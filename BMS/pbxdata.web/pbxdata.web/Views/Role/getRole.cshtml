@@ -1,0 +1,142 @@
+﻿@model IEnumerable<pbxdata.model.persona>
+
+@{
+    ViewBag.Title = "角色列表";
+}
+
+<div style="color: #FF5F3E; font-weight: bolder; line-height: 20px;">角色列表</div>
+
+
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<script>
+    $().ready(function () {
+
+
+        //添加角色
+        $("#btnRoleAdd").click(function () {
+            var roleName = $("#roleName").val();
+            var roleIndex = $("#roleIndex").val();
+            var userId = $("#userId").val();
+            $.post('/role/addRole', { menuId: "@ViewData["menuId"]", roleName: roleName, roleIndex: roleIndex, userId: userId }, function (data) {
+                alert(data);
+            })
+        })
+    })
+
+</script>
+<div id="popDiv" class="mydiv" style="display: none; width: 400px; height: 300px; left: 45%; top: 40%;">
+    <div style="line-height: 20px; text-align: right; border-bottom: solid 1px #808080; height: 20px;">
+        <a onclick="javascript:closeDiv()" style="cursor: pointer;">X　</a>
+    </div>
+    <div>角色名称：<input value="" id="roleName" /></div>
+    <div>排　　序：<input id="roleIndex" value="" /></div>
+
+    <div>
+        <button id="btnRoleAdd" value="添加">添加</button></div>
+
+</div>
+<div id="bg" class="bg" style="display: none;"></div>
+<table class="mytable" rules="all">
+    <tr>
+        <th colspan="9" class="mytableadd">
+            @*@Html.ActionLink("添加", "adddata")*@
+
+            <div style="padding-top: 20px;">
+                @if (ViewData["addName"].ToString() == "1")
+                {
+                    <a href="#" onclick="javascript: showDiv()">添加</a>
+                }
+            </div>
+        </th>
+    </tr>
+    <tr>
+        <th>角色名称
+        </th>
+        <th>排序
+        </th>
+        <th>操作人
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PersonaName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PersonaIndex)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserId)
+            </td>
+            <td>
+                @if (ViewData["updateName"].ToString() == "1")
+                {
+                    @Html.ActionLink("编辑", "EditRole", new { id = item.Id }) 
+                }
+                |
+            @if (ViewData["menuList"].ToString() == "1")
+            {
+                @Html.ActionLink("菜单列表", "allotMenuPermisson", new { id = item.Id, menuId = @ViewData["menuId"] })      
+            }
+@*@Html.ActionLink("菜单列表", "allotMenuPermisson", new { id = item.Id,menuId = @ViewData["menuId"] })*@|
+            @if (ViewData["userList"].ToString() == "1")
+            {
+                @Html.ActionLink("用户管理", "../Users/getUsers", new { menuId=16,id = item.Id }) 
+            }
+                <a href="#" class="CopyUsers">复制角色</a><span class="spanCopy" style="margin-left: 15px"></span><input type="hidden" value="@Html.DisplayFor(modelItem => item.Id)" />
+            </td>
+        </tr>
+    }
+
+</table>
+<script type="text/javascript">
+    function CopyUsers() {
+        $(".CopyUsers").each(function () {
+            $(this).click(function () {
+                var PersonaId = $(this).parent().find("input[type=hidden]").val();
+                var spanlist = $(this).parent().find(".spanCopy");
+                var athis = $(this);
+                var Id = spanlist.find("select").find("option:selected").val();
+                if ($(this).html() == "确定") {
+                    if (confirm("确定要复制成  " + spanlist.find("select").find("option:selected").text() + "  权限吗？")) {
+                        $.ajax({
+                            type: "GET",
+                            url: "/role/CopyUsers?Id=" + Id + "&PersonaId=" + PersonaId,
+                            success: function (data) {
+                                alert(data);
+                                location.href = "/role/getrole?menuId=13";
+                            },
+                            error: function () {
+                                alert("error!")
+                            },
+                        })
+                    }
+                }
+                else {
+                    $.ajax({
+                        type: "GET",
+                        url: "/role/GetUsersList",
+                        success: function (data) {
+                            spanlist.html(data);
+                            athis.html("确定");
+                        },
+                        error: function () {
+                            alert("error!")
+                        },
+                    })
+
+
+                }
+
+            })
+        })
+    }
+    CopyUsers();
+
+</script>

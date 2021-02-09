@@ -1,0 +1,843 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<script type="text/javascript" src="~/js/My97DatePicker/WdatePicker.js"></script>
+<script src="~/js/DropDowndiv.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/ShopManager/WarehouseShopShow",
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#Condition").html(da[0]);
+                    $("#ConditionDown").html(da[1]);
+                }
+            })
+    })
+    ///全选
+    function CheckAll() {
+        if ($("#Checkall").attr("checked") == "checked") {
+            $("input[id=Choose]").each(function () {
+                $(this).attr("checked", true);
+            })
+        }
+        else {
+            $("input[id=Choose]").each(function () {
+                $(this).attr("checked", false);
+            })
+        }
+    }
+
+
+    //款号查询
+    function Search() {
+        $("#PageReturn").val("1");
+        PageIndexSearch(2);
+    }
+    //款号分页
+    function PageIndexSearch(index) {
+        var style = $("#StyleTop").val() == null ? "" : $("#StyleTop").val();
+        var priceMin = $("#priceMin").val() == null ? "" : $("#priceMin").val();
+        var priceMax = $("#priceMax").val() == null ? "" : $("#priceMax").val();
+        var Cat = $("#Cat").val() == null ? "" : $("#Cat").val();
+        var BalanceMin = $("#BalanceMin").val() == null ? "" : $("#BalanceMin").val();
+        var BalanceMax = $("#BalanceMax").val() == null ? "" : $("#BalanceMax").val();
+        var Cat2 = $("#Cat2").val() == null ? "" : $("#Cat2").val();
+        var Imagefile = $("#Imagefile").val() == null ? "" : $("#Imagefile").val();
+        var salesState = $("#salesState").val() == null ? "" : $("#salesState").val();
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/ShopManager/SearchPage",
+                data: {
+                    "style": style,
+                    "priceMin": priceMin,
+                    "priceMax": priceMax,
+                    "Cat": Cat,
+                    "BalanceMin": BalanceMin,
+                    "BalanceMax": BalanceMax,
+                    "Cat2": Cat2,
+                    "Imagefile": Imagefile,
+                    "salesState": salesState,
+                    "Index": index,
+                    "PageReturn": $("#PageReturn").val() == null ? "" : $("#PageReturn").val(),
+                    "shopid": $("#ShopId").val(),
+                    "Page": $("#PageTop").val() == "" ? 10 : $("#PageTop").val()
+                },
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#TopTable").empty;
+                    $("#AllCounts").empty;
+                    $("#PageCount").empty;
+                    $("PageNum").empty;
+                    $("#TopTable").html(da[0]);
+                    $("#AllCounts").html(da[1]);
+                    $("#PageCount").html(da[2]);
+                    $("#PageNum").html(da[3]);
+                    $("#PageReturn").val(da[3]);
+                    showPic1();
+                }
+            })
+    }
+    //刷新款号
+    function Refesh() {
+        PageIndexSearch(2);
+    }
+    //页码更改  款号
+    function StyleChage()
+    {
+        $("#PageReturn").val("1");
+        PageIndexSearch(2);
+    }
+
+    //货号查询
+    function SearchDown() {
+        $("#PageT").val("1");
+        PageIndexScode(2)
+    }
+    //货号分页
+    function PageIndexScode(index) {
+        var style = $("#Style").val() == null ? "" : $("#Style").val();
+        var scode = $("#ScodeDown").val() == null ? "" : $("#ScodeDown").val();
+        var priceMin = $("#PriceMinDown").val() == null ? "" : $("#PriceMinDown").val();
+        var priceMax = $("#PriceMaxDown").val() == null ? "" : $("#PriceMaxDown").val();
+        var Cat = $("#CatDown").val() == null ? "" : $("#CatDown").val();
+        var BalanceMin = $("#StcokMinDown").val() == null ? "" : $("#StcokMinDown").val();
+        var BalanceMax = $("#StcokMaxDown").val() == null ? "" : $("#StcokMaxDown").val();
+        var Cat2 = $("#Cat2Down").val() == null ? "" : $("#Cat2Down").val();
+        var minTime = $("#MinTimeDown").val() == null ? "" : $("#MinTimeDown").val();
+        var maxTime = $("#MaxTimeDown").val() == null ? "" : $("#MaxTimeDown").val();
+        var salesState = $("#salesStatedown").val() == null ? "" : $("#salesStatedown").val();
+        var Imagefiledown = $("#Imagefiledown").val() == null ? "" : $("#Imagefiledown").val();
+        $.ajax(
+            {
+                type: "POST",
+                url: "/ShopManager/WarehouseShopShowDownPage",
+                datatype: "text",
+                data:
+                    {
+                        "style": style,
+                        "scode": scode,
+                        "priceMin": priceMin,
+                        "priceMax": priceMax,
+                        "Cat": Cat,
+                        "BalanceMin": BalanceMin,
+                        "BalanceMax": BalanceMax,
+                        "Cat2": Cat2,
+                        "minTime": minTime,
+                        "maxTime": maxTime,
+                        "Index": index,
+                        "PageReturnD": $("#PageT").val() == "" ? 0 : $("#PageT").val(),
+                        "salesState": salesState,
+                        "Imagefiledown": Imagefiledown,
+                        "shopid": $("#ShopId").val(),
+                        "Page": $("#PageDown").val() == "" ? 10 : $("#PageDown").val()
+                    },
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#downTable").empty;
+                    $("#PageCountD").empty;
+                    $("#AllCountsD").empty;
+                    $("#PageNumD").empty;
+                    $("#downTable").html(da[0]);
+                    $("#PageCountD").html(da[2]);
+                    $("#PageNumD").html(da[3]);
+                    $("#PageT").val(da[3]);
+                    $("#AllCountsD").html(da[1]);
+                    showPic();
+                }
+
+            })
+    }
+    //刷新  货号
+    function RefeshDown() {
+        PageIndexScode(2);
+    }
+    //页码更改 货号
+    function ScodeChage() {
+        $("#PageT").val("1");
+        PageIndexScode(2)
+    }
+
+
+    //查看图片
+    function LookAttr(style) {
+        $.get("/ShopManager/ShowMainPicStyle", { style: style }, function (data) {
+            var da = data.split('-*-');
+            $("#divMainPic").html("");
+            for (var i = 0; i < da.length; i++) {
+                $("#divMainPic").append("<img style='width:75px;height:75px;' src='" + da[i] + "'/>")
+            }
+        })//主图
+        //$.get("/ShopManager/ShowPeiPic", { style: style }, function (data) { $("#divBrandPeiPic").empty; $("#divBrandPeiPic").append(data) })//配图
+        //$.get("/ShopManager/ShowDetailPic", { style: style }, function (data) { $("#divProductDetail").empty; $("#divProductDetail").append(data) })//细节图
+        $("#PopStyledescript").show();
+    }
+    //开放销售
+    function OpenSale() {
+        var styles = "";
+        $("input[id=Choose]").each(function () {
+            if ($(this).attr("checked") == "checked") {
+                styles += $(this).attr("styleName") + "❤";
+            }
+        })
+        var count = styles.split('❤').length;
+        if (count > 1) {
+            if (confirm("是否确认开放销售？")) {
+                $.ajax(
+                    {
+                        type: "POST",
+                        datatype: "text",
+                        url: "/ShopManager/OpenSale",
+                        data: {
+                            "styles": styles,
+                            "shopid": $("#ShopId").val(),
+                        },
+                        success: function (data) {
+                            alert(data);
+                            Refesh()
+                        }
+                    })
+            }
+        }
+        else {
+            alert("请选择需要开放销售的款号！");
+        }
+    }
+    //取消销售
+    function CancelSale() {
+        var styles = "";
+        $("input[id=Choose]").each(function () {
+            if ($(this).attr("checked") == "checked") {
+                styles += $(this).attr("styleName") + "❤";
+            }
+        })
+        var count = styles.split('❤').length;
+        if (count > 1) {
+            if (confirm("是否确认取消销售？")) {
+                $.ajax(
+                    {
+                        type: "POST",
+                        datatype: "text",
+                        url: "/ShopManager/CancelSale",
+                        data: {
+                            "styles": styles,
+                            "shopid": $("#ShopId").val(),
+                        },
+                        success: function (data) {
+                            alert(data);
+                            Refesh()
+                        }
+                    })
+            }
+        }
+        else {
+            alert("请选择需要取消销售的款号！");
+        }
+    }
+    ///删除
+    function Delete(style) {
+        if (confirm("确认 " + style + " 是否删除？")) {
+            $.ajax(
+                {
+                    type: "POST",
+                    datatype: "text",
+                    url: "/ShopManager/DeleteByStyleAndShopid",
+                    data: {
+                        "styles": style,
+                        "shopid": $("#ShopId").val(),
+                    },
+                    success: function (data) {
+                        alert(data);
+                        Refesh()
+                    }
+                })
+        }
+    }
+    //批量删除
+    function DeleteAll() {
+        var styles = "";
+        $("input[id=Choose]").each(function () {
+            if ($(this).attr("checked") == "checked") {
+                styles += $(this).attr("styleName") + "❤";
+            }
+        })
+        var count = styles.split('❤').length;
+        if (count > 1) {
+            if (confirm("是否确认批量删除？")) {
+                $.ajax(
+                    {
+                        type: "POST",
+                        datatype: "text",
+                        url: "/ShopManager/DeleteByStyleAndShopidBatch",
+                        data: {
+                            "styles": styles,
+                            "shopid": $("#ShopId").val(),
+                        },
+                        success: function (data) {
+                            alert(data);
+                            Refesh()
+                        }
+                    })
+            }
+        }
+        else {
+            alert("请选择需要删除的款号！");
+        }
+    }
+    ///按照货号删除
+    function DeleteScode(scode) {
+        if (confirm("确认 " + scode + " 是否删除？")) {
+            $.ajax(
+                {
+                    type: "POST",
+                    datatype: "text",
+                    url: "/ShopManager/DeleteScode",
+                    data: {
+                        "Scode": scode,
+                        "shopid": $("#ShopId").val(),
+                    },
+                    success: function (data) {
+                        alert(data);
+                        RefeshDown()
+                    }
+                })
+        }
+    }
+
+    ///打开修改价格的页面
+    var Pricestyle;
+    var PriceScode;
+    function UpdatePricea(style, scode) {
+        Pricestyle = style;
+        PriceScode = scode;
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/ShopManager/GetPriceByScodeandShopid",
+                data:
+                    {
+                        "Scode": scode,
+                        "shopid": $("#ShopId").val(),
+                    },
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#PirceScode").html(scode);
+                    $("#Pricea").html(da[0]);
+                    $("#Priceb").html(da[1]);
+                    $("#Pricec").html(da[2]);
+                    $("#Priced").html(da[3]);
+                    $("#Pricee").html(da[4]);
+
+                }
+            })
+        $("#UpdatePrice").show();
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+    }
+    ///关闭修改界面
+    function ColseUpdateBalance() {
+        $("#UpdatePrice").hide();
+    }
+    ///确认修改价格
+    function SaveUpdatePrice() {
+        if (confirm("确认是否修改款号 " + Pricestyle + " 售货价")) {
+            var pricec = $("#Pricee").html();
+            var UpatePricec = $("#UpatePricec").val();
+            if (UpatePricec == "") {
+                alert("修改的价格不能为空！")
+                return false;
+            }
+            if (UpatePricec < 0) {
+                alert("价格不允许为负数！");
+                return false;
+            }
+            $.ajax(
+                {
+                    type: "POST",
+                    datatype: "text",
+                    url: "/ShopManager/UpdatePricecByStyleAndPrice",
+                    data: {
+                        "style": Pricestyle,
+                        "pricec": pricec,
+                        "UpatePricec": UpatePricec,
+                        "scode": PriceScode,
+                        "shopid": $("#ShopId").val(),
+                    },
+                    success: function (data) {
+                        alert(data);
+                        $("#UpdatePrice").hide();
+                        $(".PopBg").hide();
+                        RefeshDown();
+                    }
+                })
+        }
+
+    }
+    //查看属性
+    function LookAtrrbutt(scode, vencode) {
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/ShopManager/GetShopProductByScodeAndShopIdVencode",
+                data: {
+                    "scode": scode,
+                    "vencode": vencode,
+                    "shopid": $("#ShopId").val(),
+                },
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#EditContent").empty;
+                    $("#divProductInfo").empty;
+                    $("#TypeAttribute").empty;
+                    $.get("/ShopManager/ShowMainPic", { scode: scode }, function (data) {
+                        var da = data.split('-*-');
+                        $("#divShowMianPic").html("");
+                        for (var i = 0; i < da.length - 1; i++) {
+                            $("#divShowMianPic").append("<img style='width:75px;height:75px;' src='" + da[i] + "'/>")
+                        }
+                        MaxPic();
+
+                    })//主图
+
+                    $("#EditContent").html(da[0]);
+                    //$("#divProductInfo").html(da[1]);
+                    $("#TypeAttribute").html(da[2]);
+                    $("#PopContent").show();
+                    $(".PopBg").height($(document).height());
+                    $(".PopBg").show();
+                    
+
+                }
+            })
+    }
+    //关闭查看属性
+    function CloseDown() {
+        $("#PopContent").hide();
+    }
+    //查看商品信息
+    function LookShop(style) {
+        var style = style;
+        $("#Style").val(style)
+        $("#PageT").val("1");
+        PageIndexScode(2)
+    }
+</script>
+<style type="text/css">
+    #PopStyledescript
+    {
+        left: 20%;
+        top: 20%;
+        width: 1000px;
+        min-height: 500px;
+    }
+
+    #divMainPicContent, #divMainPicContentStyle, .divStyleContainer
+    {
+        margin: auto;
+        width: 90%;
+        min-height: 100px;
+        border: 1px solid gray;
+        padding: 10px;
+        margin-top: 10px;
+        text-align: center;
+    }
+
+        #divMainPicContent img, #divMainPicContentStyle img, .divStyleContainer img
+        {
+            width: 75px;
+            height: 75px;
+        }
+
+    #tabProperty
+    {
+        width: 720px;
+    }
+
+    #PopContent #tabProperty td
+    {
+        border: none;
+        width: 33%;
+        text-align: right;
+    }
+
+    #PopContent
+    {
+        left: 0%;
+        top: 0%;
+        width: 800px;
+        height: 805px;
+    }
+
+    #divUploadMainPicStyle img, #divShowMianPic img
+    {
+        margin-left: 10px;
+    }
+
+    #divUploadMainPic, #divShowMianPic, #divUploadMainPicStyle, #divShowMianPicStyle
+    {
+        float: left;
+    }
+
+    #EditContainer
+    {
+        margin-top: 5px;
+        border: 1px solid lightblue;
+        height: 765px;
+        width: 100%;
+        background-color: white;
+        padding-top: 15px;
+        overflow: auto;
+        float: left;
+    }
+
+    #divProductInfo
+    {
+        float: right;
+        margin-top: 5px;
+        margin-right: 5px;
+        border: 1px solid lightblue;
+        height: 765px;
+        width: 38%;
+        background-color: white;
+        padding-top: 15px;
+        overflow: auto;
+    }
+</style>
+<span style="color: red; font-weight: bold;">当前店铺:</span> @ViewData["shopname"].ToString()<input type="text"  id="ShopId" style="display:none" value="@ViewData["ShopId"]"/>
+<div id="top">
+    <div id="Condition" style="border: 1px  solid gray; height: auto;">
+    </div>
+    <div id="TopTable">
+    </div>
+    <div class="divJump">
+        <select id="PageTop" onchange="StyleChage()">@Html.Raw(ViewData["Page"])</select>
+        <a href="#" onclick="PageIndexSearch(0)">首页</a>
+        <a href="#" onclick="PageIndexSearch(1)">上一页</a>
+        <input type="text" id="PageReturn" />
+        <a href="#" onclick="PageIndexSearch(2)">跳页</a>
+        共<span id='PageCount'></span>页&nbsp;&nbsp;
+    当前第<span id='PageNum'>1</span>页&nbsp;&nbsp;
+    共<span id='AllCounts'></span>条数据
+    <a href="#" onclick="PageIndexSearch(3)">下一页</a>
+        <a href="#" onclick="PageIndexSearch(4)">末页</a>
+    </div>
+</div>
+
+<div id="down">
+    <div id="ConditionDown" style="border: 1px  solid gray; height: auto;">
+    </div>
+    <div id="downTable">
+    </div>
+    <div class="divJump">
+        <select id="PageDown" onchange="ScodeChage()">@Html.Raw(ViewData["Page"])</select>
+        <a href="#" onclick="PageIndexScode(0)">首页</a>
+        <a href="#" onclick="PageIndexScode(1)">上一页</a>
+        <input type="text" id="PageT" />
+        <a href="#" onclick="PageIndexScode(2)">跳页</a>
+        共<span id='PageCountD'></span>页&nbsp;&nbsp;
+    当前第<span id='PageNumD'>1</span>页&nbsp;&nbsp;
+    共<span id='AllCountsD'></span>条数据
+    <a href="#" onclick="PageIndexScode(3)">下一页</a>
+        <a href="#" onclick="PageIndexScode(4)">末页</a>
+    </div>
+
+    <div id="PopStyledescript" class="myPopdiv">
+        <div class="divclose" onclick="Close()">×</div>
+        <div class="Poptitle">商品图片</div>
+        <div class="PopContent">
+            <div id="info">
+
+                <table style="width: 95%">
+                    <tr>
+                        <td><span style="width: 20px; display: block;">商品描述</span></td>
+                        <td style="text-align: center;">
+                            <textarea id="txtproductDescript" style="width: 92%; height: 100px; margin: auto"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span style="width: 20px; display: block">商品缩略图</span></td>
+                        <td>
+                            <div>
+                                <div class="divStyleContainer">
+                                    <div>品牌配图</div>
+                                    <div id="divBrandPeiPic" style="float: left;"></div>
+                                </div>
+
+                                <div id="divMainPicContentStyle">
+                                    <div>主图</div>
+                                    <div id="divMainPic"></div>
+                                </div>
+                                <div class="divStyleContainer">
+                                    <div>商品细节</div>
+                                    <div id="divProductDetail" style="float: left;"></div>
+                                </div>
+                                <div id="divImageFileStyle">
+                                    <div id="div_imgStyle">
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <div style="text-align: center">
+                    <input type="button" name="Close" value=" 关 闭 " onclick="Close()" style="margin-left: 50px" />
+                </div>
+            </div>
+            <div class="divMainMaxPic">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="PopBg"></div>
+<script type="text/javascript">
+    //关闭入库界面
+    function ColseInsert() {
+        $(".PopBg").hide();
+        $("#UpdateBalance").hide();
+        RefeshDown();
+    }
+
+    var updateScode;
+    var updatevencode;
+    function Subtract(scode, vencode) {
+
+        updateScode = scode;
+        updatevencode = vencode;
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/ShopManager/PageShowRk",
+                data: {
+                    "Scode": scode,
+                    "Vencode": vencode,
+                    "shopid": $("#ShopId").val(),
+                },
+                success: function (data) {
+                    var da = data.split('❤')
+                    $("#tdScode").html(da[0]);//货号
+                    $("#tdVenName").html(da[1]);//数据源名称
+                    $("#lbCountBalance").html(da[2]);//总库存
+                    $("#TableShopBalance").html(da[3]);//写入表
+                    $("#AllCounts").html(da[4]);//总记录数
+                    $("#Count").html(da[5]);//总页数
+                    $("#SurplusBalance").html(da[6]);//剩余库存
+                    $(".PopBg").height($(document).height());
+                    $(".PopBg").show();
+                    $("#UpdateBalance").show();
+                }
+            })
+
+    }
+    ///确认修改库存
+    function SaveUpdateBalance() {
+        var balance = $("#BalanceSum").val();
+        if (balance < 0) {
+            alert("库存不允许为负数");
+            return false;
+        }
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/ShopManager/UpdateBalanceByAndShopIdVencode",
+                data: {
+                    "Scode": updateScode,
+                    "Vencod": updatevencode,
+                    "Balance": balance,
+                    "shopid": $("#ShopId").val(),
+                },
+                success: function (data) {
+                    alert(data);
+                    Subtract(updateScode, updatevencode);
+
+                }
+            })
+    }
+
+
+    /*关闭按钮取消修改*/
+    function Close() {
+        $(".PopBg").hide();
+        $(".myPopdiv").hide();
+    }
+</script>
+<style type="text/css">
+    *
+    {
+        padding: 0px;
+        margin: 0px;
+    }
+
+    #ImageUl
+    {
+        list-style-type: none;
+    }
+
+        #ImageUl img
+        {
+            width: 100px;
+            height: 100px;
+            border: 1px solid black;
+        }
+
+        #ImageUl li
+        {
+            float: left;
+            width: 120px;
+            height: 120px;
+            text-align: center;
+        }
+
+        #ImageUl div
+        {
+            width: 100%;
+            text-align: center;
+        }
+</style>
+<div class="myPopdiv" style="left: 10%; top: 20%; width: auto; height: 500px" id="UpdateBalance">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">库存修改</div>
+    <div class="PopContent">
+        <div style="margin: auto;">
+            <table style="width: auto;">
+                <tr style="height: 30px;">
+                    <td style="font-weight: bold;">货号</td>
+                    <td id="tdScode" style="color: red;"></td>
+                    <td id="tdVenName" style="color: red; font-weight: bold;"></td>
+                    <td>
+                        <label style="font-weight: bold;">共有</label>
+                        <label id="lbCountBalance" style="color: red;"></label>
+                        <label style="font-weight: bold;">件</label>
+                        &nbsp;&nbsp;
+                    <label style="font-weight: bold;">剩余库存</label>
+                        <label style="font-weight: bold; color: red;" id="SurplusBalance"></label>
+                    </td>
+                </tr>
+                <tr style="height: 30px;">
+                    <td style="font-weight: bold;">修改库存</td>
+                    <td style="width: auto;">
+
+                        <input type="text" id="BalanceSum" />&nbsp;&nbsp;<input type="button" value="确认修改" onclick="SaveUpdateBalance()" /></td>
+                </tr>
+            </table>
+            <div id="TableShopBalance"></div>
+        </div>
+    </div>
+</div>
+
+<div class="PopBg"></div>
+<div class="myPopdiv" style="left: 35%; top: 30%; width: 200px; height: 200px" id="UpdatePrice">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">价格修改</div>
+    <div class="PopContent">
+        <br />
+        <div style="text-align: left; margin-top: 10px; margin-left: 30px;">
+            当前货号：<label id="PirceScode" style="color: red;"></label><br />
+            吊牌价：<label id="Pricea" style="height: 20px;"></label><br style="height: 20px;" />
+            零售价：<label id="Priceb" style="height: 20px;"></label><br />
+            供货价：<label id="Pricec"></label><input id="UpatePricec" style="width: 50px;" />
+            <br />
+            批发价：<label id="Priced"></label><br />
+            成本价：<label id="Pricee"></label><br />
+            <input type="button" value="确认" onclick="SaveUpdatePrice()" />
+        </div>
+    </div>
+</div>
+
+<div class="PopBg"></div>
+<div id="PopContent" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">商品属性</div>
+        <div id="EditContainer">
+            <div id="EditContent" style="width: 760px">
+            </div>
+            <div id="TypeAttribute">
+            </div>
+            <div>
+                <div id="divMainPicContent">
+                    <div>主图</div>
+                    <div id="divShowMianPic"></div>
+                </div>
+                <div id="divImageFile">
+                    <div id="div_img1">
+                        <div id="divScodePic">
+                        </div>
+                    </div>
+                </div>
+                <div style="width: 100%; text-align: center; margin-top: 20px;">
+                    <input type="button" value=" 关 闭 " onclick=" CloseDown()" style="margin-left: 20px;" />
+                </div>
+            </div>
+       
+    </div>
+    <div class="divMainMaxPic"></div>
+    <div id="divShowPic1" style="position: absolute"></div>
+
+</div>
+<script type="text/javascript">
+    //鼠标悬停 查看大图
+    function showPic(obj) {
+        var src = $(obj).attr("src");
+        var y = $(obj).offset().top;
+        var x = $(obj).offset().left;
+        $("#divShowPic").css("top", y - 60);
+        $("#divShowPic").css("left", x + 60);
+        $("#divShowPic").html("<img src='" + src + "' style='height:200px;width:200px' />")
+        $("#divShowPic").show();
+    }
+    //失去鼠标焦点 隐藏大图
+    function HidePic() {
+        $("#divShowPic").hide();
+    }
+</script>
+
+
+<div id="divShowPic" style="position: absolute"></div>
+
+<script type="text/ecmascript">
+    function LoadStyleImage(Style) {
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/ShopManager/GetStyleImageFile",
+                data: { "Style": Style },
+                success: function (data) {
+                    $("#GetImageFile").html(data);
+                    $("#GetImage").show();
+                }
+            })
+    }
+    function LoadScodeImage(Scode) {
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/ShopManager/GetImageFile",
+                data: { "Scode": Scode },
+                success: function (data) {
+                    $("#GetImageFile").html(data);
+                    $("#GetImage").show();
+                }
+            })
+    }
+    function CloseImage() {
+        $(".myPopdiv").hide();
+    }
+</script>
+<div id="GetImage" class="myPopdiv" style="min-width: 502px; text-align: left; position: absolute; left: 30%; top: 30%">
+    <div class="divclose" onclick="CloseImage()">×</div>
+    <br />
+    <br />
+    <div id="GetImageFile" style="min-height: 200px; width: 500px;"></div>
+</div>

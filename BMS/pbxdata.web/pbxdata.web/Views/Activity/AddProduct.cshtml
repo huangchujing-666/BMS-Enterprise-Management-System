@@ -1,0 +1,139 @@
+﻿@{
+    ViewBag.Title = "AddProduct";
+}
+
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+
+<script src="~/js/DropDowndiv.js"></script>
+
+<script type="text/javascript">
+    $(function ()
+    {
+        $("#").click(function ()
+        {
+            var Scode = $("#Scode").val();
+            var Style = $("#Style").val();
+            var Type = $("#Cat2").val();
+            var Params = "{ Scode:'" + Scode + "', Style:'" + Style + "', Type:'" + Type + "' }";
+            $.post("/Activity/GetProduct", {
+                menuId: "@ViewData["myMenuId"]",
+                pageIndex: 1,
+                pageSize: 10,
+                params: Params,
+             }, function (data) { $("#Content").html(""); var ss = data.split("-----"); $("#Content").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+            var b = $.PageFunc("/Activity/GetProduct", "@ViewData["myMenuId"]", Params);
+            $("#spanPage").html(b);
+            $("#txtTiao").val(1);
+            $("#PageNum").html(1);
+
+        })
+    })
+
+
+
+    //全选
+    function CheckAll() {
+        if ($("#CheckAll").attr("checked") == "checked") { // 全选 
+            $("input[class=Check]").each(function () {
+                $(this).attr("checked", true);
+            });
+        }
+        else { // 取消全选 
+            $("input[class=Check]").each(function () {
+                $(this).attr("checked", false);
+            });
+        }
+    }
+    ///得到选择货物
+    function OkCheck()
+    {
+        var Scodes;
+        $("input[class=Check]").each(function () {
+            if ($(this).attr("checked") == "checked")
+            {
+                Scodes += "❤" + $(this).attr("Scode");
+            }
+        });
+        $.ajax(
+            {
+                type: "post",
+                url: "/Activity/OkCheck",
+                datatype: "text",
+                data:
+                    {
+                        "Scode":Scodes
+                    },
+                success: function (data)
+                {
+                    alert(data);
+                }
+            })
+    }
+</script>
+<div>
+    <span class="spanProperty">
+        <span class="spanPropertyName">货号：</span>
+        <input type='text' id='Scode' class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">款号：</span>
+        <input type='text' id='Style' class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">品牌：</span>
+        <select id="Cat2" class="spanPropertyValue">@Html.Raw(ViewData["Brand"])</select>
+        <input id="Cat" class="spanPropertyValue"  type="text" onclick=""/>
+    </span>
+    <br />
+    <input  type="button" onclick="Search()" class="spanPropertySearch" value="查询"/>
+    <input  type="button" onclick="OkCheck()" class="spanPropertySearch" value="确认添加"/>
+
+
+
+</div>
+<div id="Product">
+
+</div>
+<div class="divJump">
+    <span id="spanPage" style="font-weight:400;"></span>
+    共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span>条数据
+</div>
+<div id="divShowPic" style="position: absolute"></div>
+<script type="text/ecmascript">
+    $.getDropDownList("#Cat2");
+    function GetDropToBrand(e) {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Productstock/Brand",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+                var d1 = eval(data);
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].BrandAbridge + "'>" + d1[i].BrandName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }
+
+
+</script>

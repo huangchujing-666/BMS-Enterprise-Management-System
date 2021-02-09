@@ -1,0 +1,375 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="~/js/textValidate.js"></script>
+<script type="text/javascript" src="~/js/My97DatePicker/WdatePicker.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<script src="~/js/pageIndex.js"></script>
+<script type="text/javascript">
+    $(function () {
+        Load();
+    })
+
+    function Load() {
+        $.ajax(
+    {
+        type: "post",
+        datatype: "text",
+        url: "/ShopManager/TaoBaoUpdateShow",
+        success: function (data) {
+            var da = data.split('❤');
+            $("#Table").html("");
+            $("#Table").html(da[0]);
+            $("#ProductTable").html("");
+            $("#ProductTable").html(da[1]);
+            showPic()
+        }
+    })
+    }
+    ///打开修改库存
+    var StaticSkuId;
+    function Balance(SkuId) {
+        StaticSkuId = SkuId;
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/ShopManager/TaoBaoBalance",
+                data: { "SkuId": SkuId },
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#Scode").html("");
+                    $("#YBalance").html("");
+                    $("#Scode").html(da[0]);
+                    $("#YBalance").html(da[1]);
+                    $("#UpdateBalance").show();
+                }
+            })
+    }
+    ///确认修改库存
+    function UpdateBalance() {
+        var Balance;
+        if ($("#Balance").val() > 0) {
+            Balance = $("#Balance").val();
+        }
+        else {
+            alert("库存不能为负数！");
+            return false;
+        }
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/ShopManager/UpdateBalance",
+                data: {
+                    "Balance": Balance,
+                    "SkuId": StaticSkuId
+                },
+                success: function (data) {
+                    alert(data);
+                    Close();
+                    Load();
+                    OneUpdate();
+                }
+            })
+    }
+
+    function OneUpdate() {
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/ShopManager/OneUpdate",
+            })
+    }
+    ///打开价格
+    function Price(SkuId) {
+        StaticSkuId = SkuId;
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/ShopManager/TaoBaoPrice",
+                data: { "SkuId": SkuId },
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#Scode1").html("");
+                    $("#YPrice").html("");
+                    $("#Scode1").html(da[0]);
+                    $("#YPrice").html(da[1]);
+                    $("#UpdatePrice").show();
+                }
+            })
+    }
+    ///确认修改价格
+    function UpdatePrice() {
+        var Price;
+        if ($("#Price").val() > 0) {
+            Price = $("#Price").val();
+        }
+        else {
+            alert("价格不能为负数！");
+            return false;
+        }
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/ShopManager/UpdatePrice",
+                data: {
+                    "Price": Price,
+                    "SkuId": StaticSkuId
+                },
+                success: function (data) {
+                    alert(data);
+                    Close();
+                    Load();
+                }
+            })
+    }
+    ///修改货号
+    function Scode(SkuId) {
+        StaticSkuId = SkuId;
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/ShopManager/TaoBaoScode",
+                data: { "SkuId": SkuId },
+                success: function (data) {
+                    $("#Scode2").html("");
+                    $("#Scode2").html(data);
+                    $("#UpdateScode").show();
+                }
+            })
+    }
+    ///确认修改货号
+    function UpdateScode() {
+        var Scode;
+        Scode = $("#UScode").val();
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/ShopManager/UpdateScode",
+                data: {
+                    "Scode": Scode,
+                    "SkuId": StaticSkuId
+                },
+                success: function (data) {
+                    alert(data);
+                    Close();
+                    Load();
+                }
+            })
+    }
+    function Close() {
+        $(".myPopdiv").hide();
+    }
+
+
+    function Search() {
+
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/ShopManager/SearchByTbStyle",
+                data:
+                    {
+                        "Style": $("#Style").val() == null ? "" : $("#Style").val(),
+                        "Scode": $("#Scodes").val() == null ? "" : $("#Scodes").val()
+                    },
+                success: function (data) {
+                    $("#ProductTable").html("");
+                    $("#ProductTable").html(data);
+                }
+
+            })
+    }
+</script>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>TaoBaoUpdate</title>
+</head>
+<body>
+    <div style="font-size: 20px; font-weight: bold; color: red;">@ViewBag.Title</div>
+    <div id="Table">
+    </div>
+    <div style="font-weight: bold; font-size: 20px;">系统数据</div>
+    <div>款号:<input type="text" id="Style" style="width: 90px;" />货号:<input type="text" id="Scodes" style="width: 90px;" /><input type="button" onclick="Search()" value="查询" /></div>
+    <div id="ProductTable">
+    </div>
+</body>
+</html>
+<style type="text/css">
+    .divclose
+    {
+        position: absolute;
+        right: 8px;
+        top: 3px;
+        cursor: pointer;
+        font-size: 2em;
+        font-weight: bolder;
+        width: 30px;
+        height: 30px;
+    }
+
+        .divclose:hover
+        {
+            color: red;
+        }
+
+    #div_img1, #div_imgStyle
+    {
+        float: left;
+        padding-bottom: 10px;
+        min-width: 100%;
+    }
+</style>
+<div class="PopBg"></div>
+<div id="UpdateBalance" class="myPopdiv" style="left: 40%; top: 20%; min-width: 300px; text-align: left; min-height: 200px;">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">修改库存</div>
+    <div class="PopContent">
+        <br />
+        <div style="font-size: 13px;">货号：<label id="Scode" style="color: red; font-weight: bold;"></label></div>
+        <br />
+        <div style="font-size: 13px;">原库存：&nbsp;<label id="YBalance"></label></div>
+        <br />
+        <div style="font-size: 13px;">修改库存：<input type="text" id="Balance" style="width: 50px;" /></div>
+        <br />
+        <div style="padding-left: 36%;">
+            <input type="button" value="修改库存" onclick="UpdateBalance()" />
+        </div>
+        <br />
+        <br />
+    </div>
+</div>
+
+<div class="PopBg"></div>
+<div id="UpdatePrice" class="myPopdiv" style="left: 40%; top: 20%; min-width: 300px; text-align: left; min-height: 200px;">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">修改价格</div>
+    <div class="PopContent">
+        <br />
+        <div style="font-size: 13px;">货号：<label id="Scode1" style="color: red; font-weight: bold;"></label></div>
+        <br />
+        <div style="font-size: 13px;">原价格：&nbsp;<label id="YPrice"></label></div>
+        <br />
+        <div style="font-size: 13px;">修改价格：<input type="text" id="Price" style="width: 50px;" /></div>
+        <br />
+        <div style="padding-left: 36%;">
+            <input type="button" value="修改价格" onclick="UpdatePrice()" />
+        </div>
+        <br />
+        <br />
+    </div>
+</div>
+
+<div class="PopBg"></div>
+<div id="UpdateScode" class="myPopdiv" style="left: 40%; top: 20%; min-width: 300px; text-align: left; min-height: 200px;">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">修改货号</div>
+    <div class="PopContent">
+        <br />
+        <div style="font-size: 13px;">货号：<label id="Scode2" style="color: red; font-weight: bold;"></label></div>
+        <br />
+        <div style="font-size: 13px;">修改货号：<input type="text" id="UScode" style="width: 90px;" /></div>
+        <br />
+        <div style="padding-left: 36%;">
+            <input type="button" value="修改货号" onclick="UpdateScode()" />
+        </div>
+        <br />
+        <br />
+    </div>
+</div>
+<script type="text/javascript">
+    function showPic() {
+        var m = $("#mytable").find("img").length - 1;
+        $("#mytable").find("img").each(function (i, j) {
+            if (i == m && m != 0) {
+                $(this).hover(function () {
+                    var src = $(this).attr("src");
+                    var y = $(this).offset().top;
+                    var x = $(this).offset().left;
+                    $("#divShowPic").css("top", y - 140);
+                    $("#divShowPic").css("left", x + 60);
+                    //var Type = src.split(".")[4];
+                    //src = src.split("@@")[0] + "@@50q." + Type;
+                    $("#divShowPic").html("<img src='" + src + "' style='height:200px;width:200px' />")
+
+                }, function () {
+                    $("#divShowPic").html("")
+                })
+            } else {
+                $(this).hover(function () {
+                    var src = $(this).attr("src");
+                    var y = $(this).offset().top;
+                    var x = $(this).offset().left;
+                    $("#divShowPic").css("top", y);
+                    $("#divShowPic").css("left", x + 60);
+                    //var Type = src.split(".")[4];
+                    //src = src.split("@@")[0] + "@@50q." + Type;
+                    $("#divShowPic").html("<img src='" + src + "' style='height:200px;width:200px' />")
+
+                }, function () {
+                    $("#divShowPic").html("")
+                })
+            }
+        })
+    }
+</script>
+<div id="divShowPic" style="position: absolute"></div>
+<div class="PopBg"></div>
+<div id="HbPrice" class="myPopdiv" style="left: 40%; top: 20%; min-width: 300px; text-align: left; min-height: 150px; text-align: center;">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">上架</div>
+    <div class="PopContent">
+        <br />
+        <div>
+            价格:<input id="SJPrice" type="text" style="width: 60px;" />
+        </div>
+        <br />
+        <input type="button" value="确认" onclick="SJProduct()" />
+        <br />
+        <br />
+    </div>
+</div>
+<script type="text/ecmascript">
+    function SJProduct() {
+        var sjPrice = $("#SJPrice").val() == null ? "" : $("#SJPrice").val();
+        if (sjPrice < 0) {
+            alert("价格不能为负数！");
+            return false;
+        }
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/ShopManager/HeadBlock",
+                data: {
+                    "Scode": sjScode,
+                    "Color": sjcolor,
+                    "Price": sjPrice
+                },
+                success: function (data) {
+                    alert(data);
+                    $("#HbPrice").hide();
+                    Load();
+                }
+            })
+    }
+    var sjScode;
+    var sjcolor;;
+    function HeadBlock(Scode) {
+        sjcolor = $("#" + Scode).find(".selColor").find("option:selected").val();
+        sjScode = Scode;
+        $("#HbPrice").show();
+    }
+</script>
+

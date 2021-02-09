@@ -1,0 +1,114 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+
+<style type="text/css">
+    *
+    {
+        padding: 0px;
+        margin: 0px;
+    }
+
+    ul
+    {
+        list-style-type: none;
+    }
+
+    .Container
+    {
+        margin-top: 20px;
+
+    }
+
+    a
+    {
+        text-decoration: none;
+    }
+
+        a:hover
+        {
+            color: red;
+        }
+</style>
+<header style="width:100%; padding-top:10px;">
+ <span class='spanProperty'><span class='spanPropertyName'>日期：</span><input type='date' id='Mindate'  class='spanPropertyValue' style='width:120px; padding:0 0;' />-<input type='date' id='Maxdate'  class='spanPropertyValue' style='width:120px; padding:0 0;'/></span>
+    <input type="button" value="查  询" onclick="onSearch()" style="width:50px;" class="spanPropertySearch" />
+@*日期:<input type="date" id="Mindate" />-<input type="date" id="Maxdate" /><input type="button" value="查询" onclick="onSearch()" />*@
+</header>
+
+<div class="Container">
+    <div>
+        <div>销售统计(总计)</div>
+        <div id="SalesCount">
+            <table class="mytable"></table>
+        </div>
+    </div>
+    <div style="margin-top: 20px;">
+        <div>今日销售统计</div>
+        <div id="SalesCount1">
+            <table class="mytable"></table>
+        </div>
+    </div>
+    <div style="margin-top: 20px;">
+        <div>销售统计(按时间查询)</div>
+        <div id="SalesCount2">
+            <table class="mytable"></table>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+    /*销售统计--总数*/
+    $.ajax({
+        type: "POST",
+        url: "/DataChart/ReturnInfo",
+        data: { "test": $("#tex").val() },
+        success: function (data) {
+            var s = "";
+            data = eval("(" + data + ")");
+            s += "<tr><th>支付笔数</th><th>支付总金额</th><th>销售总件</th><th>未支付笔数</th><th>未支付金额</th></tr>";
+            s += "<tr><td>" + data[0].Count + "</td><td>" + data[0].SumPrice.toFixed(2) + "</td><td>" + data[0].BalaceCount + "</td><td>" + data[0].BalaceCount1 + "</td><td>" + data[0].SumPrice1.toFixed(2) + "</td></tr>"
+
+            $("#SalesCount").find("table").html(s);
+        }
+    })
+
+
+    /*销售统计--今日*/
+    $.ajax({
+        type: "POST",
+        url: "/DataChart/ReturnInfoT",
+        data: { Mintime: "", Maxtime: "" },
+        success: function (data) {
+            var s = "";
+            data = eval("(" + data + ")");
+            s += "<tr><th>支付笔数</th><th>支付总金额</th><th>销售总件</th><th>未支付笔数</th><th>未支付金额</th></tr>";
+            s += "<tr><td>" + data[0].Count + "</td><td>" + data[0].SumPrice.toFixed(2) + "</td><td>" + data[0].BalaceCount + "</td><td>" + data[0].BalaceCount1 + "</td><td>" + data[0].SumPrice1.toFixed(2) + "</td></tr>"
+            $("#SalesCount1").find("table").html(s);
+        }
+    })
+
+
+    function onSearch() {
+        var Mindate = $("#Mindate").val().trim() == null ? "" : $("#Mindate").val().trim();
+        var Maxdate = $("#Maxdate").val().trim() == null ? "" : $("#Maxdate").val().trim();
+        /*销售统计--今日*/
+        $.ajax({
+            type: "POST",
+            url: "/DataChart/ReturnInfoT",
+            data: { Mintime: Mindate, Maxtime: Maxdate },
+            success: function (data) {
+                var s = "";
+                data = eval("(" + data + ")");
+
+                s += "<tr><th>日期</th><th>支付笔数</th><th>支付总金额</th><th>销售总件</th><th>未支付笔数</th><th>未支付金额</th></tr>";
+                s += "<tr><td>" + Mindate + "至" + Maxdate + "</td><td>" + data[0].Count + "</td><td>" + data[0].SumPrice.toFixed(2) + "</td><td>" + data[0].BalaceCount + "</td><td>" + data[0].BalaceCount1 + "</td><td>" + data[0].SumPrice1.toFixed(2) + "</td></tr>"
+                $("#SalesCount2").find("table").html(s);
+            }
+        })
+    }
+</script>

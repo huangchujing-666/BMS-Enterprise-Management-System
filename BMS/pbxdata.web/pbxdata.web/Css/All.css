@@ -1,0 +1,23 @@
+﻿body {font-size: 12px;}
+
+/*超链接*/
+a:link {color: blue;text-decoration: none;}
+a:hover {color: red;text-decoration: none;}
+/*a:visited {color: gray;text-decoration: none;}*/
+a:visited {color: blue;text-decoration: none;}
+a:active {color: blue;text-decoration: none;}
+
+/*表格*/
+/*.mytable {font-size: 12px;width: 100%;min-width:800px; text-align: center;border: solid 1px #808080;}*/
+.mytable {font-size: 12px;width: 100%;min-width:800px; text-align: center;border: solid 1px #808080;}
+.mytable tr td {border: solid 1px #808080;border-collapse: collapse;height:42px;}
+.mytableadd {text-align: left;font-weight: 100;}
+.mytable tr th {
+    height:42px;
+}
+/*#divSearchlist input,.divSearchlist input {
+width:135px;
+}
+#divSearchlist select,.divSearchlist input {
+width:135px;
+}*/

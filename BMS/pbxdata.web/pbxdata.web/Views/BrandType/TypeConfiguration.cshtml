@@ -1,0 +1,205 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="~/js/textValidate.js"></script>
+<script type="text/javascript" src="~/js/My97DatePicker/WdatePicker.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<script type="text/javascript">
+    ///页面第一次加载
+    $(function ()
+    {
+        $("#Persion").attr("title",@ViewData["RoleId"].ToString()+"");
+        if ($("#Persion").attr("title") != 1)//如果不是管理员 则是个人配置
+        {
+            $("#Customer").hide();//隐藏角色选择项
+            $("#Ok").hide();//隐藏分配项
+        }
+        //加载角色下拉列表
+        $.ajax(
+            {
+                type: "POST",
+                url: "/BrandType/ShowVencode",
+                datatype: "text",
+                success: function (data)
+                {
+                    $("#Vencode").html(data);
+                }
+            })
+        //加载供应商下拉列表
+        $.ajax(
+            {
+                type: "POST",
+                url: "/BrandType/ShowCustomer",
+                datatype: "text",
+                success: function (data) {
+                    $("#Customer").html(data);
+                }
+            })
+
+        
+    })
+    //选择数据源
+    function VencodeChage()
+    {
+        var RoleId;
+        if ($("#Persion").attr("title") == 1) {   //如果是管理源  则可以选择个用户
+            RoleId = $("#Customer").val()
+        }
+        else {  //如果不是管理员  则只能看到自己当前角色
+            RoleId = $("#Persion").attr("title")
+        }
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/BrandType/TypeShow",
+                data: {
+                    "Vencode": $("#Vencode").val(),
+                    "roleId": RoleId
+                },
+                success: function (data)
+                {
+                    $("#Persion").html(data);
+                }
+            })
+    }
+    //选择角色
+    function PersonalChange()
+    {
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/BrandType/TypeShow",
+                data: {
+                    "Vencode": $("#Vencode").val(),
+                    "roleId": $("#Customer").val()
+
+                },
+                success: function (data) {
+                    $("#Persion").html(data);
+                }
+            })
+    }
+    ///全选  和  取消全选
+    function CheckAll(Id)
+    {
+        $("#"+Id+"").click(function () {
+            if ($(this).attr("checked") == "checked") { // 全选 
+                $("input[name="+Id+"]").each(function () {
+                    $(this).attr("checked", true);
+                });
+            }
+            else { // 取消全选 
+                $("input[name=" + Id + "]").each(function () {
+                    $(this).attr("checked", false);
+                });
+            }
+        });
+    }
+    ///获得选中的权限  角色
+    function SetPermission()
+    {
+        var GetDrpPersionId = "";//从下拉列表中获取当前分配的角色
+        var typeId = "";//权限小类别
+        var bigTypeId = "";//权限大类别
+        GetDrpPersionId = $("#Customer").val();
+        $("input[category=Type]").each(function ()
+        {
+            if ($(this).attr("checked")=="checked")
+            {
+                typeId += "," + $(this).attr("id");
+            }
+        })
+        $("input[category=BigType]").each(function () {
+            if ($(this).attr("checked") == "checked") {
+                bigTypeId += "," + $(this).attr("id");
+            }
+        })
+        if (GetDrpPersionId == "0")
+        {
+            alert("请先选择角色！")
+            return false;
+        }
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/BrandType/UpdatePerssion",
+                data: {
+                    "typeId": typeId,
+                    "bigTypeId":bigTypeId,
+                    "PersionId": GetDrpPersionId,
+                    "Vencode":$("#Vencode").val()
+                },
+                success: function (data)
+                {
+                    alert(data)
+                }
+            })
+    }
+    //用户
+    function PersonalSet()
+    {
+        var typeId = "";//权限小类别
+        $("input[category=Type]").each(function () {
+            if ($(this).attr("checked") == "checked") {
+                typeId += "," + $(this).attr("id");
+            }
+        })
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/BrandType/UpdatePersonalConfig",
+                data: {
+                    "typeId": typeId,
+                    "PersionId": $("#Customer").val(),
+                    "Vencode": $("#Vencode").val(),
+                },
+                success: function (data) {
+                    alert(data)
+                }
+            })
+
+    }
+
+    $(function () {
+        $("#All").change(function () {
+            if ($(this).attr("checked") == "checked") {
+                $("#Persion").find("input[type=checkbox]").attr("checked", true)
+            }
+            else {
+                $("#Persion").find("input[type=checkbox]").attr("checked", false)
+            }
+        })
+    })
+</script>
+<style type="text/css">
+    .BigType {
+        color:blue;
+        font-weight:100;
+        font-size:15px;
+    }
+    .Typestyle {
+
+    }
+    ul li {
+    float:left;
+    width:50px;
+    list-style-type:none;
+    }
+</style>
+<div>
+    <select id="Vencode" onchange="VencodeChage()" class="spanPropertyValue" ></select>
+    <select id="Customer" onchange="PersonalChange()" class="spanPropertyValue"></select>
+    <input type="button"  id="Ok" onclick="SetPermission()" class="spanPropertyValue" value="确定"/>
+    <input type="button" id="Config" onclick="PersonalSet()" class="spanPropertyValue" value="保存">
+    
+    <span id="Type"></span>
+</div>
+<div><input type="checkbox" id="All"/>全选 </div>
+<div>
+
+<div id="Persion" title=""></div>
+</div>

@@ -1,0 +1,418 @@
+﻿@model List<pbxdata.model.errorlog>
+
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<link href="~/Css/CustomPropertyView.css" rel="stylesheet" />
+<script type="text/javascript">
+    function IsYesDelete(mess) {
+        var bool = window.confirm("确认删除该客户信息？");
+        //alert(bool.toString());
+        if (bool) {
+            $.ajax({
+                type: "GET",
+                url: "DeleteErrorlog/" + mess,
+                dataType: "text",
+                success: function (data) {
+                    if (data == "true") {
+                        //seachClick1();
+                        $("#" + mess).remove();
+                    }
+                    else if (data = "noE") {
+                        $("#" + mess).remove();
+                    }
+
+                }
+            });
+            // window.location.href = 
+            //alert("Custom/DeleteCustom/" + mess);
+        }
+        return false;
+        //return bool;
+    }
+
+    var pgIndex = 1;
+
+    function PageIndexChange(index) {
+        //alert(index);
+        $.ajax({
+            type: "POST",
+            url: "PageIndexChange/" + index + "-" + pgIndex,
+            dataType: "text",
+            data: { operation: $("#errorlogType").val(), menuId: '@ViewData["menuId"]' },
+            //data:null,
+            success: function (data) {
+
+                if (data != "") {
+                    switch (index) {
+                        case 1:
+                            $("#txtTiao").val(pgIndex = 1);
+                            break;
+                        case 2:
+                            $("#txtTiao").val(pgIndex = pgIndex - 1);
+                            break;
+                        case 3:
+                            $("#txtTiao").val(pgIndex = pgIndex + 1);
+                            break;
+                        case 4:
+                            $("#txtTiao").val(pgIndex = parseInt($("#pageCount").html()));
+                            break;
+                    }
+                    $('#ErrorlogList').empty();   //清空resText里面的所有内容
+                    var da = data.split("+++");
+                    $("#pageCount").html(da[1]);
+                    pgIndex = parseInt($("#txtTiao").val());
+                    $('#ErrorlogList').html(data);
+                }
+                else if (index == 1) {
+                    pgIndex = 0;
+                    $("#txtTiao").val(0);
+                    $("#pageCount").html(0);
+                    $("#ErrorlogList").html("<tr><td colspan='7'>没有数据！</td><tr>");
+                }
+                else {
+                    pgIndex = $("#txtTiao").val();
+                    //pgIndex = 0;
+                    //$("#txtTiao").val(0);
+                    //$("#pageCount").html(0);
+                    //$("#ErrorlogList").html("<tr><td colspan='7'>没有数据！</td><tr>");
+                }
+            }
+        });
+        return false;
+    }
+    function OnTiao() {
+
+        var pageIndex = parseInt($("#txtTiao").val());
+        var pageCount = parseInt($("#pageCount").html());
+        //alert($("#errorlogType").val());
+        if (0 < pageIndex <= pageCount) {
+            $.ajax({
+                type: "POST",
+                url: "/Errorlog/PageIndexChange/5-" + pageIndex,
+                dataType: "text",
+                data: { operation: $("#errorlogType").val(), menuId: '@ViewData["menuId"]' },
+                success: function (data) {
+                    if (data != "") {
+                        $('#ErrorlogList').empty();   //清空resText里面的所有内容
+                        var da = data.split("+++");
+                        $('#ErrorlogList').html(da[0]);
+                        $("#txtTiao").val(pgIndex = pageIndex);
+                        $("#pageCount").html(da[1]);
+                    }
+                    else {
+                        $("#txtTiao").val(pgIndex);
+                    }
+                }
+            });
+            //window.location.href = "/Custom/PageIndexChange/5-" + pageIndex;
+        }
+        else {
+            $("#txtTiao").val(pgIndex);
+        }
+        return false;
+    }
+
+    function DateClick() {
+        $("#btnDate").attr("disabled", "disabled");
+        var pathName = $("#pathName").val();
+        $.ajax(
+            {
+                type: "POST",
+                url: "/Errorlog/DateBackups",
+                data: { pathName: pathName },
+                dataType: "text",
+                beforeSend: function () {
+                    $("#date").hide();
+                    $("#span").show();
+                },
+                success: function (data) {
+                    var temp = data.split("|");
+                    if (temp[0] != "True") {
+                        alert(data);
+                    }
+                    else {
+                        alert("备份成功！");
+                        Download();
+                        $("#show").html($("#show").html().replace("</br><div style='text-align:center;'>正在备份...</div>", ""));
+                        //closeDiv();
+                    }
+                    $("#btnDate").removeAttr("disabled");
+                    $("#date").hide();
+                    $("#span").show();
+                },
+                error: function (a, b) {
+                    alert("错误:" + b);
+                    $("#date").hide();
+                    $("#span").show();
+                }
+            }
+            );
+    }
+    function selectChange() {
+        //alert("a");
+        PageIndexChange(1);
+    }
+    function closeDiv() {
+        document.getElementById('show').style.display = 'none';
+        document.getElementById('bg').style.display = 'none';
+    }
+    function showDiv() {
+        document.getElementById('show').style.display = 'block';
+        document.getElementById('bg').style.display = 'block';
+    }
+    function Download() {
+        $("#date").hide();
+        $("#span").hide();
+        //alert("a");
+        $.ajax(
+            {
+                type: "GET",
+                url: "/Errorlog/GetDBPath",
+                success: function (data) {
+                    if (data != "") {
+                        //var bool = confirm("是否下载上一次备份的信息");
+
+                        // $("#date").show();
+                        $("#pathName").val(data);
+                        $("#down").attr("href", "/Errorlog/Down/" + data.replace(".bak", ""));
+                        $("#recover").attr("href", "/Errorlog/Recover/" + data.replace(".bak", ""));
+                        //window.location.href = "http://121.196.134.67:30005/database/pbxDB20150310052907.bak";
+                        $("#span").show();
+
+                    }
+                    else {
+                        $("#date").hide();
+                        $("#span").show();
+                    }
+                }
+            }
+            );
+    }
+
+    function mouseOver(th) {
+        //alert($(th).width());
+        //alert($(th).html());
+        $(th).children("div").attr("style", "display:block;left:" + $(th).width() + "px");
+    }
+    function mouseOut(th) {
+        $(th).children("div").attr("style", "display:none;left:0px;");
+        // alert($(th).html());
+        // $(th).children("div").hide();
+    }
+    function slChange() {
+        PageIndexChange(0, false);
+    }
+    function search1() {
+        PageIndexChange(0, false);
+    }
+    function Recover() {
+        var bool = window.confirm("确定恢复？");
+        //alert(bool.toString());
+        var str = $("#recover").attr("href");
+        $("#recover").attr("href", "#");
+        //alert(str);
+        if (bool) {
+            $.ajax(
+                {
+                    type: "GET",
+                    url: str,
+                    beforeSend: function (xml) {
+                        $("#date1").show();
+                        $("#span").hide();
+                    },
+                    success: function (data) {
+                        if (data == "True") {
+                            $("#date1").hide();
+                            $("#span").show();
+                            alert("数据恢复成功！");
+                        }
+                        else {
+                            $("#date1").hide();
+                            $("#span").show();
+                            alert(data);
+                        }
+                    },
+                    error: function (a, b) {
+                        alert("cuowu:", b);
+                        $("#date1").hide();
+                        $("#span").show();
+                    }
+                });
+        }
+        return false;
+    }
+</script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<style type="text/css">
+    #show {
+        display: none;
+        position: absolute;
+        top: 25%;
+        left: 22%;
+        width: 53%;
+        height: 49%;
+        padding: 8px;
+        border: 8px solid #E8E9F7;
+        background-color: white;
+        z-index: 1002;
+        overflow: auto;
+    }
+
+    #mytable td {
+        height: 25px;
+        width: auto;
+        text-align: center;
+        position: relative;
+    }
+
+    td div {
+        border: 1px solid #808080;
+        width: 300px;
+        height: auto;
+        font: bold 11px #fff;
+        top: -30px;
+        background-color: #999;
+        position: absolute;
+        opacity: 1;
+        display: none;
+        z-index: 999;
+    }
+
+    #mytable {
+        width: 90%;
+    }
+
+    .curren {
+        cursor: pointer;
+    }
+</style>
+<div id="bg" class="bg"></div>
+<div id="show" class="show" style="width: 50%; position: absolute">
+
+    <div id="span" style="width: 100%; display: none">
+        <input type="text" id="pathName" style="width: 200px" disabled="disabled" />
+        @if (bool.Parse(ViewData["backups"].ToString()))
+        {
+            <input type="button" id="btnDate" onclick="DateClick()" value="确定备份" />
+        }
+        <span style="float: right; width: auto; cursor: pointer;" onclick="closeDiv()">关闭</span><br />
+        <a href="/Errorlog/Down/pbxDB20150310052907" id="down" target="_blank">下载上次备份</a>
+        @if (bool.Parse(ViewData["recover"].ToString()))
+        {
+            <a href="#" id="recover" onclick="Recover()">数据恢复</a>
+        }
+    </div>
+    <div id="date1" style="display: none;">正在还原,还原操作需要等待几分钟,请等待还原完成...</div>
+    <div id="date" style="display: none;">正在备份...</div>
+</div>
+<div id="customDiv" style="height: 90%">
+    <select id="errorlogType" onchange="selectChange()">
+        <option value="1" selected="selected">异常信息
+        </option>
+        <option value="2">普通操作
+        </option>
+    </select><a href="#" onclick="showDiv(); Download()">数据备份</a><br />
+    <table id="mytable">
+        <thead>
+            <tr>
+                @{ string[] str = ViewData["show"] as string[];}
+                <td>序号</td>
+                @if (str.Contains("ErrorMsg"))
+                {
+                    <td>错误信息</td>
+                }
+                @if (str.Contains("errorSrc"))
+                {
+                    <td>错误路径</td>
+                }
+                @if (str.Contains("errorMsgDetails"))
+                {
+                    <td>错误详情</td>
+                }
+                @if (str.Contains("UserId"))
+                {
+                    <td>操作人</td>
+                }
+                @if (str.Contains("errorTime"))
+                {
+                    <td>日志时间</td>
+                }
+                <td>操作</td>
+            </tr>
+        </thead>
+        <tbody id="ErrorlogList">
+            @{int i = 1;}
+            @foreach (pbxdata.model.errorlog err in Model)
+            {
+                <tr id="@err.Id">
+                    <td>@(i++)</td>
+                    @if (str.Contains("ErrorMsg"))
+                    {
+                        if (@err.ErrorMsg.Length > 30)
+                        {
+                        <td onmousemove="mouseOver(this)" class="curren" onmouseout="mouseOut(this)">@err.ErrorMsg.Substring(0, 30) ...<div>
+                            <p>@err.ErrorMsg</p>
+                        </div>
+                        </td>
+                        }
+                        else
+                        {
+                        <td>@err.ErrorMsg</td>
+                        }
+                    }
+                    @if (str.Contains("errorSrc"))
+                    {
+                        if (@err.errorSrc.Length > 30)
+                        {
+                        <td onmousemove="mouseOver(this)" class="curren" onmouseout="mouseOut(this)">@err.errorSrc.Substring(0, 30) ...<div>
+                            <p>@err.errorSrc</p>
+                        </div>
+                        </td>
+                        }
+                        else
+                        {
+                        <td>@err.errorSrc</td>
+                        }
+                    }
+                    @if (str.Contains("errorMsgDetails"))
+                    {
+                        if (@err.errorMsgDetails.Length > 30)
+                        {
+                        <td onmousemove="mouseOver(this)" class="curren" onmouseout="mouseOut(this)">@err.errorMsgDetails.Substring(0, 30) ...<div>
+                            <p>@err.errorMsgDetails</p>
+                        </div>
+                        </td>
+                        }
+                        else
+                        {
+                        <td>@err.errorMsgDetails</td>
+                        }
+                    }
+                    @if (str.Contains("UserId"))
+                    {
+                        <td>@err.UserId</td>
+                    }
+                    @if (str.Contains("errorTime"))
+                    {
+                        <td>@err.errorTime</td>
+                    }
+                    <td>
+                        @if (bool.Parse(ViewData["IsDelete"].ToString()))
+                        {
+                            <a href="#" onclick="IsYesDelete('@err.Id')">删除</a>
+                        }
+                        else
+                        {
+                            @:无权限
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div>
+    <span><a href="#" onclick="PageIndexChange(1)">首页</a>  <a href="#" onclick="PageIndexChange(2)">上一页</a>
+        <input type="text" id="txtTiao" name="txtTiao" value="1" style="width: 50px;" onkeyup="IsNumber(this);" />
+        <a href="#" onclick="OnTiao()">跳转</a>  <a href="#" onclick="PageIndexChange(3)">下一页</a>  <a href="#" onclick="PageIndexChange(4)">尾页</a> 共 <span id="pageCount">@ViewBag.pageProCount</span> 页@* 当前第 <span id="pageIndex">1</span> 页*@
+    </span>
+</div>

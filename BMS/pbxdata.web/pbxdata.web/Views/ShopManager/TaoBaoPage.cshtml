@@ -1,0 +1,259 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+
+<script src="~/js/DropDowndiv.js"></script>
+
+<script type="text/javascript">
+    //更新店铺
+    function Update()
+    {
+        $("#Load").show();
+        $(".PopBg").show();
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/ShopManager/AddProductData",
+                success: function (data) {
+                    alert(data);
+                    $("#Load").hide();
+                    $(".PopBg").hide();
+                }
+            })
+    }
+    //鼠标悬停 查看大图
+    function showPic(obj) {
+        var src = $(obj).attr("src");
+        var y = $(obj).offset().top;
+        var x = $(obj).offset().left;
+        $("#divShowPic").css("top", y - 60);
+        $("#divShowPic").css("left", x + 60);
+        $("#divShowPic").html("<img src='" + src + "' style='height:200px;width:200px' />")
+        $("#divShowPic").show();
+    }
+    //失去鼠标焦点 隐藏大图
+    function HidePic() {
+        $("#divShowPic").hide();
+    }
+    ///查看详细信息
+    function LookDetailed(RemarkId, Style)
+    {
+        window.open("/ShopManager/TaoBaoUpdate?RemarkId=" + RemarkId + "&Style=" + Style, "newwindow", "height=600,width=900,left=400,top=200");
+    }
+
+
+    $(function ()
+    {
+        $("#Search").click(function ()
+        {
+            var ProductId = $("#ProductId").val() == null ? "" : $("#ProductId").val().trim();//商品编号
+            var Style = $("#Style").val() == null ? "" : $("#Style").val().trim();//款号
+            var MinBalance = $("#MinBalance").val() == null ? "" : $("#MinBalance").val().trim();//库存区间  --最小
+            var MaxBalance = $("#MaxBalance").val() == null ? "" : $("#MaxBalance").val().trim();//库存区间  --最大
+            var HkBalancemin = $("#HkBalancemin").val() == null ? "" : $("#HkBalancemin").val().trim();//香港库库存区间  --最小
+            var HkBalancemax = $("#HkBalancemax").val() == null ? "" : $("#HkBalancemax").val().trim();//香港库库存区间  --最大
+            var Pricemin = $("#Pricemin").val() == null ? "" : $("#Pricemin").val().trim();//香港库库存区间  --最小
+            var Pricemax = $("#Pricemax").val() == null ? "" : $("#Pricemax").val().trim();//香港库库存区间  --最大
+            var ShopName = $("#ShopName").val() == null ? "" : $("#ShopName").val().trim();//店铺名称
+            var Cat2 = $("#Cat").val() == null ? "" : $("#Cat").val().trim();//品牌
+            var Cat = $("#Cat2").val() == null ? "" : $("#Cat2").val().trim();//类别
+            var Cat1 = $("#Cat1").val() == null ? "" : $("#Cat1").val().trim();//季节
+            var SaleState = $("#SaleState").val() == null ? "" : $("#SaleState").val().trim();//季节
+            var HkBalance = $("#HkBalance").val() == null ? "" : $("#HkBalance").val().trim();//其他
+            var Params = "{"
+                +"ProductId:'"+ ProductId+"', Style:'"+ Style+"', MinBalance:'"+ MinBalance+"', MaxBalance:'"+ MaxBalance+"', HkBalancemin:'"+ HkBalancemin+"', HkBalancemax:'"+ HkBalancemax+"',"
+                +"Pricemin:'"+ Pricemin+"', Pricemax:'"+ Pricemax+"', ShopName:'"+ ShopName+"', Cat2:'"+ Cat2+"', Cat:'"+ Cat+"', Cat1:'"+ Cat1+"', SaleState:'"+ SaleState+"', HkBalance:'"+ HkBalance+"',"
+            +"}";
+            $.post("/ShopManager/GetProductReMarkTb", {
+                menuId: "@ViewData["myMenuId"]",
+                pageIndex: 1,
+                pageSize: 10,
+                params: Params,
+            }, function (data) { $("#TopTable").html(""); var ss = data.split("-----"); $("#TopTable").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+            var b = $.PageFunc("/ShopManager/GetProductReMarkTb", "@ViewData["myMenuId"]", Params);
+            $("#spanPage").html(b);
+            $("#txtTiao").val(1);
+            $("#PageNum").html(1);
+        })
+    })
+
+</script>
+<div id="QueryBuilder" style="margin-bottom:10px;height:auto;width:auto;">
+
+    <span class="spanProperty">
+        <span class="spanPropertyName">商品Id：</span>
+        <input type='text' id='ProductId' class="spanPropertyValue" />
+    </span>
+
+    <span class="spanProperty">
+        <span class="spanPropertyName">款号：</span>
+        <input type='text' id='Style' class="spanPropertyValue" />
+    </span>
+
+    <span class="spanProperty">
+        <span class="spanPropertyName">店铺：</span>
+        <select id="ShopName" class="spanPropertyValue">@Html.Raw(ViewData["ShopName"])</select>
+    </span>
+
+    <span class="spanProperty">
+        <span class="spanPropertyName">最小上架库存：</span>
+        <input type='text' id='MinBalance' class="spanPropertyValue" />
+    </span>
+
+    <span class="spanProperty">
+        <span class="spanPropertyName">最大上架库存：</span>
+        <input type='text' id='MaxBalance' class="spanPropertyValue" />
+    </span>
+
+    <span class="spanProperty">
+        <span class="spanPropertyName">最小系统库存：</span>
+        <input type='text' id='HkBalancemin' class="spanPropertyValue" />
+    </span>
+
+    <span class="spanProperty">
+        <span class="spanPropertyName">最大系统库存：</span>
+        <input type='text' id='HkBalancemax' class="spanPropertyValue" />
+    </span>
+
+    <span class="spanProperty">
+        <span class="spanPropertyName">最小价格：</span>
+        <input type='text' id='Pricemin' class="spanPropertyValue" />
+    </span>
+
+    <span class="spanProperty">
+        <span class="spanPropertyName">最大价格：</span>
+        <input type='text' id='Pricemax' class="spanPropertyValue" />
+    </span>
+
+    <span class="spanProperty">
+        <span class="spanPropertyName">状态：</span>
+        <select id="SaleState" class="spanPropertyValue"><option value=''>请选择</option><option value='instock'>仓库中</option><option value='onsale'>销售中</option></select>
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">品牌：</span>
+        <input type="text" id="Cat" class="spanPropertyValue" onclick="GetDropToBrand(this.id)" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">类别：</span>
+        <input id="Cat2" type="text" class="spanPropertyValue" onclick="GetDropToType(this.id)" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">季节：</span>
+        <input type='text' id='Cat1' class="spanPropertyValue" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">库存与上架库存：</span>
+        <select id='HkBalance' class="spanPropertyValue">
+        <option value=''>请选择</option>
+        <option value='1'>香港&lt;上架</option>
+        <option value='2'>香港&gt;上架</option>
+        <option value='3'>香港*2<=上架</option>
+        <option value='4'>预警</option>
+        </select>
+    </span>
+    <br />
+    <input type="button" value='查询' class="spanPropertySearch" id="Search">
+    <input type="button" onclick='Update()' class="spanPropertySearch" value='更新淘宝'/>
+</div>
+<div style="clear:both;"></div>
+<div id="TopTable">
+
+</div>
+@*分页*@
+<div class="divJump">
+    <span id="spanPage" style="font-weight:400;"></span>
+    共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span>条数据
+</div>
+<div class="PopBg"></div>
+<div class="myPopdiv" style="left: 30%; width:500px;height:300px;" id="Load">
+     <div>更新中..........</div>
+</div>
+
+
+<div id="divShowPic" style="position:absolute"></div>
+
+
+<script type="text/javascript">
+
+    function selPage(url, menuid, obj) {
+        var params = JSON.stringify(obj).replace(/\"/g, "'");
+        console.log(obj);
+        $.post(url, {
+            menuId: menuid,
+            pageIndex: 1,
+            pageSize: $("#selPages").val(),
+            params: params,
+        }, function (data) { $("#TopTable").html(""); var ss = data.split("-----"); $("#TopTable").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+    }
+
+
+
+    $.getDropDownList("#Cat");
+    function GetDropToBrand(e) {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Productstock/Brand",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+                var d1 = eval(data);
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].BrandAbridge + "'>" + d1[i].BrandName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }
+
+
+    $.getDropDownList("#Cat2");
+    function GetDropToType(e) {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Productstock/Type",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+
+                var d1 = eval(data);
+
+
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].TypeNo + "'>" + d1[i].TypeName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+</script>
+
+
+

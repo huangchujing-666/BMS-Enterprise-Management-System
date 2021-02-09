@@ -1,0 +1,178 @@
+﻿@model IEnumerable<pbxdata.model.tableFiledPerssion>
+
+@{
+    ViewBag.Title = "分配字段权限";
+}
+
+@*<div id="navigateTop" style="color:#FF5F3E;font-weight:bolder;line-height:20px;">@ViewData["roleId"]->@ViewData["menuid"]->@ViewData["funid"]->分配字段权限</div>*@
+<div id="navigateTop" style="color:#FF5F3E;font-weight:bolder;line-height:20px;"><span id="navigateTopRoleName"></span><span id="navigateTopMenuName"></span><span id="navigateTopFunName"></span></div>
+
+
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<script>
+    $().ready(function () {
+        //获取角色名称
+        $.post('/PublicHelp/getRoleName', { roleId: "@ViewData["roleId"]" }, function (data) { $("#navigateTopRoleName").html(data + "->"); });
+        //获取目录名称
+        $.post('/PublicHelp/getMenuName', { menuId: "@ViewData["menuId"]" }, function (data) { $("#navigateTopMenuName").html(data + "->"); });
+        //获取功能名称
+        $.post('/PublicHelp/getFunName1', { funId: "@ViewData["funId"]" }, function (data) { $("#navigateTopFunName").html(data + "->分配字段权限"); });
+
+    })
+    function AddTable() {
+        if ($("#txtTabName").length>0) {
+            return false;
+        }
+        else {
+            $(".mytable").find("tr:eq(1)").after("<tr><td><input id='txtTabName' type='text' value='' /></td><td><a href='#' onclick='SaveTable()'>保存</a></td></tr>")
+        }
+       
+    }
+    function SaveTable() {
+        var TabName = $("#txtTabName").val().trim();
+        $.ajax({
+            type: "GET",
+            url: "/Role/AddTable?TabName=" + TabName,
+            success: function (data) {
+                if (data != "") {
+                    alert(data)
+                }
+                else {
+                    location.href = "/role/allotTablePermisson/@ViewData["funId"]?roleid=@ViewData["roleId"]&menuId=@ViewData["menuid"]"; 
+                }
+            },
+            error: function () {
+            }
+
+        })
+    }
+</script>
+
+
+
+
+<table class="mytable" rules="all">
+    <tr>
+        <th colspan="9" class="mytableadd">
+            @*@Html.ActionLink("添加", "adddata")*@
+            <div style="padding-top: 20px;">
+                @Html.ActionLink("返回", "allotFunPermisson",new {id=@ViewData["menuid"],roleid=@ViewData["roleId"]}) 
+                @*<a onclick="javascript:window.history.go(-1)" style="cursor:pointer;color:blue;" >返回</a>*@
+                <a href="#" onclick="AddTable()">添加</a>
+            </div>
+        </th>
+    </tr>
+    <tr>
+        <th>
+            表格名称
+        </th>
+        <th>描述</th>
+        <th></th>
+        <th>删除</th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+             <span class="spanDescript"> @Html.DisplayFor(modelItem => item.tableName)</span><a href="#" class="aUpdateTabName" style="margin-left:20px">修改</a>
+        </td>
+        <td> <span class="spanDescript">@Html.DisplayFor(modelItem => item.Def1)</span><input type="hidden" value="@Html.DisplayFor(modelItem => item.Id)" /><a href="#" class="aUpdate" style="margin-left:20px">修改</a></td>
+        <td>
+            @Html.ActionLink("字段列表", "allotFiledPermisson", new { id=item.Id ,roleid=@ViewData["roleId"],menuid=@ViewData["menuid"],funid=@ViewData["funid"]}) 
+        </td>
+        <td><a href="#" class="aDelete" onclick="DeletetableFiled(@Html.DisplayFor(modelItem => item.Id))">删除</a></td>
+    </tr>
+}
+
+</table>
+<script type="text/javascript">
+    UpdateTabName();
+    ChangeDescript();
+    //--修改描述
+    function ChangeDescript() {
+        $(".aUpdate").each(function () {
+            $(this).click(function () {
+                if ($(this).html() == "修改") {
+                    $(this).parent().find(".spanDescript").html("<input type='text' class='txtDescript' value=\"" + $(this).parent().find(".spanDescript").html() + "\" />");
+                    $(this).html("保存");
+                }
+                else {
+                    var Descript = $(this).parent().find(".txtDescript").val().trim();
+                    var Id = $(this).parent().parent().find("input[type=hidden]").val();
+                    $.ajax({
+                        type: "GET",
+                        url: "/role/AddDescript?Id=" + Id + "&Descript=" + Descript,
+                        success: function (data) {
+                            if (data != "") {
+                                alert(data)
+                            }
+                            else {
+                                location.href = "/role/allotTablePermisson/@ViewData["funId"]?roleid=@ViewData["roleId"]&menuId=@ViewData["menuid"]";
+                            }
+                        },
+                        error: function () {
+                            alert("保存描述 error!")
+                        },
+
+
+                    })
+                }
+
+            })
+        })
+    }
+    function UpdateTabName() {
+        $(".aUpdateTabName").each(function () {
+            $(this).click(function () {
+                if ($(this).html() == "修改") {
+                    $(this).parent().find(".spanDescript").html("<input type='text' class='txtDescript' value=\"" + $(this).parent().find(".spanDescript").html() + "\" />");
+                    $(this).html("保存");
+                }
+                else {
+                    var Descript = $(this).parent().find(".txtDescript").val().trim();
+                    var Id = $(this).parent().parent().find("input[type=hidden]").val();
+                    $.ajax({
+                        type: "GET",
+                        url: "/role/UpdateTabName?Id=" + Id + "&Descript=" + Descript,
+                        success: function (data) {
+                            if (data != "") {
+                                alert(data)
+                            }
+                            else {
+                                location.href = "/role/allotTablePermisson/@ViewData["funId"]?roleid=@ViewData["roleId"]&menuId=@ViewData["menuid"]";
+                            }
+                        },
+                        error: function () {
+                            alert("保存描述 error!")
+                        },
+
+
+                    })
+                }
+
+            })
+        })
+    }
+    //--删除列
+    function DeletetableFiled(obj) {
+        if (confirm("确定要删除吗?")) {
+            $.ajax({
+                type: "GET",
+                url: "/Role/DeletetableFiled?Id=" + obj,
+                success: function (data) {
+                    if (data != "") {
+                        alert(data)
+                    }
+                    else {
+                        location.href = "/role/allotTablePermisson/@ViewData["funId"]?roleid=@ViewData["roleId"]&menuId=@ViewData["menuid"]";
+                }
+            },
+                 error: function () {
+                 }
+             })
+        }
+     }
+</script>

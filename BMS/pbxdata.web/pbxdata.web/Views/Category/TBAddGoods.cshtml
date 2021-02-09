@@ -1,0 +1,206 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+
+<style type="text/css">
+    *
+    {
+        font-size:12px;
+    }
+    #divContainer
+    {
+        padding: 20px;
+    }
+
+    #tabProductInfo
+    {
+        margin-top: 10px;
+    }
+
+        #tabProductInfo, #tabProductInfo td, #tabProductInfo th
+        {
+            border: 1px solid gray;
+            border-collapse: collapse;
+            text-align: center;
+            min-width: 50px;
+        }
+
+            #tabProductInfo td
+            {
+                font-size: 10px;
+            }
+
+
+    #divProps, #divContent
+    {
+        width: 850px;
+    }
+
+    .divinner
+    {
+        width: 270px;
+        float: left;
+        text-align: right;
+        height:22px;
+    }
+
+        .divinner select,.divinner input[type=text]
+        {
+            width: 150px;
+        }
+    #divProductInfo
+    {
+        text-align:center;
+        width:100%;
+    }
+    #divProductInfo table
+    {
+        width:80%;
+        margin:auto;
+    }
+</style>
+<div id="divContainer">
+    <div id="divContent">
+        <div class="divinner">品牌:<input type="text" id="txtBrand" /><input type="hidden" value="@ViewBag.style"  id="hidstyle" /><input type="hidden" value="@ViewBag.ShopId"  id="hidShopId" /></div>
+        <div class="divinner">货号:<input type="text" id="txtScode" value="@ViewBag.style" /></div>
+        <div class="divinner">积分反点:<input type="text" id="txtPoint" value="5" /></div>
+        <div class="divinner">数量:<input type="text" id="txtNum" /></div>
+        <div class="divinner">价格:<input type="text" id="txtPrice" /></div>
+        <div class="divinner">
+            发布类型:<select id="selType">
+                <option value="fixed" selected="selected">一口价</option>
+                <option value="auction">拍卖</option>
+            </select>
+        </div>
+        <div class="divinner">名称:<input type="text" id="txtTitle" value="@ViewBag.style"  /></div>
+        <div class="divinner">描述:<input type="text" id="txtDesc" /></div>
+        <div class="divinner">
+            销售状态:
+                <select id="selStatus">
+                    <option value="onsale">销售中</option>
+                    <option value="instock" selected="selected">仓库中</option>
+                </select>
+        </div>
+        <div class="divinner">省份:<input type="text" id="txtState" value="香港" /></div>
+        <div class="divinner">城市:<input type="text" id="txtCity" value="九龙" /></div>
+        <div class="divinner">
+            运费承担:<select id="selPayer">
+                <option value="seller" selected="selected">卖家</option>
+                <option value="buyer">买家</option>
+            </select>
+        </div>
+    </div>
+    <div style="clear: both;"></div>
+    @* <tr>
+        <td>
+            <label>属性:<input type="text" id="txtProp" /></label></td>
+        <td>
+            <label>属性值:<input type="text" id="txtPropvalue" /></label></td>
+    </tr>*@
+
+    <div id="divProps"></div>
+    <div style="clear: both;"></div>
+    <div id="divProductInfo"></div>
+    <div style="width:100%;text-align:center;margin-top:5px;"><input type="button" value=" 上   货 " onclick="addProduct()" style="background-color:lightblue;height:35px;width:120px;font-size:1.5em;font-weight:bold" /></div>
+    
+</div>
+
+<script type="text/javascript">
+
+    $.ajax({
+        type: "GET",
+        url: "/Category/rtnProductInfo?style=" + $("#hidstyle").val(),
+        success: function (data) {
+            var item = data.split("-*-");
+            $("#divProductInfo").html(item[0])
+            $("#txtBrand").val(item[1]);
+            $("#txtNum").val(item[2]);
+            $("#txtPrice").val(item[3]);
+            $("#divProps").html(item[4]);
+        },
+        error: function () {
+        },
+    })
+    function addProduct() {
+        var ShopId = $("#hidShopId").val();
+        var StyleNum = $("#hidstyle").val();
+        var Colors = [];
+        var Props = [];
+        $(".selColor").each(function () {
+            Colors.push($(this).find("option:selected").val())
+        })
+        for (var i = 0; i < Colors.length - 1; i++) {
+            for (var j = i + 1; j < Colors.length; j++) {
+                if (Colors[i] == Colors[j]) {
+                    alert("请选择" + Colors.length + "个不同的颜色!")
+                    return false;
+                }
+            }
+        }
+        $(".sel").each(function () {
+            var cid = $(this).attr("name").replace("sel", "");
+            var vid = $(this).find("option:selected").val();
+            if (vid != "") {
+                Props.push( cid + ":" + vid)
+            }
+
+        })
+        var Brand = $("#txtBrand").val().trim();
+        var Scode = $("#txtScode").val().trim();
+        //var Zhidi = $("#selZhidi").find("option:selected").val();
+        //var Style = $("#selStyle").find("option:selected").val();
+        //var Date = $("#selDate").find("option:selected").val();
+        //var PopStyle = $("#selPopStyle").find("option:selected").val() == null ? "" : $("#selPopStyle").find("option:selected").val();
+        var Num = $("#txtNum").val().trim();
+        var Price = $("#txtPrice").val().trim();
+        var Type = $("#selType").find("option:selected").val();
+        var Title = $("#txtTitle").val().trim();
+        var Desc = $("#txtDesc").val().trim();
+        var State = $("#txtState").val().trim();
+        var City = $("#txtCity").val().trim();
+        var Status = $("#selStatus").find("option:selected").val();
+        //var Prop = $("#txtProp").val().trim();
+        //var Propvalue = $("#txtPropvalue").val().trim();
+        var Payer = $("#selPayer").find("option:selected").val();
+        var Point = $("#txtPoint").val().trim();
+        $.ajax({
+            type: "post",
+            url: "/Category/addProduct",
+            data: {
+                "ShopId": ShopId,
+                "StyleNum": StyleNum,
+                "Colors": Colors,
+                "Brand": Brand,
+                "Scode": Scode,
+                "Props": Props,
+                "Num": Num,
+                "Price": Price,
+                "Type": Type,
+                "Title": Title,
+                "Desc": Desc,
+                "State": State,
+                "City": City,
+                "Status": Status,
+                //"Prop": Prop,
+                //"Propvalue": Propvalue,
+                "Payer": Payer,
+                "Point": Point,
+            },
+            success: function (data) {
+                alert(data)
+            },
+            error: function () {
+                alert("error!");
+            }
+
+        })
+    }
+    //var a = {
+    //    "Product": { "BarcodeStr": null, "Binds": null, "BindsStr": null, "CatName": null, "Cid": 0, "CollectNum": 0, "CommodityId": 0, "Created": "2015-05-14 17:01:39", "CspuFeature": null, "CustomerProps": null, "Desc": null, "IsSuiteEffective": false, "Level": 0, "Modified": null, "Name": null, "OuterId": null, "PicPath": null, "PicUrl": null, "Price": null, "ProductExtraInfos": [], "ProductId": 333273240, "ProductImgs": [], "ProductPropImgs": [], "PropertyAlias": null, "Props": null, "PropsStr": null, "RateNum": 0, "SaleNum": 0, "SaleProps": null, "SalePropsStr": null, "SellPt": null, "ShopPrice": null, "StandardPrice": null, "Status": 0, "SuiteItemsStr": null, "TemplateId": 0, "Tsc": null, "VerticalMarket": 0 },
+    //    "ErrCode": null, "ErrMsg": null, "SubErrCode": null, "SubErrMsg": null, "TopForbiddenFields": null, "Body": "<?xml version=\"1.0\" encoding=\"utf-8\" ?><product_add_response><product><created>2015-05-14 17:01:39</created><product_id>333273240</product_id></product></product_add_response><!--top010179134198.s.et2-->", "ReqUrl": null, "IsError": false
+    //}
+    //var b = {
+    //    "Product": null, "ErrCode": "540", "ErrMsg": "Remote service error", "SubErrCode": "isv.product-is-existed-tmall", "SubErrMsg":
+    //       "此产品信息在系统中已存在，请勿重复提交-已有产品ID[333425008];", "TopForbiddenFields": null, "Body": "<?xml version=\"1.0\" encoding=\"utf-8\" ?><error_response><code>540</code><msg>Remote service error</msg><sub_code>isv.product-is-existed-tmall</sub_code><sub_msg>此产品信息在系统中已存在，请勿重复提交-已有产品ID[333425008];</sub_msg><request_id>1476tugrzs4m8</request_id></error_response><!--top010179045190.s.et2-->", "ReqUrl": null, "IsError": true
+    //}
+
+
+</script>

@@ -1,0 +1,80 @@
+﻿<script type="text/javascript" src="~/js/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="~/js/jquery.form.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+
+<style type="text/css">
+    *
+    {
+        font-size: 12px;
+    }
+</style>
+<div>Excel导入格式为：客户ID,店铺,联系人,性别(默认为男),年龄,生日(格式为:2000-01-01),身份证号码,手机号码,电话,微信,QQ号码,客户等级,备注,服务客服ID.例如:</div>
+<table class="mytable">
+    <tr>
+        <th>客户ID</th>
+        <th>店铺</th>
+        <th>联系人</th>
+        <th>性别</th>
+        <th>年龄</th>
+        <th>生日</th>
+        <th>身份证号码</th>
+        <th>手机号码</th>
+        <th>电话</th>
+        <th>微信</th>
+        <th>QQ号码</th>
+        <th>客户等级</th>
+        <th>备注</th>
+        <th>服务客服ID</th>
+    </tr>
+    <tr>
+        <td>123</td>
+        <td>app</td>
+        <td>张三</td>
+        <td>男</td>
+        <td>27</td>
+        <td>1988-01-01</td>
+        <td>123456789132456789</td>
+        <td>12345678910</td>
+        <td>0755-13245678</td>
+        <td>微信</td>
+        <td>123456789</td>
+        <td>1</td>
+        <td>备注</td>
+        <td>1</td>
+    </tr>
+</table>
+<br />
+<form id="form1" method="post" enctype="multipart/form-data">
+    <input type="file" id="fileName" name="fileName" accept=".xls" />
+    <input type="button" value="导入" onclick="Upload()" />
+</form>
+<div id="ErrorMsg"></div>
+<script type="text/javascript">
+    /*ajax表单提交回调函数*/
+    var option_ajax = {
+        type: "post",
+        url: "/Custom/UploadExcel",
+        beforeSubmit: function () {
+            if ($("#fileName").val() == "") {
+                alert("请选择文件");
+                return false;
+            }
+            else if ($("#fileName").val().split(".")[$("#fileName").val().split(".").length - 1] != "xls") {
+                alert("请选择xls文件");
+                return false;
+            }
+
+        },
+        success: function (data) {
+            $("#ErrorMsg").html(data)
+        },
+        error: function () {
+            alert("error!");
+        }
+
+    }
+    /*ajax表单提交*/
+    function Upload() {
+        $("#form1").ajaxSubmit(option_ajax);
+    }
+</script>

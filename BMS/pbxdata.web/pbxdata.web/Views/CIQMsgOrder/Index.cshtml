@@ -1,0 +1,119 @@
+﻿@{
+    ViewBag.Title = "海关订单信息报备";
+}
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<style>
+    .head {
+        float:left;width:100%;border:solid 1px red;
+    }
+        .head div {
+            float:left;width:33%;border:solid 1px red;height:20px;
+        }
+    .msgType {
+        height:20px;width:200px;border:solid 1px #808080;
+    }
+    .content {
+        float:left;width:100%;border:solid 1px #808080;
+    }
+        .content div {
+            float:left;width:33%;border:solid 1px #808080;height:20px;
+        }
+</style>
+
+<div style="color:#FF5F3E;font-weight:bolder;line-height:20px;">海关订单信息报备</div>
+
+
+<div>商品信息报备</div>
+<div style="width:100%;height:250px;">    
+    <div class="head">
+        <div>报文编号:<label></label></div><div class="msgType">报文类型:<label id="productMsgType">661105</label></div><div>发送者:<label>IE150212852866</label></div>
+        <div>接收人:<label>CBE_CBBPPS_000001</label></div><div>发送时间:<label>@DateTime.Now.ToString("yyyyMMddHHmmss")</label></div><div>业务类型:<label></label></div>
+        <div>版本号:<label>1.0</label></div>
+    </div>
+    <div class="content">
+        <div>跨境电商企业编码：<label>IE150212852866</label></div><div>检验检疫机构代码：<label>000069</label></div><div>跨境电商企业备案编码：<label>IE150212852866</label></div>
+        <div>备注：</div><div>制单企业编号：<label>IE150212852866</label></div><div>申请日期：<label>@DateTime.Now.ToString("yyyyMMddHHmmss")</label></div>
+        <div>货号：</div><div>商品名称：</div><div>规格型号：</div>
+        <div>商品HS编码：</div><div>计量单位(最小)：</div><div>商品条形码：</div>
+        <div>商品描述：</div><div>备注：</div><div>生产企业名称：</div>
+        <div>品牌：</div><div>原产国/地区：</div><div>成分为空时默认“无”：</div>
+        <div>超范围使用食品添加剂（为空时默认“无”）：</div><div>含有毒害物质（为空时默认“无”）：</div><div></div>
+    </div>
+    <div><input type="button" id="btnProductMsgCiq" value="商品报备" /></div>
+</div>
+<br /><br />
+
+<div>订单信息报备</div>
+<div style="width:100%;height:250px;">
+    <div class="head">
+        <div>报文编号:<label></label></div><div class="msgType">报文类型:<label id="productMsgType">661105</label></div><div>发送者:<label>IE150212852866</label></div>
+        <div>接收人:<label>CBE_CBBPPS_000001</label></div><div>发送时间:<label>@DateTime.Now.ToString("yyyyMMddHHmmss")</label></div><div>业务类型:<label></label></div>
+        <div>版本号:<label>1.0</label></div>
+    </div>
+    <div class="content">
+        <div>跨境电商企业编码：<label>IE150212852866</label></div><div>检验检疫机构代码：<label>000069</label></div><div>跨境电商企业备案编码：<label>IE150212852866</label></div>
+        <div>备注：</div><div>制单企业编号：<label>IE150212852866</label></div><div>申请日期：<label>@DateTime.Now.ToString("yyyyMMddHHmmss")</label></div>
+        <div>货号：</div><div>商品名称：</div><div>规格型号：</div>
+        <div>商品HS编码：</div><div>计量单位(最小)：</div><div>商品条形码：</div>
+        <div>商品描述：</div><div>备注：</div><div>生产企业名称：</div>
+        <div>品牌：</div><div>原产国/地区：</div><div>成分为空时默认“无”：</div>
+        <div>超范围使用食品添加剂（为空时默认“无”）：</div><div>含有毒害物质（为空时默认“无”）：</div><div></div>
+    </div>
+
+    <div><input type="button" id="btnOrderMsgCiq" value="订单报备" /></div>
+</div>
+<br /><br />
+
+<div>支付信息报备</div>
+<div style="width:100%;height:250px;">
+    <div class="head">
+        <div>报文编号:<label></label></div><div class="msgType">报文类型:<label id="productMsgType">661105</label></div><div>发送者:<label>IE150212852866</label></div>
+        <div>接收人:<label>CBE_CBBPPS_000001</label></div><div>发送时间:<label>@DateTime.Now.ToString("yyyyMMddHHmmss")</label></div><div>业务类型:<label></label></div>
+        <div>版本号:<label>1.0</label></div>
+    </div>
+    <div class="content">
+        <div>跨境电商企业编码：<label>IE150212852866</label></div><div>检验检疫机构代码：<label>000069</label></div><div>跨境电商企业备案编码：<label>IE150212852866</label></div>
+        <div>备注：</div><div>制单企业编号：<label>IE150212852866</label></div><div>申请日期：<label>@DateTime.Now.ToString("yyyyMMddHHmmss")</label></div>
+        <div>货号：</div><div>商品名称：</div><div>规格型号：</div>
+        <div>商品HS编码：</div><div>计量单位(最小)：</div><div>商品条形码：</div>
+        <div>商品描述：</div><div>备注：</div><div>生产企业名称：</div>
+        <div>品牌：</div><div>原产国/地区：</div><div>成分为空时默认“无”：</div>
+        <div>超范围使用食品添加剂（为空时默认“无”）：</div><div>含有毒害物质（为空时默认“无”）：</div><div></div>
+    </div>
+    <div><input type="button" id="btnPayMsgCiq" value="支付报备" /></div>
+</div>
+<br /><br />
+
+<div>物流信息报备</div>
+<div style="width:100%;height:250px;">
+    <div class="head">
+        <div>报文编号:<label></label></div><div class="msgType">报文类型:<label id="productMsgType">661105</label></div><div>发送者:<label>IE150212852866</label></div>
+        <div>接收人:<label>CBE_CBBPPS_000001</label></div><div>发送时间:<label>@DateTime.Now.ToString("yyyyMMddHHmmss")</label></div><div>业务类型:<label></label></div>
+        <div>版本号:<label>1.0</label></div>
+    </div>
+    <div class="content">
+        <div>跨境电商企业编码：<label>IE150212852866</label></div><div>检验检疫机构代码：<label>000069</label></div><div>跨境电商企业备案编码：<label>IE150212852866</label></div>
+        <div>备注：</div><div>制单企业编号：<label>IE150212852866</label></div><div>申请日期：<label>@DateTime.Now.ToString("yyyyMMddHHmmss")</label></div>
+        <div>货号：</div><div>商品名称：</div><div>规格型号：</div>
+        <div>商品HS编码：</div><div>计量单位(最小)：</div><div>商品条形码：</div>
+        <div>商品描述：</div><div>备注：</div><div>生产企业名称：</div>
+        <div>品牌：</div><div>原产国/地区：</div><div>成分为空时默认“无”：</div>
+        <div>超范围使用食品添加剂（为空时默认“无”）：</div><div>含有毒害物质（为空时默认“无”）：</div><div></div>
+    </div>
+    <div><input type="button" id="btnExpressMsgCiq" value="物流报备" /></div>
+</div>
+
+
+
+
+
+
+
+
+
+
+

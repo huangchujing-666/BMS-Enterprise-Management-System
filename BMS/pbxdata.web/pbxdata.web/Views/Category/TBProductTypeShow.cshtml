@@ -1,0 +1,402 @@
+﻿<script src="~/js/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="~/js/divShow.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/Search.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<style type="text/css">
+    a
+    {
+        text-decoration: none;
+    }
+
+        a:hover
+        {
+            text-decoration: underline;
+        }
+
+    #mytable
+    {
+        min-width: 550px;
+    }
+
+        #mytable tr th:first-child
+        {
+            width: 40px;
+        }
+
+        #mytable tr th:nth-child(2)
+        {
+            width: 150px;
+        }
+
+        #mytable tr th:nth-child(3)
+        {
+            width: 100px;
+        }
+
+        #mytable tr th:nth-child(3)
+        {
+            width: 100px;
+        }
+
+        #mytable tr th:nth-child(4)
+        {
+            width: 100px;
+        }
+
+    #PopEditContent, #PopAddtypeContent
+    {
+        left: 10%;
+        top: 10%;
+        min-width: 150px;
+        height: 150px;
+        padding: 15px;
+    }
+
+    #PopPorpertyContent
+    {
+        left: 10%;
+        top: 10%;
+        min-height: 400px;
+        padding: 15px;
+    }
+
+    #mytablePorperty
+    {
+        min-width: 400px;
+    }
+
+
+    .divclose
+    {
+        position: absolute;
+        right: 8px;
+        top: 3px;
+        cursor: pointer;
+        font-size: 2em;
+        font-weight: bolder;
+        width: 30px;
+        height: 30px;
+    }
+
+        .divclose:hover
+        {
+            color: red;
+        }
+
+    .divtitle
+    {
+        color: red;
+        font-weight: bold;
+        font-size: 1.5em;
+    }
+
+    .divContent
+    {
+        background-color: white;
+        border: solid 1px lightblue;
+        height: 85%;
+    }
+
+    .divHeader
+    {
+        border: 1px solid #DDDDDD;
+        background-color: #F4F4F4;
+        height: 30px;
+        line-height: 30px;
+        padding-left: 15px;
+    }
+
+</style>
+
+<div class="divHeader" style="width:100%;padding:10px 0px;">
+    <span class="spanProperty"><span class="spanPropertyName">类别名称：</span><input class="spanPropertyValue" id="txtName" type="text"></span>
+    <input type="button" value="查  询" onclick="OnSearch()" class="spanPropertySearch" /><input type="button" value="添加类别" onclick="AddTBtype()" class="spanPropertySearch" />
+</div>
+<div style="border: solid 1px lightblue; overflow: hidden">
+    <table id="mytable" class="mytable" border="0" cellpadding="0" cellspacing="0">
+    </table>
+    <div class="divJump">
+        <span id="spanPage" style="font-weight: 400;"></span>
+        共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span>条数据
+    </div>
+</div>
+<div class="PopBg"></div>
+<div id="PopEditContent" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="divtitle">类别修改</div>
+    <div class="divContent">
+        <table>
+            <tr>
+                <td style="text-align: right;">类别名：</td>
+                <td>
+                    <input type="text" id="txtTBtype" /></td>
+            </tr>
+            <tr>
+                <td style="text-align: right;">淘宝编号：</td>
+                <td>
+                    <input type="text" id="txtTBCid" /></td>
+
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <input type="button" onclick="SaveType()" value="保存" /></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div id="PopAddtypeContent" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="divtitle">添加类别</div>
+    <div class="divContent">
+        <table>
+            <tr>
+                <td style="text-align: right;">类别名：</td>
+                <td>
+                    <input type="text" id="txtAddTBtype" /></td>
+            </tr>
+            <tr>
+                <td style="text-align: right;">淘宝编号：</td>
+                <td>
+                    <input type="text" id="txtAddTBCid" /></td>
+
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <input type="button" onclick="AddType()" value="保存" /></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div id="PopPorpertyContent" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="divtitle">属性修改</div>
+    <div class="divContent">
+        <input type="hidden" id="hidParentcid" />
+        <table id="mytablePorperty" class="mytable">
+        </table>
+        <div><a href="#" onclick="AddTBProperty()">添加属性</a></div>
+    </div>
+</div>
+<script type="text/javascript">
+    function OnSearch() {
+        var Name = $("#txtName").val().trim();
+        var params = "{Name:'" + Name + "'}";
+
+        $.post("/Category/SearchTBType", {
+            menuId: "@ViewData["myMenuId"]",
+            pageIndex: 1,
+            pageSize: 10,
+            params: params
+        }, function (data) {
+            $("#mytable").html("");
+            var ss = data.split("-----");
+            $("#mytable").append(ss[0]);
+            $("#PageCount").html(ss[1]);
+            $("#AllCounts").html(ss[2]);
+        });
+
+        var b = $.PageFunc("/Category/SearchTBType", "@ViewData["myMenuId"]", params);
+        $("#spanPage").html(b);
+        $("#txtTiao").val(1);
+        $("#PageNum").html(1);
+    }
+    function selPage(url, menuid, obj) {
+        var params = JSON.stringify(obj).replace(/\"/g, "'");
+        $.post(url, {
+            menuId: menuid,
+            pageIndex: 1,
+            pageSize: $("#selPages").val(),
+            params: params
+        }, function (data) {
+            $("#mytable").html("");
+            var ss = data.split("-----");
+            $("#mytable").append(ss[0]);
+            $("#PageCount").html(ss[1]);
+            $("#AllCounts").html(ss[2]);
+        });
+    };
+
+    //---编辑窗口
+    function Edit(TBTypeName, cid, Id) {
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopEditContent").show();
+        $("#txtTBtype").val(TBTypeName);
+        $("#txtTBtype").attr("title", Id);
+        $("#txtTBCid").val(cid);
+    }
+    //---删除淘宝类别
+    function DeleteTBtype(TBTypeName, cid, Id) {
+        $.MsgBox.Confirm("提示", "确定要" + TBTypeName + "删除吗!", function () {
+            $.ajax({
+                type: "GET",
+                url: "/Category/DeleteTBtype?TBTypeName=" + TBTypeName + "&cid=" + cid + "&Id=" + Id,
+                success: function (data) {
+                    if (data == "") {
+                        OnSearch();
+                        //GetTable($("#selPages").val(), $("#txtTiao").val())
+                    }
+                    else {
+                        $.MsgBox.Alert("提示", data);
+                    }
+                },
+                error: function () {
+                    alert("error!")
+                },
+            })
+        })
+    }
+    //---关闭窗口
+    function Close() {
+        $(".PopBg").hide();
+        $(".myPopdiv").hide();
+    }
+    //---更新淘宝类别
+    function SaveType() {
+        var TypeName = $("#txtTBtype").val().trim();
+        var cid = $("#txtTBCid").val().trim();
+        var Id = $("#txtTBtype").attr("title");
+        $.ajax({
+            type: "GET",
+            url: "/Category/UpdateTBType?TypeName=" + TypeName + "&cid=" + cid + "&Id=" + Id,
+            success: function (data) {
+                OnSearch();
+                //GetTable($("#selPages").val(), $("#txtTiao").val());
+                $.MsgBox.Alert("提示", data);
+            },
+            error: function () {
+                alert("error!")
+            },
+        })
+    }
+    //---查看对应淘宝类别属性
+    function CheckTBProperty(cid) {
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopPorpertyContent").show();
+        $("#hidParentcid").val(cid);
+        $.ajax({
+            type: "GET",
+            url: "/Category/GetProperty?cid=" + cid,
+            success: function (data) {
+                $("#mytablePorperty").html(data);
+                UpdateTBProperty();
+            },
+            error: function () {
+                alert("error!");
+            }
+        })
+    }
+    //---更新淘宝属性
+    function UpdateTBProperty() {
+        $("#mytablePorperty").find(".Update").each(function () {
+            $(this).click(function () {
+                if ($(this).html() == "修改") {
+                    var Name = $(this).parent().parent().find(".txtTBPropertyName").find("label").html();
+                    var vid = $(this).parent().parent().find(".txtTypevid").find("label").html();
+                    $(this).parent().parent().find(".txtTBPropertyName").html("<input type='text' value='" + Name + "' />");
+                    $(this).parent().parent().find(".txtTypevid").html("<input type='text' value='" + vid + "' />");
+                    $(this).html("保存");
+                }
+                else {
+                    var PropertyName = $(this).parent().parent().find(".txtTBPropertyName").find("input[type=text]").val();
+                    var vid = $(this).parent().parent().find(".txtTypevid").find("input[type=text]").val();
+                    var id = $(this).attr("title")
+                    $.ajax({
+                        type: "GET",
+                        url: "/Category/UpdateTBProperty?PropertyName=" + PropertyName + "&vid=" + vid + "&Id=" + id,
+                        success: function (data) {
+                            if (data != "修改失败!") {
+                                $(this).html("修改");
+                                CheckTBProperty($("#hidParentcid").val());
+                            }
+                            else {
+                                $.MsgBox.Alert("提示", data);
+                            }
+
+                        },
+                        error: function () {
+                            alert("error!");
+                        }
+                    })
+
+                }
+
+            })
+        })
+    }
+    //---添加淘宝类别窗口
+    function AddTBtype() {
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopAddtypeContent").show();
+        $("#txtAddTBtype").val("");
+        $("#txtAddTBCid").val("");
+    }
+    //---添加淘宝类别
+    function AddType() {
+        var TypeName = $("#txtAddTBtype").val().trim();
+        var cid = $("#txtAddTBCid").val().trim();
+        $.ajax({
+            type: "GET",
+            url: "/Category/AddTBtype?TypeName=" + TypeName + "&cid=" + cid,
+            success: function (data) {
+                OnSearch();
+                //GetTable($("#selPages").val(), $("#txtTiao").val());
+                $.MsgBox.Alert("提示", data);
+            },
+            error: function () {
+                alert("error!")
+            },
+        })
+    }
+    //---添加淘宝属性链接
+    function AddTBProperty() {
+        $("#mytablePorperty").append("<tr><td></td><td><input type='text' id='txtAddTBProperty' /></td><td><input type='text' id='txtAddTBvid' /></td><td><a href='#' onclick='SaveTBProperty()'>保存</a></td></tr>")
+    }
+    //---添加淘宝属性
+    function SaveTBProperty() {
+        var TBPropertyName = $("#txtAddTBProperty").val().trim();
+        var vid = $("#txtAddTBvid").val().trim();
+        var parentcid = $("#hidParentcid").val();
+        $.ajax({
+            type: "GET",
+            url: "/Category/AddTBProperty?TBPropertyName=" + TBPropertyName + "&vid=" + vid + "&parentcid=" + parentcid,
+            success: function (data) {
+                if (data == "添加失败!") {
+                    $.MsgBox.Alert("提示", data);
+                }
+                CheckTBProperty($("#hidParentcid").val());
+                
+            },
+            error: function () {
+                alert("error!")
+            },
+        })
+
+    }
+    //---删除淘宝属性
+    function DeleteTBProperty(Id) {
+        $.MsgBox.Confirm("提示", "确定要删除吗!", function () {
+            $.ajax({
+                type: "GET",
+                url: "/Category/DeleteTBProperty?Id=" + Id,
+                success: function (data) {
+                    if (data == "") {
+                        CheckTBProperty($("#hidParentcid").val());
+                    }
+                    else {
+                        $.MsgBox.Alert("提示", data);
+                    }
+                },
+                error: function () {
+                    alert("error!")
+                },
+            })
+        })
+    }
+</script>

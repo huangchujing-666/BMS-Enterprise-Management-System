@@ -1,0 +1,97 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<script type="text/javascript">
+
+    //鼠标悬停 查看大图
+    function showPic(obj)
+    {
+        var src = $(obj).attr("src");
+        var y = $(obj).offset().top;
+        var x = $(obj).offset().left;
+        $("#divShowPic").css("top", y - 60);
+        $("#divShowPic").css("left", x + 60);
+        $("#divShowPic").html("<img src='" + src + "' style='height:200px;width:200px' />")
+        $("#divShowPic").show();
+    }
+    //失去鼠标焦点 隐藏大图
+    function HidePic()
+    {
+        $("#divShowPic").hide();
+    }
+
+
+    $(function ()
+    {
+        $("#Serach").click(function ()
+        {
+            var Style = $("#style").val() == null ? "" : $("#style").val();
+            var Scode = $("#scode").val() == null ? "" : $("#scode").val();
+            var tbRemarkId = $("#tbRemarkId").val() == null ? "" : $("#tbRemarkId").val();
+            var SkuId = $("#SkuId").val() == null ? "" : $("#SkuId").val();
+            var SaleStatus = $("#SaleStatus").val() == null ? "" : $("#SaleStatus").val();
+
+            var Params = "{ Style: '"+Style+"', Scode: '"+Scode+"', tbRemarkId: '"+tbRemarkId+"', SkuId:'"+ SkuId+"', SaleStatus:'"+ SaleStatus+"' }";
+            $.post("/ShopManager/selectSkuScode", {
+                menuId: "@ViewData["myMenuId"]",
+                pageIndex: 1,
+                pageSize: 10,
+                params: Params,
+            }, function (data) { $("#Table").html(""); var ss = data.split("-----"); $("#Table").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+            var b = $.PageFunc("/ShopManager/selectSkuScode", "@ViewData["myMenuId"]", Params);
+            $("#spanPage").html(b);
+            $("#txtTiao").val(1);
+            $("#PageNum").html(1);
+            
+        })
+    })
+
+
+    function selPage(url, menuid, obj) {
+        var params = JSON.stringify(obj).replace(/\"/g, "'");
+        console.log(obj);
+        $.post(url, {
+            menuId: menuid,
+            pageIndex: 1,
+            pageSize: $("#selPages").val(),
+            params: params,
+        }, function (data) { $("#Table").html(""); var ss = data.split("-----"); $("#Table").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+    }
+</script>
+
+<div>
+    <span class="spanProperty">
+        <span class="spanPropertyName">款号：</span>
+        <input type="text" class="spanPropertyValue" id="style" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">货号：</span>
+        <input type="text" class="spanPropertyValue" id="scode" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">淘宝商品号：</span>
+        <input type="text" class="spanPropertyValue" id="tbRemarkId" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">商品SKUID：</span>
+        <input type="text" class="spanPropertyValue" id="SkuId" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">销售状态：</span>
+        <select id="SaleStatus" class="spanPropertyValue"><option value="">请选择</option><option value="instock">仓库中</option><option value="onsale">销售中</option></select>
+    </span>
+    <br />
+    <input  type="button" value="查询" class="spanPropertySearch"  id="Serach"/>
+    <input type="button" value="更新SKU" class="spanPropertySearch" onclick="LoadSku()"  />
+</div>
+<div id="Table"></div>
+<div class="divJump">
+    <span id="spanPage" style="font-weight:400;"></span>
+    共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span>条数据
+    </div>
+
+<div id="divShowPic" style="position:absolute"></div>

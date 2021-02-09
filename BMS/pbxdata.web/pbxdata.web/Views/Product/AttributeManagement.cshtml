@@ -1,0 +1,441 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+
+<script src="~/js/pageIndex.js"></script>
+<script type="text/javascript">
+    /*搜索*/
+    function OnSearch() {
+        var SeachName = $("#txtSeachName").val().trim();
+        var SeachBigName = $("#txtSeachBigName").val().trim();
+        var SeachTypeNo = $("#txtSeachTypeNo").val().trim();
+        var params = "{SeachName:'" + SeachName + "',SeachBigName:'" + SeachBigName + "',SeachTypeNo:'" + SeachTypeNo + "'}";
+        $.post("/Product/AttributeManagementSearch", {
+            menuId: "@ViewData["myMenuId"]",
+            pageIndex: 1,
+            pageSize: 10,
+            params: params
+        }, function (data) {
+            var ss = data.split("-----");
+            $("#mytable").html("");
+            $("#mytable").append(ss[0]);
+            $("#PageCount").html(ss[1]);
+            $("#AllCounts").html(ss[2]);
+        });
+
+        var b = $.PageFunc("/Product/AttributeManagementSearch", "@ViewData["myMenuId"]", params);
+        $("#spanPage").html(b);
+        $("#txtTiao").val(1);
+        $("#PageNum").html(1);
+    }
+    function selPage(url, menuid, obj) {
+        var params = JSON.stringify(obj).replace(/\"/g, "'");
+        $.post(url, {
+            menuId: menuid,
+            pageIndex: 1,
+            pageSize: $("#selPages").val(),
+            params:params
+        }, function (data) {
+            $("#mytable").html("");
+            var ss = data.split("-----");
+            $("#mytable").append(ss[0]);
+            $("#PageCount").html(ss[1]);
+            $("#AllCounts").html(ss[2]);
+        });
+    };
+    /*编辑按钮获取需要编辑类别信息*/
+    function EditAttribute(Id, TypeName, TypeNo, BigTypeName) {
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopEditContent").show();
+        $("#txtEditTypeName").attr("title", Id)
+        $("#txtEditTypeName").val(TypeName)
+        $("#txtEditTypeNo").val(TypeNo)
+        $("#selEditBigTypeName").val(BigTypeName)
+        Getddl(BigTypeName)
+    }
+
+    /*保存编辑类别信息*/
+    function UpdateTypeName() {
+        var Id = $("#txtEditTypeName").attr("title");
+        var TypeName = $("#txtEditTypeName").val().trim();
+        var TypeNo = $("#txtEditTypeNo").val().trim();
+        var Bigid = $("#selEditBigTypeName").val().trim();
+        $.ajax({
+            type: "GET",
+            url: "/product/UpdateType?Id=" + Id + "&TypeName=" + TypeName + "&TypeNo=" + TypeNo + "&Bigid=" + Bigid,
+            success: function (data) {
+                if (data) {
+                    alert("修改成功！");
+                    OnSearch();
+
+                    //GetTable($("#txtTiao").val().trim(), $("#selPages").val().trim());
+                    Close();
+                }
+                else {
+                    alert("修改失败！")
+                }
+            },
+            error: function () {
+                alert("修改失败！")
+            },
+        })
+    }
+    /*保存编辑类别信息*/
+    function DeleteType(TypeNo) {
+        if (confirm("确定要删除吗！")) {
+            $.ajax({
+                type: "GET",
+                url: "/product/DeleteType?TypeNo=" + TypeNo,
+                success: function (data) {
+                    if (data) {
+                        alert("删除成功！")
+                    }
+                    else {
+                        alert("删除失败！")
+                    }
+                    OnSearch();
+                    //GetTable($("#txtTiao").val().trim(), $("#selPages").val().trim());
+                },
+                error: function () {
+                    alert("删除失败！")
+                },
+            })
+        }
+        return false;
+
+    }
+    /*点击添加商品类别按钮*/
+    function AddClick() {
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopAddContent").show();
+        $("#txtAddTypeName").val("");
+        $("#txtAddTypeName").val("");
+    }
+
+    /*确定添加商品类别*/
+    function AddType() {
+        var TypeName = $("#txtAddTypeName").val().trim();
+        var TypeNo = $("#txtAddTypeNo").val().trim();
+        var Bigid = $("#selAddBigTypeName").val().trim();
+        $.ajax({
+            type: "GET",
+            url: "/product/AddType?Bigid=" + Bigid + "&TypeName=" + TypeName + "&TypeNo=" + TypeNo,
+            success: function (data) {
+                if (data) {
+                    alert("添加成功！")
+                }
+                else {
+                    alert("添加失败！")
+                }
+                OnSearch();
+                //GetTable($("#txtTiao").val().trim(), $("#selPages").val().trim());
+                Close();
+            },
+            error: function () {
+                alert("添加失败！")
+            },
+        })
+    }
+
+    /*获取大类别下拉列表*/
+    function Getddl(BigTypeName) {
+        $.ajax({
+            type: "GET",
+            url: "/Product/Getddl?BigTypeName=" + BigTypeName,
+            success: function (data) {
+                $("#selEditBigTypeName").html(data)
+                $("#selAddBigTypeName").html(data)
+            },
+            error: function () {
+            },
+        })
+    }
+
+    /*关闭按钮取消修改*/
+    function Close() {
+        $(".PopBg").hide();
+        $(".myPopdiv").hide();
+    }
+
+    function checkAttribute(TypeNo) {
+        window.open("/Product/UpdateAttribute?TypeNo=" + TypeNo, 'newwindow', 'height=700, width=1000, top=100,left=250, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no, status=no')
+    }
+
+    $(function () {
+        Getddl();
+
+        //$.post("/Product/getDataType", { menuId: "@ViewData["myMenuId"]" }, function (data) { $(".mytable").append(data) })
+    })
+
+    //----修改海关类别
+    function checkTariff(TypeNo, TypeName) {
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopTariff").show();
+        $("#txtTariffTypename").val(TypeName);
+        $("#hidTariffTypeNo").val(TypeNo)
+        $("#txtTariffNo").val("");
+        $("#txtTariffName").val("");
+        $("#txtSelectTariffName").val("");
+        $.ajax({
+            type: "GET",
+            url: "/Product/GetTariffDDL?TypeNo=" + TypeNo,
+            success: function (data) {
+                var result = data.split("-*-");
+                $("#selTariff").html(result[0]);
+                if (result.length > 1) {
+                    $("#txtTariffNo").val(result[1])
+                    $("#txtTariffName").val(result[2])
+                }
+                OnSearch();
+                //GetTable($("#txtTiao").val().trim(), $("#selPages").val().trim());
+            },
+            error: function () {
+            },
+        })
+    }
+    function UploadTariff() {
+        var TypeNo = $("#hidTariffTypeNo").val().trim();
+        var TariffNo = $("#txtTariffNo").val().trim();
+        if (TariffNo == "") {
+            alert("请选择税号后保存!"); return false;
+        }
+        $.ajax({
+            type: "GET",
+            url: "/Product/UploadTariff?TypeNo=" + TypeNo + "&TariffNo=" + TariffNo,
+            success: function (data) {
+                if (!data) {
+                    alert("保存失败!")
+                }
+                OnSearch();
+                //GetTable($("#txtTiao").val().trim(), $("#selPages").val().trim());
+            },
+            error: function () {
+                alert("UploadTariff error!")
+            },
+        })
+    }
+    function SelectTariff() {
+        var TariffName = $("#txtSelectTariffName").val().trim();
+        $.ajax({
+            type: "GET",
+            url: "/Product/SelectTariff?TariffName=" + TariffName,
+            success: function (data) {
+                $("#selTariff").html(data);
+            },
+            error: function () {
+            },
+        })
+    }
+    function GetTariffName() {
+        $("#txtTariffNo").val($("#selTariff").find("option:selected").val());
+        $("#txtTariffName").val($("#selTariff").find("option:selected").text());
+    }
+
+
+</script>
+<style type="text/css">
+    #PopEditContent, #PopAddContent
+    {
+        left: 15%;
+        top: 15%;
+        width: 300px;
+        min-height: 200px;
+    }
+
+    #PopTariff, #PopTBtype
+    {
+        left: 15%;
+        top: 15%;
+        width: 400px;
+        min-height: 300px;
+    }
+
+    .PopContent
+    {
+        height: 180px;
+        width: 99%;
+        padding-top: 15px;
+    }
+
+        .PopContent div
+        {
+            margin-top: 5px;
+        }
+
+    .divHeader
+    {
+        border: 1px solid #DDDDDD;
+        background-color: #F4F4F4;
+        height: 30px;
+        line-height: 30px;
+        padding-left: 15px;
+    }
+    .divclose
+    {
+        position: absolute;
+        right: 8px;
+        top: 3px;
+        cursor: pointer;
+        font-size: 2em;
+        font-weight: bolder;
+        width: 30px;
+        height: 30px;
+    }
+
+        .divclose:hover
+        {
+            color: red;
+        }
+</style>
+<header class="divHeader" style="width: 100%; padding-top: 10px;">
+    <span class="spanProperty"><span class="spanPropertyName">类别名称：</span><input class="spanPropertyValue" id="txtSeachName" type="text"></span>
+    <span class="spanProperty"><span class="spanPropertyName">大类别：</span><input class="spanPropertyValue" id="txtSeachBigName" type="text"></span>
+    <span class="spanProperty"><span class="spanPropertyName">类别编号：</span><input class="spanPropertyValue" id="txtSeachTypeNo" type="text"></span>
+    <input type="button" value="查  询" onclick="OnSearch()" class="spanPropertySearch" /><input type="button" value="添  加" onclick="    AddClick()" class="spanPropertySearch" />
+</header>
+<div style="border: solid 1px lightblue; overflow: hidden;">
+    <table id="mytable" class="mytable" border="0" cellpadding="0" cellspacing="0">
+        @* Html.Raw(ViewBag.Show)*@
+    </table>
+    <div class="divJump" style="">
+        <span id="spanPage" style="font-weight: 400;"></span>
+        共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span>条数据
+    </div>
+</div>
+<div class="PopBg"></div>
+<div id="PopEditContent" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: left;">修改类别</div>
+    <div class="PopContent">
+        <div>类别名称：<input id="txtEditTypeName" type="text" title="" /></div>
+        <div>类别编号：<input id="txtEditTypeNo" type="text" title="" disabled="disabled" /></div>
+        <div>
+            大类别名称：<select id="selEditBigTypeName"></select>
+        </div>
+        <div style="text-align: center">
+            <input type="button" name="Update" value=" 保  存 " onclick="UpdateTypeName()" /><input type="button" name="Close" value=" 关  闭 " onclick="    Close()" style="margin-left: 50px" />
+        </div>
+    </div>
+</div>
+<div id="PopAddContent" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: left;">添加类别</div>
+    <div class="PopContent">
+        <div>
+            类别名称：<input id="txtAddTypeName" type="text" title="" />
+        </div>
+        <div>类别编号：<input id="txtAddTypeNo" type="text" title="" /></div>
+        <div>
+            大类别名称：<select id="selAddBigTypeName"></select>
+        </div>
+        <div style="text-align: center">
+            <input type="button" name="Update" value=" 保  存 " onclick="AddType()" /><input type="button" name="Close" value=" 关  闭 " onclick="    Close()" style="margin-left: 50px" />
+        </div>
+    </div>
+</div>
+<div id="PopTariff" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: left;">修改关税类别</div>
+    <div class="PopContent" style="height: 280px; text-indent: 30px; text-align: left">
+        <div id="TariffTypeNo"></div>
+        <div>
+            类别名称：<input id="txtTariffTypename" type="text" title="" disabled="disabled" /><input type="hidden" id="hidTariffTypeNo" />
+        </div>
+        <div>关税编号：<input id="txtTariffNo" type="text" title="" disabled="disabled" /></div>
+        <div>关税名称：<input id="txtTariffName" type="text" title="" disabled="disabled" /></div>
+        @*<div>税率：<input id="txtTariff" type="text" title="" disabled="disabled"  /></div>*@
+        <div>
+            关 键 字：<input id="txtSelectTariffName" type="text" title="" />
+            <input type="button" value=" 查 询 " onclick="SelectTariff()" />
+        </div>
+        <div>
+            关税列表：<select id="selTariff" onchange="GetTariffName()" style="width: 150px"></select>
+        </div>
+
+        <div style="text-align: center">
+            <input type="button" name="Update" value=" 保  存 " onclick="UploadTariff()" /><input type="button" name="Close" value=" 关  闭 " onclick="    Close()" style="margin-left: 50px" />
+        </div>
+    </div>
+</div>
+<div id="PopTBtype" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: left;">修改淘宝类别</div>
+    <div class="PopContent" style="height: 280px; text-indent: 30px; text-align: left">
+        @*<div id="TariffTypeNo"></div>*@
+        <div>
+            类别名称：<input id="txtTypename" type="text" title="" disabled="disabled" /><input type="hidden" id="hidTypeNo" />
+        </div>
+        <div>淘宝编号：<input id="txtDef1" type="text" title="" disabled="disabled" /></div>
+        <div>淘宝类别：<input id="txtTBType" type="text" title="" disabled="disabled" /></div>
+        @*<div>税率：<input id="txtTariff" type="text" title="" disabled="disabled"  /></div>*@
+        <div>
+            关 键 字：<input id="txtSelectTBType" type="text" title="" />
+            <input type="button" value=" 查 询 " onclick="SelectTBtype()" />
+        </div>
+        <div>
+            淘宝列表：<select id="selTBType" onchange="GetTBType()" style="width: 150px"></select>
+        </div>
+
+        <div style="text-align: center">
+            <input type="button" name="Update" value=" 保  存 " onclick="UploadTBType()" /><input type="button" name="Close" value=" 关  闭 " onclick="    Close()" style="margin-left: 50px" />
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function checkTBtype(TypeNo, TypeName, cid, TBtypeName) {
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopTBtype").show();
+        $("#txtTypename").val(TypeName);
+        $("#hidTypeNo").val(TypeNo);
+        $("#txtDef1").val(cid);
+        $("#txtTBType").val(TBtypeName);
+        $("#txtSelectTBType").val("");
+        $("#selTBType").html("");
+        SelectTBtype();
+    }
+    function SelectTBtype() {
+        var TBtype = $("#txtSelectTBType").val().trim();
+        $.ajax({
+            type: "GET",
+            url: "/Product/SelectTBtype?TBtype=" + TBtype,
+            success: function (data) {
+                $("#selTBType").html(data);
+            },
+            error: function () {
+            },
+        })
+    }
+    function UploadTBType() {
+        var TypeNo = $("#hidTypeNo").val().trim();
+        var cid = $("#txtDef1").val().trim();
+        if (cid == "") {
+            alert("请选择淘宝编号后保存!"); return false;
+        }
+        $.ajax({
+            type: "GET",
+            url: "/Product/UploadTBType?TypeNo=" + TypeNo + "&cid=" + cid,
+            success: function (data) {
+                if (!data) {
+                    alert("保存失败!")
+                }
+                OnSearch();
+                //GetTable($("#txtTiao").val().trim(), $("#selPages").val().trim());
+            },
+            error: function () {
+                alert("error!")
+            },
+        })
+    }
+
+    function GetTBType(TypeName, cid) {
+        $("#txtDef1").val($("#selTBType").find("option:selected").val());
+        $("#txtTBType").val($("#selTBType").find("option:selected").text());
+    }
+</script>

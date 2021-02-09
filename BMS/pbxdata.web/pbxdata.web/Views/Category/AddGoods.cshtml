@@ -1,0 +1,43 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<input type="text" id="txt" />
+<input type="button" value="Select" onclick="abc()" />
+<input type="button" value="Show" onclick="Check()" />
+<div id="div" style="width:900px;"></div>
+<div id="show"></div>
+<style type="text/css">
+    .divinner
+    {
+        width:297px;
+        float:left;
+        text-align:right;
+    }
+    .divinner select
+    {
+        width:150px;
+    }
+</style>
+<script type="text/javascript">
+    function abc() {
+        var cid = $("#txt").val();
+        $.ajax({
+            type: "GET",
+            url: "/Category/ShowProperty?cid=" + cid,
+            success: function (data) {
+                $("#div").html(data)
+            },
+            error: function () {
+            },
+        })
+    }
+    function Check() {
+        $("#show").html("");
+        $(".sel").each(function () {
+            var cid = $(this).attr("name").replace("sel", "");
+            var vid = $(this).find("option:selected").val();
+            if (vid != "") {
+                $("#show").append("<div>" + cid + ":" + vid + "</div>");
+            }
+        })
+    }
+</script>
+

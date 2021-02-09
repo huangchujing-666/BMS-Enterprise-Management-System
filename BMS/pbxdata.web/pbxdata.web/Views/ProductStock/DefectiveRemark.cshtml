@@ -1,0 +1,421 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<script type="text/javascript" src="~/js/My97DatePicker/WdatePicker.js"></script>
+
+
+<script src="~/js/DropDowndiv.js"></script>
+@*            按照货号合并               *@
+<script type="text/ecmascript">
+    //查询
+    function MergeSearch() {
+        $("#ThisCountH").val("1");
+        MergeSearchPage(2);
+    }
+    //分页
+    function MergeSearchPage(Index) {
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/ProductStock/GetMergeDefectiveRemark",
+                data: {
+                    "Scode": $("#ScodeH").val() == null ? "" : $("#ScodeH").val(),
+                    "Cat": $("#CatH").val() == null ? "" : $("#CatH").val(),
+                    "Cat2": $("#Cat2H").val() == null ? "" : $("#Cat2H").val(),
+                    "Style": $("#StyleH").val() == null ? "" : $("#StyleH").val(),
+                    "Page": $("#PageH").val() == "" ? 10 : $("#PageH").val(),
+                    "IsPage": false,
+                    "Index": Index,
+                    "ReturnPage": $("#ThisCountH").val() == null ? "" : $("#ThisCountH").val()
+                },
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#ScodeTable").html("");
+                    $("#CountH").html("");
+                    $("#PageCountH").html("");
+                    $("#ThisCountH").val("");
+                    $("#ThisPageH").html("");
+                    $("#ScodeTable").html(da[0]);
+                    $("#CountH").html(da[1]);
+                    $("#PageCountH").html(da[2]);
+                    $("#ThisCountH").val(da[3]);
+                    $("#ThisPageH").html(da[3]);
+                }
+            })
+    }
+    //页码改变
+    function MergeScodeMarkerChagePage() {
+        $("#ThisCountH").val("1");
+        MergeSearchPage(2)
+    }
+    function Look(Scode) {
+        $("#Scode").val(Scode);
+        Search();
+    }
+    ///取消标记
+    function DeleteScodeMarker(Marker) {
+        if (confirm("是否取消标记")) {
+            $.ajax(
+                {
+                    type: "post",
+                    datatype: "text",
+                    data: {
+                        "ScodeMarker": Marker
+                    },
+                    url: "/ProductStock/DeleteScodeMarker",
+                    success: function (data) {
+                        alert(data);
+                        SearchPage(2)
+                    }
+                })
+        }
+    }
+</script>
+<style type="text/css">
+    .PopContent
+    {
+        min-height: 100px;
+        min-width: 350px;
+    }
+</style>
+<div>
+    <span class="spanProperty">
+        <span class="spanPropertyName">货号：</span>
+        <input type='text' id='ScodeH' class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">款号：</span>
+        <input type='text' id='StyleH' class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">类别：</span>
+        <input type="text" id="Cat2H" class="spanPropertyValue" onclick="GetDropToType(this.id)" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">品牌：</span>
+        <input type="text" id="CatH" class="spanPropertyValue" onclick="GetDropToBrand(this.id)" />
+    </span>
+    <br />
+    <span class="spanProperty">
+    <span class="spanPropertyName"><input type="button" value="查询" class="spanPropertySearch" onclick="MergeSearch()" /></span>
+
+    </span>
+    
+</div>
+<br />
+<div id="ScodeTable"></div>
+<div class="divJump">
+    <select id="PageH" onchange = "return MergeScodeMarkerChagePage()">@Html.Raw(ViewData["PageSum"])</select>
+    <a href="#" onclick="MergeSearchPage(0)">首页</a>
+    <a href="#" onclick="MergeSearchPage(1)">上一页</a>
+    <input type="text" id="ThisCountH" />
+    <a href="#" onclick="MergeSearchPage(2)">跳页</a>
+    共<span id='PageCountH'></span>页&nbsp;&nbsp;
+    当前第<span id='ThisPageH'>1</span> 页&nbsp;&nbsp;
+    共<span id='CountH'></span>条数据
+    <a href="#" onclick="MergeSearchPage(3)">下一页</a>
+    <a href="#" onclick="MergeSearchPage(4)">末页</a>
+</div>
+<br />
+@*            所有标记货品               *@
+<script type="text/ecmascript">
+    //查询
+    function Search() {
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/ProductStock/GetDefectiveRemark",
+                data: {
+                    "ScodeMarker": $("#ScodeMarker").val() == null ? "" : $("#ScodeMarker").val(),
+                    "Scode": $("#Scode").val() == null ? "" : $("#Scode").val(),
+                    "Cat": $("#Cat").val() == null ? "" : $("#Cat").val(),
+                    "Cat2": $("#Cat2").val() == null ? "" : $("#Cat2").val(),
+                    "Style": $("#Style").val() == null ? "" : $("#Style").val(),
+                    "Page": $("#Page").val() == "" ? 10 : $("#Page").val(),
+                    "IsPage": false,
+                },
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#ScodeMarkerTable").html(da[0]);
+                    $("#Count").html(da[1]);
+                    $("#PageCount").html(da[2]);
+                    $("#ThisCount").val(da[3]);
+                    $("#ThisPage").html(da[3]);
+                }
+            })
+    }
+    //分页
+    function SearchPage(Index) {
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/ProductStock/GetDefectiveRemark",
+                data: {
+                    "ScodeMarker": $("#ScodeMarker").val() == null ? "" : $("#ScodeMarker").val(),
+                    "Scode": $("#Scode").val() == null ? "" : $("#Scode").val(),
+                    "Cat": $("#Cat").val() == null ? "" : $("#Cat").val(),
+                    "Cat2": $("#Cat2").val() == null ? "" : $("#Cat2").val(),
+                    "Style": $("#Style").val() == null ? "" : $("#Style").val(),
+                    "Page": $("#Page").val() == "" ? 10 : $("#Page").val(),
+                    "IsPage": true,
+                    "Index": Index,
+                    "ReturnPage": $("#ThisCount").val() == null ? "" : $("#ThisCount").val()
+                },
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#ScodeMarkerTable").html("");
+                    $("#Count").html("");
+                    $("#PageCount").html("");
+                    $("#ThisCount").val("");
+                    $("#ThisPage").html("");
+                    $("#ScodeMarkerTable").html(da[0]);
+                    $("#Count").html(da[1]);
+                    $("#PageCount").html(da[2]);
+                    $("#ThisCount").val(da[3]);
+                    $("#ThisPage").html(da[3]);
+                }
+            })
+    }
+    //页码改变
+    function ScodeMarkerChagePage() {
+        SearchPage(2)
+    }
+    ///修改商品 打开修改界面
+    var UpdateMarker;
+    function UpdatePrice(scodemarker) {
+        UpdateMarker = scodemarker;
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                data:
+                    {
+                        "scodemarker": scodemarker
+                    },
+                url: "/ProductStock/GetDefectiveRemarkByScodeMarker",
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#pricea").html(da[0]);
+                    $("#priceb").html(da[1]);
+                    $("#pricec").html(da[2]);
+                    $("#priced").html(da[3]);
+                    $("#pricee").html(da[4]);
+                    $("#udpatescode").html(da[6]);
+                    $("#beizhu").html(da[5]);
+                    $("#UpdatePrice").show();
+                    $(".PopBg").height($(document).height());
+                    $(".PopBg").show();
+                }
+            })
+    }
+    ///关闭探弹窗
+    function ColseInsert() {
+        $(".myPopdiv").hide();
+        $(".PopBg").hide();
+    }
+    ///确认修改价格
+    function OkUpdatePrice() {
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/ProductStock/UpdatePrice",
+                data:
+                    {
+                        "pricea": $("#priceatext").val() == null ? "" : $("#priceatext").val(),
+                        "priceb": $("#pricebtext").val() == null ? "" : $("#pricebtext").val(),
+                        "pricec": $("#pricectext").val() == null ? "" : $("#pricectext").val(),
+                        "priced": $("#pricedtext").val() == null ? "" : $("#pricedtext").val(),
+                        "scodeMarker": UpdateMarker,
+                    },
+                success: function (data) {
+                    alert(data);
+                    ColseInsert();
+                    SearchPage(2);
+                }
+            })
+    }
+
+</script>
+<div>
+    <span class="spanProperty">
+        <span class="spanPropertyName">标记编号：</span>
+        <input type='text' id='ScodeMarker' class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">货号：</span>
+        <input type='text' id='Scode' class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">款号：</span>
+        <input type='text' id='Style' class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">类别：</span>
+        <input type="text" id="Cat2" class="spanPropertyValue" onclick="GetDropToType(this.id)" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">品牌：</span>
+        <input type="text" id="Cat" class="spanPropertyValue" onclick="GetDropToBrand(this.id)" />
+    </span>
+    <br />
+<span class="spanProperty">
+    <span class="spanPropertyName"><input type="button" onclick="Search()" class="spanPropertySearch" value="查询" /></span>
+
+    </span>
+    
+</div>
+<br />
+<div id="ScodeMarkerTable"></div>
+<div class="divJump">
+    <select id="Page" onchange = "return ScodeMarkerChagePage()">@Html.Raw(ViewData["PageSum"])</select>
+    <a href="#" onclick="SearchPage(0)">首页</a>
+    <a href="#" onclick="SearchPage(1)">上一页</a>
+    <input type="text" id="ThisCount" />
+    <a href="#" onclick="SearchPage(2)">跳页</a>
+    共<span id='PageCount'></span>页&nbsp;&nbsp;
+    当前第<span id='ThisPage'>1</span> 页&nbsp;&nbsp;
+    共<span id='Count'></span>条数据
+    <a href="#" onclick="SearchPage(3)">下一页</a>
+    <a href="#" onclick="SearchPage(4)">末页</a>
+</div>
+
+
+
+<div class="PopBg"></div>
+<div class="myPopdiv" style="left: 10%; top: 20%; min-width: 300px; min-height: 250px" id="UpdatePrice">
+    <div class="divclose" onclick="ColseInsert()">×</div>
+    <div class="Poptitle">修改价格</div>
+    <div class="PopContent">
+        <table>
+            <tr>
+                <td style="font-size: 15px; font-weight: bold;">货号</td>
+                <td style="color: red;">
+                    <label id="udpatescode"></label>
+                </td>
+                <td style="font-size: 15px; font-weight: bold;">说明</td>
+                <td style="font-size: 15px; font-weight: bold;">
+                    <label id="beizhu"></label>
+                </td>
+            </tr>
+            <tr>
+                <td>吊牌价:</td>
+                <td>
+                    <label id="pricea"></label>
+                </td>
+                <td>
+                    <input type="text" id="priceatext" /></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>零售价:</td>
+                <td>
+                    <label id="priceb"></label>
+                </td>
+                <td>
+                    <input type="text" id="pricebtext" /></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>VIP价:</td>
+                <td>
+                    <label id="pricec"></label>
+                </td>
+                <td>
+                    <input type="text" id="pricectext" /></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>批发价:</td>
+                <td>
+                    <label id="priced"></label>
+                </td>
+                <td>
+                    <input type="text" id="pricedtext" /></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>成本价:</td>
+                <td>
+                    <label id="pricee"></label>
+                </td>
+            </tr>
+        </table>
+        <input type="button" value="确认" onclick="OkUpdatePrice()" />
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+
+    $.getDropDownList("#Cat2H");
+    $.getDropDownList("#CatH");
+    function GetDropToBrand(e) {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Productstock/Brand",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+                var d1 = eval(data);
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].BrandAbridge + "'>" + d1[i].BrandName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }
+
+
+    $.getDropDownList("#Cat2");
+    $.getDropDownList("#Cat");
+    function GetDropToType(e) {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Productstock/Type",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+
+                var d1 = eval(data);
+
+
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].TypeNo + "'>" + d1[i].TypeName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+
+</script>

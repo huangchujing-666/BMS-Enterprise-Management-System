@@ -1,0 +1,880 @@
+﻿
+
+
+<script src="~/js/jquery-1.8.2.min.js"></script> 
+
+<script type="text/javascript" src="~/js/textValidate.js"></script>
+
+<script src="~/js/jquery.form.js"></script>
+
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<script type="text/javascript" src="~/js/My97DatePicker/WdatePicker.js"></script>
+<script src="~/js/DropDowndiv.js"></script>
+
+<script type="text/javascript">
+
+    //全选
+    function CheckAll() {
+        if ($("#CheckAll").attr("checked") == "checked") { // 全选 
+            $("input[class=Check]").each(function () {
+                $(this).attr("checked", true);
+            });
+        }
+        else { // 取消全选 
+            $("input[class=Check]").each(function () {
+                $(this).attr("checked", false);
+            });
+        }
+    }
+
+    $(function ()
+    {
+        $("#Serach").click(function ()
+        {
+            var Scode = $("#Scode").val();//货号
+            var Style = $("#Style").val();//款号
+            var PriceMin = $("#PriceMin").val();//最小价格
+            var PriceMax = $("#PriceMax").val();//最大价格
+            var Season = $("#Season").val();//季节
+            var Brand = $("#Brand").val();//品牌
+            var StockMin = $("#StcokMin").val();//最小库存
+            var StockMax = $("#StcokMax").val();//最大库存
+            var TimeMin = $("#MinTime").val();//最小时间
+            var TimeMax = $("#MaxTime").val();//最大时间
+            var Type = $("#Type").val();//类别
+            var Imagefile = $("#Imagefile").val();//是否有图
+            var Params = "{Scode:'" + Scode + "', Style:'" + Style + "', PriceMin:'" + PriceMin + "', PriceMax:'" + PriceMax + "', Season:'" + Season + "', Brand:'" + Brand + "', StockMin:'" + StockMin + "', StockMax:'" + StockMax + "'," +
+                "TimeMin:'" + TimeMin + "', TimeMax:'" + TimeMax + "', Type:'" + Type + "', Imagefile:'" + Imagefile + "'}";
+            $.post("/SoCalProduct/ShowCheckProduct", {
+                menuId: "@ViewData["myMenuId"]",
+                pageIndex: 1,
+                pageSize: 10,
+                params: Params,
+            }, function (data) { $("#CheckProductTb").html(""); var ss = data.split("-----"); $("#CheckProductTb").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+            var b = $.PageFunc("/SoCalProduct/ShowCheckProduct", "@ViewData["myMenuId"]", Params);
+            $("#spanPage").html(b);
+            $("#txtTiao").val(1);
+            $("#PageNum").html(1);
+        })
+    })
+
+
+
+    //确认选货  确认店铺
+    function CheckProduct() {
+        var Scodes = "";
+        var Vencodes = "";
+        var ShopId = $("#ThisShop").val() == null ? "" : $("#ThisShop").val();
+        if (ShopId == "") {
+            alert("请选择店铺");
+            return false;
+        }
+        $("input[class=Check]").each(function () {
+            if ($(this).attr("checked") == "checked") {
+                Scodes += "," + $(this).attr("Scode");
+                Vencodes += "," + $(this).attr("Vencode");
+            }
+
+        });
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/SoCalProduct/SaveCheckProduct",
+                data: {
+                    "Scodes": Scodes,
+                    "ShopId": ShopId,
+                    "Vencodes": Vencodes
+                },
+                success: function (data) {
+                    alert(data)
+                }
+            })
+    }
+    ///提交数据
+    function TestSubmit() {
+        var ajax_option = {
+            success: function (data) {
+                alert("aaa" + data);
+            },
+            error: function (a, b, c) {
+                alert(b);
+            },
+            complete: function (XMLHttpRequest, textStatus) {
+                alert(textStatus);
+            }
+        }
+        $("#form1").ajaxSubmit();
+        $("#form1").ajaxsu
+    }
+
+    function selPage(url, menuid, obj) {
+        var params = JSON.stringify(obj).replace(/\"/g, "'");
+       
+        $.post(url, {
+            menuId: menuid,
+            pageIndex: 1,
+            pageSize: $("#selPages").val(),
+            params: params,
+        }, function (data) { $("#CheckProductTb").html(""); var ss = data.split("-----"); $("#CheckProductTb").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+    }
+</script>
+
+<div id="QueryBuilder">
+    <span class="spanProperty">
+        <span class="spanPropertyName">选货人：</span>
+        <span class="spanPropertyName">@ViewData["UserName"]</span>
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">店铺：</span>
+        <select id="ThisShop" class="spanPropertyValue">@Html.Raw(ViewData["ShopName"])</select>
+    </span>
+
+    <span class="spanProperty">
+        <span class="spanPropertyName">款号：</span>
+        <input type='text' id='Style' class="spanPropertyValue" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">货号：</span>
+        <input type='text' id='Scode' class="spanPropertyValue" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">最小价格：</span>
+        <input type='text' id='PriceMin' class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">最大价格：</span>
+        <input type='text' id='PriceMax' class="spanPropertyValue"/>
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">品牌：</span>
+        <input id="Brand" type="text" class="spanPropertyValue" onclick="GetDropToBrand(this.id)" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">类别：</span>
+        <input type="text" id="Type" class="spanPropertyValue" onclick="GetDropToType(this.id)" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">季节：</span>
+        <input type='text' id='Season' class="spanPropertyValue" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">最小库存：</span>
+        <input type='text' class="spanPropertyValue" id='StcokMin'>
+    </span>
+        <span class="spanProperty">
+        <span class="spanPropertyName">最大库存：</span>
+        <input type='text' class="spanPropertyValue" id='StcokMax'>
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">最小时间：</span>
+        <input type="text" class="spanPropertyValue" id="MinTime"  onfocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">最大时间：</span>
+        <input type="text" class="spanPropertyValue" id="MaxTime"  onfocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">图片：</span>
+        <select id='Imagefile' class="spanPropertyValue"><option value=''>请选择</option><option value='1'>有</option><option value='2'>无</option></select>
+    </span>
+    <br />
+        <input type='button' id='Serach' class="spanPropertySearch" value='查询' />
+        <input type='button' class="spanPropertySearch" onclick='CheckProduct()' value='确认挑货'/>
+@using (Ajax.BeginForm("UploadExcel", "SoCalProduct", new AjaxOptions() { HttpMethod = "post" }, new { id = "form1", enctype = "multipart/form-data" }))
+{
+    <input type="file" id="fileName" name="fileName" value="选择文件" class="sty" accept=".xls" /><input type="button" value="上传" onclick="TestSubmit()" />
+}
+</div>
+
+<div id="CheckProductTb"></div>
+<div class="divJump" id="divJump">
+        <span id="spanPage" style="font-weight:400;"></span>
+    共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span>条数据
+    </div>
+<style type="text/css">
+    #PopStyledescript {
+        left: 20%;
+        top: 20%;
+        width: 1000px;
+        min-height: 500px;
+    }
+
+    #divMainPicContent, #divMainPicContentStyle, .divStyleContainer {
+        margin: auto;
+        width: 90%;
+        min-height: 100px;
+        border: 1px solid gray;
+        padding: 10px;
+        margin-top: 10px;
+        text-align: center;
+    }
+
+        #divMainPicContent img, #divMainPicContentStyle img, .divStyleContainer img {
+            width: 75px;
+            height: 75px;
+        }
+
+    #PopContent #tabProperty {
+        width: 720px;
+    }
+
+        #PopContent #tabProperty td {
+            border: none;
+            width: 33%;
+            text-align: right;
+        }
+
+    #PopContent {
+        left: 0%;
+        top: 0%;
+        width: 1250px;
+        height: 805px;
+    }
+
+    #divUploadMainPicStyle img, #divShowMianPic img {
+        margin-left: 10px;
+    }
+
+    #divUploadMainPic, #divShowMianPic, #divUploadMainPicStyle, #divShowMianPicStyle {
+        float: left;
+    }
+
+    #EditContainer {
+        margin-top: 5px;
+        border: 1px solid lightblue;
+        height: 765px;
+        width: 61%;
+        background-color: white;
+        padding-top: 15px;
+        overflow: auto;
+        float: left;
+    }
+
+    #divProductInfo {
+        float: right;
+        margin-top: 5px;
+        margin-right: 5px;
+        border: 1px solid lightblue;
+        height: 765px;
+        width: 38%;
+        background-color: white;
+        padding-top: 15px;
+        overflow: auto;
+    }
+        .Loading
+    {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 105%;
+        line-height: 500px;
+        background-color: white;
+        text-align: center;
+        font-size: 50px;
+        display: none;
+        z-index: 999;
+    }
+         #divImageFile, #divImageFileStyle
+    {
+        margin: auto;
+        width: 90%;
+        min-height: 200px;
+        border: 1px solid gray;
+        padding: 10px;
+        text-align: center;
+        overflow: auto;
+    }
+           .divclose
+    {
+        position: absolute;
+        right: 8px;
+        top: 3px;
+        cursor: pointer;
+        font-size: 2em;
+        font-weight: bolder;
+        width: 30px;
+        height: 30px;
+    }
+        .divclose:hover
+        {
+            color:red;
+        }
+            #div_img1, #div_imgStyle
+    {
+        float: left;
+        padding-bottom: 10px;
+        min-width: 100%;
+    }
+
+        #div_img1 img, #div_imgStyle img
+        {
+            margin-left: 10px;
+            margin-top: 10px;
+            float: left;
+            box-sizing: border-box;
+            width: 75px;
+            height: 75px;
+        }
+
+    #divMainPicContent, #divMainPicContentStyle, .divStyleContainer
+    {
+        margin: auto;
+        width: 90%;
+        min-height: 100px;
+        border: 1px solid gray;
+        padding: 10px;
+        margin-top: 10px;
+        text-align: center;
+        overflow: auto;
+    }
+
+        #divMainPicContent img,#divShowMianPicStyle img
+        {
+            width: 75px;
+            height: 75px;
+        }
+
+        #divUploadMainPicStyle img, .divStyleContainer img
+        {
+            width: 75px;
+            height: 75px;
+            margin-left: 10px;
+        }
+    
+    #divUploadMainPic, #divShowMianPic, #divUploadMainPicStyle, #divShowMianPicStyle
+    {
+        float: left;
+    }
+    .divMainMaxPic
+    {
+        position: absolute;
+    }
+</style>
+<script type="text/ecmascript">
+    //查看属性
+    function LookAtrrbutt(scode, vencode) {
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/SoCalProduct/LookAttrByCheck",
+                data: {
+                    "scode": scode,
+                    "vencode": vencode
+                },
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#EditContent").empty;
+                    $("#divProductInfo").empty;
+                    $("#CaoZuo").empty;
+                    $.get("/ShopManager/ShowMainPic", { scode: scode }, function (data) {
+                        var da = data.split('-*-');
+                        $("#divShowMianPic").html("");
+                        for (var i = 0; i < da.length - 1; i++) {
+                            $("#divShowMianPic").append("<img style='width:75px;height:75px;' src='" + da[i] + "'/>")
+                        }
+                        MaxPic();
+                        ShowMainPic(scode);
+
+                    })//主图
+                    $("#EditContent").html(da[0]);
+                    $("#divProductInfo").html(da[1]);
+                    $("#CaoZuo").html(da[3]);
+                    $("#PopContent").show();
+                    $(".PopBg").height($(document).height());
+                    $(".PopBg").show();
+
+                }
+            })
+    }
+    //关闭查看属性
+    function Close() {
+        $(".myPopdiv").hide();
+        $(".Popbg").hide();
+    }
+    //--保存上传图片-货号表
+    function SavePic() {
+        $(".Loading").height($(document).height() - 70);
+        $(".Loading").show();
+        var Arrysrc = [];
+        var scode = $("#txtScodeE").val();
+        $("#divUploadImg").find("img").each(function () {
+            Arrysrc.push($(this).attr("src"))
+        })
+        if (Arrysrc.length == 0) {
+            alert("没有可上传的图片!")
+            return false;
+        }
+        $.ajax({
+            type: "get",
+            url: "/SoCalProduct/UploadScodePic?Arrysrc=" + Arrysrc + "&scode=" + scode,
+            success: function (data) {
+                if (data) {
+                    ShowAllpic(scode);
+                    $(".Loading").hide();
+                }
+                else {
+                    alert("保存失败!")
+                }
+                ScCalSearchScode()
+
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+
+    //--显示所有上传图片-货号表
+    function ShowAllpic(scode) {
+
+        $("#divScodePic").html("");
+        $("#divUploadImg").html("");
+        var scode = $("#txtScodeE").val();
+        var srcs = [];
+        $.ajax({
+            type: "get",
+            url: "/OperaPic/retAllpicByScode?scode=" + scode,
+            success: function (data) {
+                if (data != "") {
+                    $("#divScodePic").html(data);
+                }
+                MaxPic('div_img1');
+                select();
+                CheckMainPic();
+            },
+            error: function () {
+            },
+        })
+    }
+    //编辑页面显示主图的大图通用
+    function MaxPic(obj) {
+        $("#" + obj).find("img").each(function () {
+            $(this).hover(function () {
+                var y = $(this).offset().top;
+                var x = $(this).offset().left;
+                $(".divMainMaxPic").css("top", y - 200);
+                $(".divMainMaxPic").css("left", x + 100);
+                var src = $(this).attr("src");
+                var Type = src.split(".")[4];
+                if (src != "") {
+                    src = src.split("@@")[0];
+                    $(".divMainMaxPic").html("<img src='" + src + "' style='height:200px;width:200px' />");
+                }
+                ScrollPic("divMainMaxPic");
+
+
+            }, function () {
+                $(".divMainMaxPic").html("");
+
+                CloseScroll();
+            })
+        })
+    }
+    function ScrollPic(obj) {
+        var scrollFunc = function (e) {
+            var direct = 0;
+            ee = e || window.event;
+            if (e.wheelDelta > 0) {
+                var add = $("." + obj).find("img").css("width");
+                add = parseInt(add)
+                if (add < 500) {
+                    $("." + obj).find("img").css("width", add + 25)
+                    $("." + obj).find("img").css("height", add + 25)
+                }
+
+            }
+            else {
+                var add = $("." + obj).find("img").css("width");
+                add = parseInt(add)
+                if (add != 200) {
+                    $("." + obj).find("img").css("width", add - 25)
+                    $("." + obj).find("img").css("height", add - 25)
+                }
+            }
+
+            $("body").css("overflow", "hidden");
+            $("#EditContainer").css("overflow", "hidden");
+
+        }
+
+        window.onmousewheel = document.onmousewheel = scrollFunc; //IE/Opera/Chrome/Safari 
+    }
+    function CloseScroll() {
+        $("body").css("overflow", "auto");
+        $("#EditContainer").css("overflow", "auto");
+        window.onmousewheel = document.onmousewheel = 0; //IE/Opera/Chrome/Safari
+    }
+    //--判断选择主图数量-货号表
+    function select() {
+        var i = 0;
+        $("#divScodePic").find("img").each(function () {
+            $(this).unbind("click");
+            $(this).bind("click", function () {
+                i = $("#divMainPicContent").find("img").length;
+                //if ($(this).attr("class") != "selected") {
+                if (parseInt(i) < 5) {
+                    var check = $(this);
+                    var flag = false;
+                    $("#divMainPicContent").find("img").each(function () {
+                        if ($(this).attr("src") == check.attr("src")) {
+                            flag = true
+                        }
+                    })
+                    if (!flag) {
+                        check.attr("class", "selected");
+                        $("#divUploadMainPic").prepend("<img src='" + check.attr("src") + "' />")
+                        i = parseInt(i) + 1;
+                    }
+                }
+                CancleMainPic();
+            })
+        })
+        CancleMainPic();
+    }
+    //--检测上传的图片中是否被选择为主图-货号表
+    function CheckMainPic() {
+        $("#divScodePic").find("img").each(function () {
+            var src = $(this);
+            $("#divShowMianPic").find("img").each(function () {
+                if ($(this).attr("src") == src.attr("src")) {
+                    src.attr("class", "selected");
+                }
+            })
+
+        })
+    }
+
+    //--取消主图-货号表
+    function CancleMainPic() {
+        $("#divUploadMainPic").find("img").each(function () {
+            var cancel = $(this);
+            $(this).unbind("click");
+            $(this).bind("click", function () {
+                var flags = false;
+                $("#divScodePic").find("img").each(function () {
+                    if (cancel.attr("src") == $(this).attr("src")) {
+                        $(this).removeClass("selected");
+                        cancel.remove();
+                        $(".divMainMaxPic").html("");
+                    }
+                })
+            })
+        })
+    }
+    //--显示主图通过货号
+    function ShowMainPic(scode) {
+        $("#divShowMianPic").html("");
+        $("#divUploadMainPic").html("");
+        $.ajax({
+            type: "POST",
+            url: "/OperaPic/GetZhutuPic1",
+            data: { "scode": scode },
+            success: function (data) {
+                if (data != "") {
+                    $("#divShowMianPic").html("");
+                    srcs = data.split("-*-");
+                    for (var i = 0; i < srcs.length; i++) {
+                        if (srcs[i] != "")
+                            $("#divShowMianPic").append("<div class='divPicouter'><img src=" + srcs[i] + " /><div class='divPicinner'><a href='#' onclick='LeftChangeMScode(\"" + scode + "\",\"" + srcs[i] + "\")'><</a><a href='#' onclick='RightChangeMScode(\"" + scode + "\",\"" + srcs[i] + "\")'>></a><a href='#' onclick='DeleteMainPicScode(\"" + scode + "\",\"" + srcs[i] + "\")'>x</a></div></div>")
+                    }
+                }
+                ControlPic();
+                ShowAllpic(scode);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }
+    function ControlPic() {
+        $(".divPicouter").each(function () {
+            $(this).hover(function () {
+                $(this).find(".divPicinner").animate({ top: "50px" }, 200)
+            }, function () {
+                $(this).find(".divPicinner").animate({ top: "75px" }, 200)
+            })
+
+        })
+    }
+    //--保存选择的主图-货号表
+    function SelectMainPic() {
+        var Arrysrc = [];
+        var Descript = $("#txtCdescriptE").val() == null ? "" : $("#txtCdescriptE").val();
+        var scode = $("#txtScodeE").val() == null ? "" : $("#txtScodeE").val();
+        $("#div_img1").find("img").each(function () {
+            if ($(this).attr("class") == "selected")
+                Arrysrc.push($(this).attr("src"))
+        })
+        $.ajax({
+            type: "get",
+            url: "/Product/SelectMainPic?Arrysrc=" + Arrysrc + "&scode=" + scode,
+            success: function (data) {
+                if (!data) {
+                    alert("保存失败!")
+                }
+
+                OkSaveUpdate(scode, Descript);///保存改过的属性
+                ShowMainPic(scode);
+                alert("保存成功!")
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+    function OkSaveUpdate(Scode, Descript) {
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/SoCalProduct/UpdateSoCalProduct",
+                data: {
+                    "Descript": Descript,
+                    "Scode": Scode
+                },
+                success: function () {
+
+                }
+            })
+    }
+</script>
+<div class="PopBg"></div>
+<div id="PopContent" class="myPopdiv">
+    <div class="Loading">图片上传中<span style="color: red; font-size: 50px;">(请勿关闭窗口!)</span>......</div>
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: left;">编辑商品属性</div>
+    <div id="EditContainer">
+        <div id="EditContent" style="width: 760px">
+        </div>
+        <div id="TypeAttribute">
+        </div>
+        <div>
+
+            <div id="divMainPicContent">
+                <div>主图</div>
+                <div id="divUploadMainPic"></div>
+                <div id="divShowMianPic"></div>
+            </div>
+            <div id="divImageFile">
+                <div>本地上传<span style="color: red">(设置主图-单击图片并点击保存!)</span></div>
+
+                <div id="div_img1">
+                    <div id="divScodePic"></div>
+                    <div id="divUploadImg"></div>
+                </div>
+                <div>
+                    <div id="fileQueue1" style="text-align: center">
+                    </div>
+                    <input type="file" name="uploadify1" id="uploadify1" />
+                    <p>
+                        <a href="javascript:$('#uploadify1').uploadifyUpload()">点击上传</a>&nbsp;&nbsp;
+                    </p>
+                    <input type="button" value="复制图片" onclick="CopysocdepicTostyle()" />
+                    <input type="button" value="删除图片" onclick="DeleteAllPicByScode()" />
+                    <label style="margin-left: 10px">全选<input type="checkbox" id="checkboxscode" onclick="selectAllBox('scode')" /></label>
+                </div>
+            </div>
+            <div style="width: 100%; text-align: center; margin-top: 20px;" id="CaoZuo">
+                <input type="button" value=" 保 存 " onclick="SelectMainPic()" />
+                <input type="button" value=" 关 闭 " onclick="Close()" style="margin-left: 20px;" />
+            </div>
+        </div>
+    </div>
+    <div id="divProductInfo"></div>
+    <div class="divMainMaxPic"></div>
+</div>
+
+<script type="text/ecmascript">
+
+    //鼠标悬停 查看大图
+    function showPic(obj) {
+        var src = $(obj).attr("src");
+        var y = $(obj).offset().top;
+        var x = $(obj).offset().left;
+        $("#divShowPic").css("top", y - 60);
+        $("#divShowPic").css("left", x + 60);
+        $("#divShowPic").html("<img src='" + src + "' style='height:200px;width:200px' />")
+        $("#divShowPic").show();
+    }
+    //失去鼠标焦点 隐藏大图
+    function HidePic() {
+        $("#divShowPic").hide();
+    }
+
+    //查看图片
+    function LookAttr(style) {
+        $.get("/SoCalProduct/ShowMainPicStyle", { style: style }, function (data) {
+            var da = data.split('-*-');
+            $("#divMainPic").html("");
+            if (da.length > 0) {
+                for (var i = 0; i < da.length - 1; i++) {
+                    $("#divMainPic").append("<img style='width:75px;height:75px;' src='" + da[i] + "'/>")
+                }
+            }
+        })//主图
+        $.get("/SoCalProduct/ShowPeiPic", { style: style }, function (data) {
+            var da = data.split('-*-');
+            $("#divBrandPeiPic").html("");
+            if (da.length > 0) {
+                for (var i = 0; i < da.length - 1; i++) {
+                    $("#divBrandPeiPic").append("<img style='width:75px;height:75px;' src='" + da[i] + "'/>")
+                }
+            }
+            //$("#divBrandPeiPic").empty; $("#divBrandPeiPic").append(data)
+        })//配图
+        $.get("/SoCalProduct/ShowDetailPic", { style: style }, function (data) {
+            var da = data.split('-*-');
+            $("#divProductDetail").html("");
+            if (da.length > 0) {
+                for (var i = 0; i < da.length - 1; i++) {
+                    $("#divProductDetail").append("<img style='width:75px;height:75px;' src='" + da[i] + "'/>")
+                }
+            }
+            //$("#divProductDetail").empty; $("#divProductDetail").append(data)
+        })//细节图
+        $("#PopStyledescript").show();
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+    }
+    //--上传图片-货号表
+    $(document).ready(function () {
+        $("#uploadify1").uploadify({
+            'uploader': '/js/content/uploadify.swf',
+            'script': '/Product/UploadminImg',
+            'cancelImg': '/js/content/cancel.png',
+            'folder': 'UploadFile',
+            'fileExt': '*.jpg;*.gif;*.png;*.bmp;',
+            'fileDesc': '请选择jpg,jpeg,gif,png,bmp格式',
+            'queueID': 'fileQueue1',
+            'auto': false,
+            'multi': true,
+            'onComplete': function (event, ID, fileObj, response, data) {
+                $('#divUploadImg').append("<img src=\"" + response + "\" alt='' height='100' width='100' />")
+                select();
+                SavePic();
+
+            }
+        });
+    });
+</script>
+
+<div id="PopStyledescript" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: center; font-size: 20px; font-weight: bold;">商品图片</div>
+    <div id="info">
+
+        <table style="width: 95%">
+            <tr>
+                <td><span style="width: 20px; display: block;">商品描述</span></td>
+                <td style="text-align: center;">
+                    <textarea id="txtproductDescript" style="width: 92%; height: 100px; margin: auto"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td><span style="width: 20px; display: block">商品缩略图</span></td>
+                <td>
+                    <div>
+                        <div class="divStyleContainer">
+                            <div>品牌配图</div>
+                            <div id="divBrandPeiPic" style="margin-left: 0%;"></div>
+                        </div>
+
+                        <div id="divMainPicContentStyle">
+                            <div>主图</div>
+                            <div id="divMainPic"></div>
+                        </div>
+                        <div class="divStyleContainer">
+                            <div>商品细节</div>
+                            <div id="divProductDetail" style="margin-left: 0%;"></div>
+                        </div>
+                        <div id="divImageFileStyle">
+                            <div id="div_imgStyle">
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <div style="text-align: center" id="Operation">
+            
+        </div>
+    </div>
+    <div class="divMainMaxPic">
+    </div>
+
+</div>
+
+
+<script type="text/ecmascript">
+
+
+
+    $.getDropDownList("#Brand");
+    function GetDropToBrand(e) {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Productstock/Brand",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+                var d1 = eval(data);
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].BrandAbridge + "'>" + d1[i].BrandName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }
+
+    $.getDropDownList("#Type");
+    function GetDropToType(e) {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Productstock/Type",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+
+                var d1 = eval(data);
+
+
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].TypeNo + "'>" + d1[i].TypeName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+
+</script>

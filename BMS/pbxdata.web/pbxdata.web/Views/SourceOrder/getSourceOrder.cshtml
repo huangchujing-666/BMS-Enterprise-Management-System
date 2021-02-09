@@ -1,0 +1,681 @@
+﻿@{
+    ViewBag.Title = "源头订单";
+}
+
+<div style="color: #FF5F3E; font-weight: bolder; line-height: 20px;">源头订单</div>
+
+<style>
+    .buyMsgContent
+    {
+        float: left;
+    }
+
+    .buyMsgContentDiv
+    {
+        float: left;
+        width: 230px;
+        line-height: 40px;
+        text-align: left;
+    }
+
+    .myPopdiv
+    {
+        left: 0%;
+        top: 0%;
+        min-height: 200px;
+        min-width: 980px;
+    }
+
+    #texRemark
+    {
+        width: 90%;
+        height: 50px;
+    }
+
+    .tdRemark
+    {
+        text-align: left;
+    }
+    .tdOpera a
+    {
+        margin-left:10px;
+    }
+</style>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<script src="~/js/pagecommon.js"></script>
+<script type="text/javascript">
+
+    $().ready(function () {
+        $.post('/SourceOrder/GetVencode', function (data) { $("#selsendSource").html(data); }) //供应商
+        $.post('/SourceOrder/GetciqOrderlist', function (data) { $("#selSJstatus").html(data); $("#selHGstatus").html(data); $("#selBBCstatus").html(data); $("#selPayStatus").html(data); }) //商检 //海关 //物流 //支付
+
+
+        $("#btnSearch").click(function () {
+            var orderId = $("#txtorderId").val();
+            var newStatus = $("#selnewStatus").val();
+            var createTime = $("#txtcreateTime").val();
+            var editTime = $("#txteditTime").val();
+            var showStatus = $("#selshowStatus").val();
+            var sendSource = $("#selsendSource").val() == "-1" ? "" : $("#selsendSource").val();
+            var SJstatus = $("#selSJstatus").val() == "-1" ? "" : $("#selSJstatus").val();
+            var HGstatus = $("#selHGstatus").val() == "-1" ? "" : $("#selHGstatus").val();
+            var BBCstatus = $("#selBBCstatus").val() == "-1" ? "" : $("#selBBCstatus").val();
+            var Paystatus = $("#selPayStatus").val() == "-1" ? "" : $("#selPayStatus").val();
+
+            var params = "{orderId:'" + orderId + "',newStatus:'" + newStatus
+                + "',createTime:'" + createTime + "',editTime:'" + editTime + "',showStatus:'" + showStatus
+                + "',sendSource:'" + sendSource + "',SJstatus:'" + SJstatus + "',HGstatus:'" + HGstatus + "',BBCstatus:'" + BBCstatus + "',Paystatus:'" + Paystatus + "'}";
+
+            $.post("/SourceOrder/getData", {
+                menuId: "@ViewData["myMenuId"]",
+                pageIndex: 1,
+                pageSize: 10,
+                params: params,
+            }, function (data) { $(".mytable").html(""); var ss = data.split("-----"); $(".mytable").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+
+            var b = $.PageFunc("/SourceOrder/getData", "@ViewData["myMenuId"]", params);
+            $("#spanPage").html(b);
+            $("#txtTiao").val(1);
+            $("#PageNum").html(1);
+
+        })
+
+        
+        
+
+
+
+        //审核开放checkOpenOrder - checkConfirmSendOrder - checkCancelOrder
+        $("#checkOpenOrder").click(function () {
+            var statu = confirm("确认订单开放给供应商吗?");
+            if (!statu) {
+                return false;
+            }
+
+            var scodes = "";
+            $("input[name=checkbox1]").each(function () {
+                if ($(this).attr("checked") == "checked") {
+                    scodes += $(this).val() + ",";
+                }
+            })
+            if (scodes == "") {
+                alert("请选择需要审核开放的订单");
+            }
+            //$.post("/Customs/createHGPayReport", { orderId: scodes }, function (data) { console.log(data); alert(data); });
+            $.post("/SourceOrder/checkOrder", { orderId: scodes }, function (data) { alert(data); });
+        })
+
+        //确认发货checkOpenOrder - checkConfirmSendOrder - checkCancelOrder
+        $("#checkConfirmSendOrder").click(function () {
+            var statu = confirm("确认订单状态更改为可发货状态吗?");
+            if (!statu) {
+                return false;
+            }
+
+            var scodes = "";
+            $("input[name=checkbox1]").each(function () {
+                if ($(this).attr("checked") == "checked") {
+                    scodes += $(this).val() + ",";
+                }
+            })
+            if (scodes == "") {
+                alert("请选择需要确认发货的订单");
+            }
+            //$.post("/Customs/createHGPayReport", { orderId: scodes }, function (data) { console.log(data); alert(data); });
+            $.post("/SourceOrder/sendOrder", { orderId: scodes }, function (data) { alert(data); });
+        })
+
+        //取消订单checkOpenOrder - checkConfirmSendOrder - checkCancelOrder
+        $("#checkCancelOrder").click(function () {
+            var statu = confirm("确认订单状态更改为取消状态吗?");
+            if (!statu) {
+                return false;
+            }
+
+            var scodes = "";
+            $("input[name=checkbox1]").each(function () {
+                if ($(this).attr("checked") == "checked") {
+                    scodes += $(this).val() + ",";
+                }
+            })
+            if (scodes == "") {
+                alert("请选择需要取消的订单");
+            }
+            //$.post("/Customs/createHGPayReport", { orderId: scodes }, function (data) { console.log(data); alert(data); });
+            $.post("/SourceOrder/cancelOrder", { orderId: scodes }, function (data) { alert(data); });
+        })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //生成商检报文
+        $("#createSJOrderReport").click(function () {
+            var scodes = "";
+
+            $("input[name=checkbox1]").each(function () {
+                if ($(this).attr("checked") == "checked") {
+                    var payIds = $(this).parent().parent().find(".payId").html(); //支付单号（这里做订单号报关）
+                    scodes += $(this).val() + "-" + payIds + ",";//订单号
+                }
+            })
+            if (scodes == "") {
+                alert("请选择需要生成商检报文的订单");
+            }
+            $.post("/Customs/createSJOrderReport", { orderId: scodes }, function (data) { console.log(data); alert(data); });
+            //$.post("/Customs/createSJOrderReport", { orderId: scodes, payId: payIds }, function (data) { console.log(data); alert(data); });
+        })
+
+        //上传商检报文
+        $("#uploadSJOrderReport").click(function () {
+            var scodes = "";
+            $("input[name=checkbox1]").each(function () {
+                if ($(this).attr("checked") == "checked") {
+                    var payIds = $(this).parent().parent().find(".payId").html(); //支付单号（这里做订单号报关）
+                    scodes += $(this).val() + "-" + payIds + ",";//订单号
+                }
+            })
+            if (scodes == "") {
+                alert("请选择需要上传商检报文的订单");
+            }
+            $.post("/Customs/upLoadSJOrderReport", { orderId: scodes }, function (data) { console.log(data); alert(data); });
+        })
+        //读取商检报文
+        $("#readSJOrderReport").click(function () {
+            $.post("/Customs/readSJOrderReport", function (data) { console.log(data); alert(data); });
+        })
+
+        //下载商检报文回执
+        $("#downloadSJOrderReport").click(function () {
+            $.post("/Customs/downLoadSJOrderReport", function (data) { console.log(data); alert(data); });
+        })
+
+
+        //生成海关报文
+        $("#createHGOrderReport").click(function () {
+            var scodes = "";
+            $("input[name=checkbox1]").each(function () {
+                if ($(this).attr("checked") == "checked") {
+                    var payIds = $(this).parent().parent().find(".payId").html(); //支付单号（这里做订单号报关）
+                    scodes += $(this).val() + "-" + payIds + ",";//订单号
+                }
+            })
+
+            if (scodes == "") {
+                alert("请选择需要生成海关报文的订单");
+            }
+            $.post("/Customs/createHGOrderReport", { orderId: scodes }, function (data) { console.log(data); alert(data); });
+        })
+
+
+        //上传海关报文
+        $("#uploadHGOrderReport").click(function () {
+            var scodes = "";
+            $("input[name=checkbox1]").each(function () {
+                if ($(this).attr("checked") == "checked") {
+                    var payIds = $(this).parent().parent().find(".payId").html(); //支付单号（这里做订单号报关）
+                    scodes += $(this).val() + "-" + payIds + ",";//订单号
+                }
+            })
+            if (scodes == "") {
+                alert("请选择需要上传海关报文的订单");
+            }
+            $.post("/Customs/upLoadHGOrderReport", { orderId: scodes }, function (data) { console.log(data); alert(data); });
+        })
+
+        //读取海关报文
+        $("#readHGOrderReport").click(function () {
+            $.post("/Customs/readHGOrderReport", function (data) { console.log(data); alert(data); });
+        })
+
+        //下载海关回执
+        $("#downloadHGOrderReport").click(function () {
+            $.post("/Customs/downLoadHGOrderReport", function (data) { console.log(data); alert(data); });
+        })
+
+        //联邦订单报备（创建）
+        $("#BBCOrderPeport").click(function () {
+            var scodes = "";
+            $("input[name=checkbox1]").each(function () {
+                if ($(this).attr("checked") == "checked") {
+                    scodes += $(this).val() + ",";
+                }
+            })
+            if (scodes == "") {
+                alert("请选择需要提交联邦报文的订单");
+            }
+
+            $.post("/Customs/BBCOrderPeport", { orderId: scodes }, function (data) { console.log(data); alert(data); });
+        })
+
+        //更新联邦订单报备(更新)
+        $("#BBCUpdateOrderPeport").click(function () {
+            var scodes = "";
+            $("input[name=checkbox1]").each(function () {
+                if ($(this).attr("checked") == "checked") {
+                    scodes += $(this).val() + ",";
+                }
+            })
+            if (scodes == "") {
+                alert("请选择需要提交联邦报文的订单");
+            }
+            $.post("/Customs/BBCUpdateOrderPeport", { orderId: scodes }, function (data) { console.log(data); alert(data); });
+            //$.post("/Customs/BBCUpdateOrderPeport", { orderId: "380," }, function (data) { console.log(data); alert(data); });
+        })
+
+
+        //修改联邦订单状态
+        $("#BBCOrderUpdateStatus").click(function () {
+            var orderIds = "";
+            $("input[name=checkbox1]").each(function () {
+                if ($(this).attr("checked") == "checked") {
+                    orderIds += $(this).val() + ",";
+                }
+            })
+            if (orderIds == "") {
+                alert("请选择需要修改联邦状态的订单");
+            }
+            $.post("/Customs/BBCOrderUpdateStatus", { orderId: orderIds }, function (data) { console.log(data); alert(data); });
+        })
+
+
+
+        //支付信息报备
+        $("#PayOrderPeport").click(function () {
+            var scodes = "";
+            $("input[name=checkbox1]").each(function () {
+                if ($(this).attr("checked") == "checked") {
+                    scodes += $(this).val() + ",";
+                }
+            })
+            if (scodes == "") {
+                alert("请选择需要提交支付报文的订单");
+            }
+            $.post("/Customs/createHGPayReport", { orderId: scodes }, function (data) { console.log(data); alert(data); });
+        })
+
+
+    })
+
+
+    ///全选
+    var count = 0;
+    function selectAll() {
+        $.selectAllFunc("#mytable input[name=checkbox1]");
+    }
+
+
+    //点击行展开订单详情
+    function detailstable(obj) {
+        var details = $(obj).children().eq(1).html();
+        var orderId = $(obj).children().eq(1).next().html();
+        if (details == "+") {
+            $(obj).children().eq(1).html("-");
+            $(obj).nextUntil("tr.trSourceOrder").remove();
+            $.post("/SourceOrder/getDataSourceOrder", { orderId: orderId, menuId: "@ViewData["myMenuId"]" }, function (data) {
+                $(obj).after(data);
+            });
+        } else {
+            $(obj).children().eq(1).html("+");
+            $(obj).nextUntil("tr.trSourceOrder").remove();
+        }
+    }
+
+
+    
+
+    ////---------------------------------------------------------------------------------------------------------------------------------------
+    ////分配订单
+    ////---------------------------------------------------------------------------------------------------------------------------------------
+    ///审核订单(是否开放给供应商查看,0为未开放，1为开放)
+    function checkOrder(obj) {
+        var statu = confirm("确认订单开放给供应商吗?");
+        if (!statu) {
+            return false;
+        }
+        $.post("/SourceOrder/checkOrder", { orderId: obj }, function (data) { alert(data); });
+    }
+
+
+    ///确认订单状态(订单当前状态：1为待确认，2为确认，3为待发货，4为发货，5交易成功，6通关异常，7，通关成功，11退货，12取消)
+    function sendOrder(obj) {
+        var statu = confirm("确认订单状态更改为可发货吗?");
+        if (!statu) {
+            return false;
+        }
+        $.post("/SourceOrder/sendOrder", { orderId: obj }, function (data) { alert(data); });
+    }
+
+
+    ///取消订单(订单当前状态：1为待确认，2为确认，3为待发货，4为发货，5交易成功，6通关异常，7，通关成功，11退货，12取消)
+    function cancelOrder(obj) {
+        var statu = confirm("确认要取消订单吗?");
+        if (!statu) {
+            return false;
+        }
+        $.post("/SourceOrder/cancelOrder", { orderId: obj }, function (data) { alert(data); });
+    }
+
+
+    ///根据主订单编号查询拆单后的订单
+    function getDataSourceOrder(obj) {
+        var details = $(obj).html();
+        var orderId = $(obj).next().html();
+        if (details == "+") {
+            $(obj).html("-");
+            $(obj).parent().nextUntil("tr.trSourceOrder").remove();
+            $.post("/SourceOrder/getDataSourceOrder", { orderId: orderId, menuId: "@ViewData["myMenuId"]" }, function (data) {
+                $(obj).parent().after(data);
+            });
+
+        } else {
+            $(obj).html("+");
+            $(obj).parent().nextUntil("tr.trSourceOrder").remove();
+
+        }
+    }
+
+
+    //根据主订单编号查看买家信息
+    function selectBuyer(obj) {
+        $.post("/SourceOrder/selectBuyer", { orderId: obj }, function (data) {
+            var buyMsg = eval('(' + data + ')');
+
+            var s = "<div>真实姓名：" + buyMsg.buyMsg[0].realName + "</div>";
+            s += "<div>省份：" + buyMsg.buyMsg[1].provinceId + "</div>";
+            s += "<div>城市：" + buyMsg.buyMsg[2].cityId + "</div>";
+            s += "<div>区域：" + buyMsg.buyMsg[3].district + "</div>";
+            s += "<div>地址信息：" + buyMsg.buyMsg[4].buyNameAddress + "</div>";
+            s += "<div>邮政编码：" + buyMsg.buyMsg[5].postcode + "</div>";
+            s += "<div>手机号码：" + buyMsg.buyMsg[6].phone + "</div>";
+            s += "<div>订单备注：" + buyMsg.buyMsg[7].orderMsg + "</div>";
+            s += "<div>订单状态：" + buyMsg.buyMsg[8].orderStatus + "</div>";
+            s += "<div>商品总价：" + buyMsg.buyMsg[9].itemPrice + "</div>";
+            s += "<div>快递费用：" + buyMsg.buyMsg[10].deliveryPrice + "</div>";
+            s += "<div>优惠费用：" + buyMsg.buyMsg[11].favorablePrice + "</div>";
+            s += "<div>税费：" + buyMsg.buyMsg[12].taxPrice + "</div>";
+            s += "<div>订单金额：" + buyMsg.buyMsg[13].orderPrice + "</div>";
+            s += "<div>实际支付金额：" + buyMsg.buyMsg[14].paidPrice + "</div>";
+            s += "<div>支付状态：" + buyMsg.buyMsg[15].isPay + "</div>";
+            s += "<div>支付时间：" + buyMsg.buyMsg[16].payTime + "</div>";
+            //s += "<div>支付流水号：" + buyMsg.buyMsg[17].payOuterId + "</div>";
+            s += "<div>订单创建时间：" + buyMsg.buyMsg[18].createTime + "</div>";
+            s += "<div>身份证号码：" + buyMsg.buyMsg[19].def1 + "</div>";
+
+            $("#buyMsgContent").html(s);
+            $("#buyMsgContent div").addClass("buyMsgContentDiv");
+        });
+    }
+
+
+    /*报关按钮显示*/
+    $().ready(function () {
+        $("#btnCustoms").click(function () {
+            $(".divCustoms").toggle(1000);
+        })
+    })
+
+</script>
+
+<style>
+    .divCustoms {
+        display:none;
+        position:absolute;
+        background-color:#808080;
+        width:100%;
+    }
+
+</style>
+
+<div class="divCustoms">
+<button class="spanPropertySearch" id="checkOpenOrder">1.审核开放</button>
+<button class="spanPropertySearch" id="checkConfirmSendOrder">2.审核确认发货</button>
+<button class="spanPropertySearch" id="checkCancelOrder">3.审核取消订单</button>
+<hr />
+<button class="spanPropertySearch" id="createSJOrderReport">1.生成商检报文</button>
+<button class="spanPropertySearch" id="uploadSJOrderReport">2.上传商检报文</button>
+<button class="spanPropertySearch" id="downloadSJOrderReport">3.下载商检回执</button>
+<button class="spanPropertySearch" id="readSJOrderReport">4.读取商检回执</button>
+
+<button class="spanPropertySearch" id="createHGOrderReport">5.生成海关报文</button>
+<button class="spanPropertySearch" id="uploadHGOrderReport">6.上传海关报文</button>
+<button class="spanPropertySearch" id="downloadHGOrderReport">7.下载海关回执</button>
+<button class="spanPropertySearch" id="readHGOrderReport">8.读取海关回执</button>
+
+<button class="spanPropertySearch" id="BBCOrderPeport">9.联邦订单报备</button>
+@*<button class="spanPropertySearch" id="BBCOrderUpdateStatus">10.更改联邦订单状态</button>
+<button class="spanPropertySearch" id="BBCUpdateOrderPeport">11.更改联邦订单报备</button>
+<button class="spanPropertySearch" id="PayOrderPeport">12.支付信息报备</button>*@
+<button class="spanPropertySearch" id="PayOrderPeport">10.支付信息报备</button>
+</div>
+
+
+
+
+
+
+
+@*<div id="divSearchlist"></div>*@
+<div id="bg" class="bg" style="display: none;"></div>
+<div id="popDivEdit" class="mydiv" style="display: none; width: 720px;min-height: 420px; left: 30%; top: 15%;">
+    <div class="divclose" onclick="Close()">×</div>
+    <h2 style="text-indent: 10px; text-align: left;">查看买家</h2>
+    <div style="background-color: white; padding: 10px; margin-top: 5px; border-radius: 5px;">
+        <div id="buyMsgContent" style="width: 100%; height: 396px;">
+        </div>
+    </div>
+</div>
+
+@*搜索*@
+<div style="width: 100%; min-height: 50px; border-color: red;">
+    <div id="divSearchlist">
+        <span class ="spanProperty"><span class="spanPropertyName">订单ID:</span><input type="text" class="spanPropertyValue" id="txtorderId"></span>
+        <span class ="spanProperty"><span class="spanPropertyName">订单状态:</span>
+            <select class="spanPropertyValue" id='selnewStatus'>
+                <option value=''>请选择</option>
+                <option value='1'>待确认</option>
+                <option value='2'>已确认</option>
+                <option value='3'>待发货</option>
+                <option value='4'>发货</option>
+                <option value='5'>交易成功</option>
+                <option value='6'>通关异常</option>
+                <option value='7'>通关成功</option>
+                <option value='11'>退货</option>
+                <option value='12'>取消</option>
+            </select>
+        </span>
+        <span class ="spanProperty"><span class="spanPropertyName">创建时间:</span><input class="spanPropertyValue" type='date' id='txtcreateTime' /></span>
+        <span class ="spanProperty"><span class="spanPropertyName">编辑时间:</span><input class="spanPropertyValue" type='date' id='txteditTime' /></span>
+        <span class ="spanProperty">
+            <span class="spanPropertyName">开放状态:</span>
+            <select class="spanPropertyValue" id='selshowStatus'>
+                <option value=''>请选择</option>
+                <option value='1'>开放</option>
+                <option value='0'>未开放</option>
+            </select>
+        </span>
+        <span class ="spanProperty">
+            <span class="spanPropertyName">供应商:</span>
+            <select class="spanPropertyValue" id='selsendSource'></select>
+        </span>
+        <span class ="spanProperty">
+            <span class="spanPropertyName">商检:</span>
+            <select class="spanPropertyValue" id='selSJstatus'></select>
+        </span>
+        <span class ="spanProperty">
+            <span class="spanPropertyName">海关:</span>
+            <select class="spanPropertyValue" id='selHGstatus'></select>
+        </span>
+        <span class ="spanProperty">
+            <span class="spanPropertyName">物流:</span>
+            <select class="spanPropertyValue" id='selBBCstatus'></select>
+        </span>
+        <span class ="spanProperty">
+            <span class="spanPropertyName">支付:</span>
+            <select class="spanPropertyValue" id='selPayStatus'></select>
+        </span>
+        </div>
+        <input class="spanPropertySearch" value=" 查   询 " type="button" id="btnSearch">
+        <input class="spanPropertySearch" value=" 报   关 " type="button" id="btnCustoms">
+</div>
+
+<table class="mytable" id="mytable" rules="all" style="width: 100%;">
+</table>
+
+
+@*分页*@
+<div class="divJump">
+    <span id="spanPage" style="font-weight:400;"></span>
+    共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span>条数据
+</div>
+
+
+<div class="myPopdiv" id="EditContainer">
+    <div class="divclose" onclick="Close()">×</div>
+    <h2 style="text-indent: 10px; text-align: left;">修改订单</h2>
+    <div id="PopContent" style="background-color: white; padding: 10px; margin-top: 10px; border-radius: 5px;">
+        <input type="hidden" value="" id="hidOrderId" />
+        <table id="tabEditOrder" class="mytable"></table>
+        <div id="divRemarks"></div>
+        <div style="margin-top: 10px;">
+            <div style="font-size: 2em; float: left">备注：</div>
+            <textarea id="texRemark"></textarea>
+        </div>
+        <div style="width: 100%; text-align: center; margin-top: 10px;">
+            <input type="button" value=" 保  存 " onclick="UpdateApiOrder()" />
+        </div>
+    </div>
+</div>
+<script>
+
+    //编辑按钮
+    function EditOrder(OrderId) {
+        $("#EditContainer").show();
+        $("#hidOrderId").val(OrderId);
+        $(".bg").height($(document).height());
+        $(".bg").show();
+        $("#texRemark").val("");
+        $.ajax({
+            type: "POST",
+            url: "/SourceOrder/EditApiOrder",
+            data: { "menuId": "@ViewData["myMenuId"]", "OrderId": OrderId },
+            success: function (data) {
+
+                $("#tabEditOrder").html(data.split("-*-")[0]);
+                $("#divRemarks").html(data.split("-*-")[1]);
+                EditRemark();
+            },
+            error: function () {
+                alert("error!");
+            }
+        })
+    }
+
+    //确定修改
+    function UpdateApiOrder() {
+        var OrderId = $("#hidOrderId").val();
+        var Remark = $("#texRemark").val().trim();
+        var detailsOrderIds = [];
+        var sendSources = [];
+        $(".hidnewOrderId").each(function () {
+            detailsOrderIds.push($(this).val());
+            sendSources.push($(this).parent().find("select").find("option:selected").val());
+
+        })
+        $.ajax({
+            type: "POST",
+            url: "/SourceOrder/UpdateApiOrder",
+            data: { "OrderId": OrderId, "Remark": Remark, "detailsOrderIds": detailsOrderIds, "sendSources": sendSources },
+            success: function (data) {
+                $.MsgBox.Alert("提示", data);
+                EditOrder(OrderId);
+            },
+            error: function () {
+            },
+        })
+    }
+    /*取消修改或者添加*/
+    function Close() {
+        $(".bg").hide();
+        $("#EditContainer").hide();
+        $("#popDivEdit").hide();
+    }
+    //删除备注
+    function DeleteRemark(Id) {
+        var OrderId = $("#hidOrderId").val();
+        $.MsgBox.Confirm("提示", "确定要删除吗？", function () {
+            $.ajax({
+                type: "GET",
+                url: "/ApiOrder/DeleteRemark?Id=" + Id,
+                success: function (data) {
+                    $.MsgBox.Alert("提示", data);
+                    EditOrder(OrderId);
+                },
+                error: function () {
+                },
+            })
+        });
+    }
+    //编辑备注
+    function EditRemark() {
+        $(".EditRemark").each(function () {
+            $(this).find("a").click(function () {
+                var OrderId = $("#hidOrderId").val();
+                if ($(this).html() == "编辑") {
+                    $(this).html("确定");
+                    var Remark = $(this).parent().parent().find(".tdRemark").html();
+                    $(this).parent().parent().find(".tdRemark").html("<textarea style='min-height:35px;width:100%'>" + Remark + "</textarea>")
+                }
+                else {
+                    $(this).html("编辑");
+                    var Id = $(this).attr("title");
+                    var UpdateRemark = $(this).parent().parent().find(".tdRemark").find("textarea").val().trim();
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/ApiOrder/EditRemark",
+                        data: { "Id": Id, "Remark": UpdateRemark },
+                        success: function (data) {
+                            $.MsgBox.Alert("提示", data);
+                        },
+                        error: function () {
+                        },
+                    })
+                    EditOrder(OrderId);
+
+                }
+
+
+            })
+        })
+    }
+
+    /*图片错误处理*/
+    function errorImg(obj) {
+        var src = $(obj).attr("src");
+        $(obj).parent().attr("title", src);
+        $(obj).parent().html("Img error");
+    }
+</script>
+

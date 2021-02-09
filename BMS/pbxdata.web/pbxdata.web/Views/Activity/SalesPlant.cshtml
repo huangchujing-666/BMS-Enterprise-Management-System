@@ -1,0 +1,284 @@
+﻿<script src="~/js/jquery-1.8.2.min.js">
+</script>
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+
+<script src="~/js/DropDowndiv.js"></script>
+
+<link href="~/Css/Search.css" rel="stylesheet" />
+<script type="text/javascript">
+    ///打开新建活动界面
+    function Insert() {
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/Activity/OrderNo",
+                success: function (data) {
+                    $("#ActivtNo").val(data);
+                    $("#ActivtNo").attr("disabled", "disabled");
+                }
+            })
+        $("#Insert").show();
+    }
+    //关闭新建活动界面
+    function Close() {
+        $(".PopBg").hide();
+        $(".myPopdiv").hide();
+    }
+    ///将品牌加入到集合中
+    var Brand = "";
+    function InsertBrand() {
+        var temp = $("#ActivtBrand").val();
+        if (Brand.indexOf(temp) > 0) {
+            alert("品牌已加入");
+            return false;
+        }
+        else {
+            Brand = Brand + "," + temp;
+        }
+    }
+    ///确认开始创建订单
+    function OkCreate() {
+        var PlaseNo = $("#ActivtNo").val() == null ? "" : $("#ActivtNo").val();
+        var ActivityName = $("#ActivtName").val() == null ? "" : $("#ActivtName").val();
+        var Loc = $("#ActivtLoc").val() == null ? "" : $("#ActivtLoc").val();
+        var SalesTime = $("#OpenTime").val() == null ? "" : $("#OpenTime").val();
+        var StopTime = $("#StopTime").val() == null ? "" : $("#StopTime").val();
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/Activity/InsertSalesPlant",
+                data:
+                    {
+                        "PlaseNo": PlaseNo,
+                        "ActivityName": ActivityName,
+                        "Loc": Loc,
+                        "Brand": Brand,
+                        "SalesTime": SalesTime,
+                        "StopTime": StopTime
+                    },
+                success: function (data) {
+                    alert(data);
+                    Close();
+                    Search();
+                }
+            })
+    }
+
+
+
+    $(function ()
+    {
+        $("#Serach").click(function ()
+        {
+            var PlaseNo = $("#PlaseNo").val() == null ? "" : $("#PlaseNo").val();
+            var ActivitName = $("#ActivitName").val() == null ? "" : $("#ActivitName").val();
+            var Brand = $("#Brand").val() == null ? "" : $("#Brand").val();
+            var ShState =$("#ShState").val() == null ? "" : $("#ShState").val();
+
+            var Params="{PlaseNo:'"+PlaseNo+"',ActivitName:'"+ActivitName+"',Brand:'"+Brand+"',ShState:'"+ShState+"'}";
+
+            $.post("/Activity/GetSalesPlant", {
+                menuId: "@ViewData["myMenuId"]",
+                pageIndex: 1,
+                pageSize: 10,
+                params: Params,
+            }, function (data) { $("#ActiveTable").html(""); var ss = data.split("-----"); $("#ActiveTable").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); showPic(); })
+
+            var b = $.PageFunc("/Activity/GetSalesPlant", "@ViewData["myMenuId"]", Params);
+            $("#spanPage").html(b);
+            $("#txtTiao").val(1);
+            $("#PageNum").html(1);
+
+        })
+    })
+
+
+
+
+        ///添加商品
+        function AddProduct(Plase) {
+            window.open("/Activity/AddProduct?PlaseNo=" + Plase, "newwindow", "height=600,width=1400,left=400,top=200");
+        }
+        function LookProduct(Plase, MenuId) {
+            window.open("/Activity/PlantProducts?PlaseNo=" + Plase + "&MenuId=" + MenuId, "newwindow", "height=600,width=1600,left=200,top=200");
+        }
+        ///通过
+        function Pass(plaseno) {
+            $.ajax(
+                {
+                    type: "post",
+                    datatype: "text",
+                    data: {
+                        "State": 1,
+                        "PlaseNo": plaseno
+                    },
+                    url: "/Activity/UpdateSalesState",
+                    success: function (data) {
+                        alert(data)
+                        Search()
+                    }
+                })
+        }
+        ///不通过
+        function NoPass(plaseno) {
+            $.ajax(
+                {
+                    type: "post",
+                    datatype: "text",
+                    data: {
+                        "State": 2,
+                        "PlaseNo": plaseno
+                    },
+                    url: "/Activity/UpdateSalesState",
+                    success: function (data) {
+                        alert(data)
+                        Search()
+                    }
+                })
+        }
+
+        function selPage(url, menuid, obj) {
+            var params = JSON.stringify(obj).replace(/\"/g, "'");
+            console.log(obj);
+            $.post(url, {
+                menuId: menuid,
+                pageIndex: 1,
+                pageSize: $("#selPages").val(),
+                params: params,
+            }, function (data) { $("#ActiveTable").html(""); var ss = data.split("-----"); $("#ActiveTable").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+        }
+
+
+
+</script>
+<style type="text/css">
+    .divclose
+    {
+        position: absolute;
+        right: 8px;
+        top: 3px;
+        cursor: pointer;
+        font-size: 2em;
+        font-weight: bolder;
+        width: 30px;
+        height: 30px;
+    }
+
+        .divclose:hover
+        {
+            color: red;
+        }
+</style>
+<div>
+    <span class="spanProperty">
+        <span class="spanPropertyName">活动编号：</span>
+        <input type='text' id='PlaseNo' class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">活动名称：</span>
+        <input type='text' id='ActivitName' class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">品牌：</span>
+        <input type="text" id="Brand" class="spanPropertyValue" onclick="GetDropToBrand(this.id)"/>
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">审核：</span>
+        <select id="ShState" class="spanPropertyValue"><option value="">请选择</option>
+        <option value="1">已审核</option>
+        <option value="0">未审核</option>
+    </select>
+    </span>
+    <br />
+    <input type="button" id="Serach" value="查询" class="spanPropertySearch" />
+    <input type="button" onclick="Insert()" class="spanPropertySearch"  value="新建活动" />
+</div>
+<div id="ActiveTable">
+</div>
+ <div class="divJump" id="divJump">
+        <span id="spanPage" style="font-weight:400;"></span>
+    共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span>条数据
+</div>
+<div class="PopBg"></div>
+<div id="Insert" class="myPopdiv" style="margin-left: 20%; width: 502px; text-align: left;">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">销售计划</div>
+    <div class="PopContent">
+        <div id="InsertTable">
+            <table>
+                <tr>
+                    <td>申请编号：</td>
+                    <td>
+                        <input type="text" id="ActivtNo" /></td>
+                    <td>活动名称：</td>
+                    <td>
+                        <input type="text" id="ActivtName" /></td>
+
+                </tr>
+                <tr>
+                    <td>活动店铺:</td>
+                    <td>
+                        <select id="ActivtLoc">@Html.Raw(ViewData["Shop"])</select></td>
+                    <td>品牌</td>
+                    <td>
+                        <select id="ActivtBrand">@Html.Raw(ViewData["Brand"])</select><input type="button" onclick="InsertBrand()" value="加入" /></td>
+                </tr>
+                <tr>
+                    <td>开放时间:</td>
+                    <td>
+                        <input type="text" class="Wdate" id="OpenTime" style="width: 86px;" onfocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" /></td>
+                    <td>截至时间:</td>
+                    <td>
+                        <input type="text" class="Wdate" id="StopTime" style="width: 86px;" onfocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" /></td>
+                </tr>
+                <tr>
+                    <td>锁定时间:</td>
+                    <td rowspan="3">
+                        <input type="text" id="LockTime" /></td>
+                </tr>
+                <tr>
+                    <td rowspan="4">
+                        <input type="button" onclick="OkCreate()" value="确认创建" /></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<script type="text/ecmascript">
+
+    $.getDropDownList("#Brand");
+    function GetDropToBrand(e) {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Productstock/Brand",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+                var d1 = eval(data);
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].BrandAbridge + "'>" + d1[i].BrandName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }
+</script>

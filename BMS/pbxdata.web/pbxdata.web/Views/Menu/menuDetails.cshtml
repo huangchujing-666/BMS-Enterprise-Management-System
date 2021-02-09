@@ -1,0 +1,113 @@
+﻿@model IEnumerable<pbxdata.model.menu>
+
+@{
+    ViewBag.Title = "子菜单";
+}
+
+<div style="color: #FF5F3E; font-weight: bolder; line-height: 20px;">子菜单</div>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<script>
+    $().ready(function () {
+        //添加菜单
+        $("#btnMenuAdd").click(function () {
+            var menuName = $("#menuName").val();
+            var menuSrc = $("#menuSrc").val();
+            var menuLevel = $("#menuLevel").val();
+            var menuIndex = $("#menuIndex").val();
+            var userId = $("#userId").val();
+            $.post('/Menu/adddata', { menuName: menuName, menuSrc: menuSrc, menuLevel: menuLevel, menuIndex: menuIndex, userId: userId, }, function (data) {
+                alert(data);
+            })
+        })
+
+
+
+    })
+    function adel(id) {
+        var status = confirm("您确定要删除吗？");
+        if (!status) {
+            return;
+        }
+        var id = id;
+        $.post('/Menu/delSubMenu', { id: id }, function (data) { alert(data); })
+        //console.log("aaa");
+        //var statu = confirm("确定要删除吗?");
+        //if (!statu) {
+        //    return false;
+        //}
+
+
+        //var id = obj;
+        //$.post('/Menu/deldata', { id: id }, function (data) {
+        //    alert(data);
+        //})
+    }
+</script>
+
+<div id="popDiv" class="mydiv" style="display: none; width: 400px; height: 300px; left: 45%; top: 40%;">
+    <div style="line-height: 20px; text-align: right; border-bottom: solid 1px #808080; height: 20px;">
+        <a onclick="javascript:closeDiv()" style="cursor: pointer;">X　</a>
+    </div>
+    <div>菜单名称：<input value="" id="menuName" /></div>
+    <div>菜单路径：<input value="" id="menuSrc" /></div>
+    <div>菜单等级：<input value="@ViewData["MenuLevel"]" id="menuLevel" disabled="disabled" /></div>
+    <div>菜单排序：<input value="" id="menuIndex" /></div>
+
+    <div>
+        <button id="btnMenuAdd" value="添加">添加</button></div>
+
+</div>
+<div id="bg" class="bg" style="display: none;"></div>
+<table class="mytable" rules="all">
+    <tr>
+        <th colspan="6" class="mytableadd">
+            <div style="padding-top: 20px;">
+                <a href="#" onclick="javascript: showDiv()">添加</a>
+                @Html.ActionLink("返回", "getdata")
+            </div>
+        </th>
+    </tr>
+    <tr>
+        <th>菜单名称
+        </th>
+        <th>菜单路径
+        </th>
+        <th>菜单等级
+        </th>
+        <th>排序
+        </th>
+        <th>操作人
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.menuName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MenuSrc)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MenuLevel)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MenuIndex)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserId)
+            </td>
+            <td>
+                @Html.ActionLink("编辑", "editdata", new { id = item.Id }) |
+            @*@Html.ActionLink("删除", "Delete", new { id = item.Id })*@
+                <a onclick="adel(@item.Id)" href="#">删除</a>
+            </td>
+        </tr>
+    }
+
+</table>

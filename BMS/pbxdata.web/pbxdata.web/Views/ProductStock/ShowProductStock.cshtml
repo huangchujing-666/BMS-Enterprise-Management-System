@@ -1,0 +1,856 @@
+﻿@model List<pbxdata.model.ProductStokcModel>
+
+<script src="~/js/jquery-1.8.2.min.js"></script>
+
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<script type="text/javascript" src="~/js/My97DatePicker/WdatePicker.js"></script>
+
+<script src="~/js/DropDowndiv.js"></script>
+
+<script type="text/javascript">
+    
+
+    $(function () {
+        
+        $("#CheckAll").click(function () {
+            if ($(this).attr("checked") == "checked") { // 全选 
+                $("input[class=Check]").each(function () {
+                    $(this).attr("checked", true);
+                });
+            }
+            else { // 取消全选 
+                $("input[class=Check]").each(function () {
+                    $(this).attr("checked", false);
+                });
+            }
+        });
+    });
+    function CheckAll() {
+        if ($("#CheckAll").attr("checked") == "checked") { // 全选 
+            $("input[class=Check]").each(function () {
+                $(this).attr("checked", true);
+            });
+        }
+        else { // 取消全选 
+            $("input[class=Check]").each(function () {
+                $(this).attr("checked", false);
+            });
+        }
+    }
+    function ScodeSerach()
+    {
+        var Scode = $("#Scode").val();//货号
+        var Style = $("#Style").val();//款号
+        var PriceMin = $("#PriceMin").val();//最小价格
+        var PriceMax = $("#PriceMax").val();//最大价格
+        var Season = $("#Season").val();//季节
+        var Brand = $("#Brand").val();//品牌
+        var StockMin = $("#StcokMin").val();//最小库存
+        var StockMax = $("#StcokMax").val();//最大库存
+        var TimeMin = $("#MinTime").val();//最小时间
+        var TimeMax = $("#MaxTime").val();//最大时间
+        var Type = $("#Type").val();//类别
+        var Vencode = $("#VendCodeByScode").val();//供应商
+        var Ddescript = $("#Descript").val();//英文描述
+        var Imagefile = $("#Imagefile").val();//是否有图
+        var order = $("#OrderBy").attr("Order") == "" ? "desc" : $("#OrderBy").attr("Order");
+        var orderValue = $("#OrderBy").attr("Value") == "" ? "balance" : $("#OrderBy").attr("Value");
+        var Params = "{Scode:'" + Scode + "', Style:'" + Style + "', PriceMin:'" + PriceMin + "', PriceMax:'" + PriceMax + "', Season:'" + Season + "', Brand:'" + Brand + "', StockMin:'" + StockMin + "', StockMax:'" + StockMax + "'," +
+            "TimeMin:'" + TimeMin + "', TimeMax:'" + TimeMax + "', Type:'" + Type + "', Vencode:'" + Vencode + "', Ddescript:'" + Ddescript + "', Imagefile:'" + Imagefile + "',order:'" + order + "',orderValue:'" + orderValue + "'}";
+
+        $.post("/Productstock/Search", {
+            menuId: "@ViewData["myMenuId"]",
+                pageIndex: 1,
+                pageSize: 10,
+                params: Params,
+            }, function (data) { $("#tableStcok").html(""); var ss = data.split("-----"); $("#tableStcok").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+            var b = $.PageFunc("/ProductStock/Search", "@ViewData["myMenuId"]", Params);
+            $("#spanPage").html(b);
+            $("#txtTiao").val(1);
+            $("#PageNum").html(1);
+    }
+
+    //$(function ()
+    //{
+    //    $("#ScodeSerach").click(function ()
+    //    {
+            
+                
+    //    })
+    //})
+
+    //查看商品  Style款号
+    function LookOver(Style) {
+        $("#Style").val(Style);
+        ScodeSerach();
+    }
+
+
+    ///款号查询  
+    function StcokSearch() {
+        $("#PageSumStcok").val("1")
+        PageIndexChageByStyle(0);  
+    }
+    ///款号查询分页 
+    function PageIndexChageByStyle(Index) {
+        var style = "";
+        var price = "";
+        var price1 = "";
+        var cat = "";
+        var stcok = "";
+        var stcok1 = "";
+        var cat2 = "";
+        var vencode = "";
+        var page = $("#PageByStyle").val();
+        var returnPage = $("#PageSumStcok").val() == "" ? 1 : $("#PageSumStcok").val();
+        if ($("#StyleBig").val() != "") {
+            style = $("#StyleBig").val();
+        }
+        if ($("#PriceMinBig").val() != "") {
+            price = $("#PriceMinBig").val();
+
+        }
+        if ($("#PriceMaxBig").val() != "") {
+            price1 = $("#PriceMaxBig").val();
+        }
+        if ($("#StcokMinBig").val() != "") {
+            stcok = $("#StcokMinBig").val();
+
+        }
+        if ($("#BrandBig").val() != "")//手动输入  品牌
+        {
+            cat = $("#BrandBig").val();
+        }
+        if ($("#StcokMaxBig").val() != "") {
+            stcok1 = $("#StcokMaxBig").val();
+        }
+        if ($("#Cat2").val() != "") {
+            cat2 = $("#Cat2").val();
+        }
+        var sum = $("#PageByStyle").val() == "" ? 10 : $("#PageByStyle").val();
+        vencode = $("#VendCode").val();
+        $.ajax(
+        {
+            type: "POST",
+            url: "/ProductStock/PageIndexChageByStyle",
+            datatype: "text",
+            data: {
+                "retrunPage": returnPage,
+                "change": Index,
+                "style": style,
+                "price": price,
+                "price1": price1,
+                "cat": cat,
+                "stcok": stcok,
+                "stcok1": stcok1,
+                "cat2": cat2,
+                "Vencode": vencode,
+                "Page": sum,
+                "MenuId": "@ViewData["myMenuId"]"
+            },
+            success: function (data) {
+                if (data != null) {
+                    var da = data.split("❤");
+                    $("#StcokTop").html(da[0]);
+                    $("#PageCountStcok").html(da[1]);
+                    $("#RecordStcok").html(da[2]);
+                    $("#thisPgeStcok").html(da[3]);
+                    $("#PageSumStcok").val(da[3])
+                }
+                else {
+                }
+            }
+
+        })
+    }
+    //款号页码事件
+    function ChangeByStyle() {
+        PageIndexChageByStyle(3);
+    }
+    //导出Excel数据
+    function Excel() {
+       
+        var scode = "";  //货号
+        var style = "";  //款号
+        var price = "";  //价格1
+        var price1 = "";  //价格2
+        var cat = "";     //季节  
+        var brand = "";//品牌  手动输入
+        var CatLB = "";//类别
+        var stcok = "";   //库存1
+        var stcok1 = "";   //库存2
+        var time = "";    //时间1
+        var time1 = "";   //时间2
+        var vencode = "";//供应商
+        vencode = $("#VendCodeByScode").val();
+        if ($("#Scode").val() != "") {
+            scode = $("#Scode").val();
+        }
+        if ($("#Style").val() != "") {
+            style = $("#Style").val();
+        }
+        if ($("#PriceMin").val() != "") {
+            price = $("#PriceMin").val();
+        }
+        if (isNaN(price) == true) {
+            alert("价格请输入数字类型");
+            return false;
+        }
+        if ($("#PriceMax").val() != "") {
+            price1 = $("#PriceMax").val();
+        }
+        if (isNaN(price1) == true) {
+            alert("价格请输入数字类型");
+            return false;
+        }
+        if ($("#Season").val() != "") {
+            cat = $("#Season").val();
+        }
+        if ($("#Brand").val() != "")//手动输入  品牌
+        {
+            brand = $("#Brand").val();
+        }
+        if ($("#StcokMin").val() != "") {
+            stcok = $("#StcokMin").val();
+        }
+        if (isNaN(stcok) == true) {
+            alert("库存应为整数类型");
+            return false;
+        }
+        if ($("#StcokMax").val() != "") {
+            stcok1 = $("#StcokMax").val();
+        }
+        if (isNaN(stcok1) == true) {
+            alert("库存应为整数类型");
+            return false;
+        }
+        if ($("#MinTime").val() != "") {
+            time = $("#MinTime").val();
+        }
+        if ($("#MaxTime").val() != "") {
+            time1 = $("#MaxTime").val();
+        }
+        if ($("#Type").val() != "") {
+            CatLB = $("#Type").val();
+        }
+        var sum = $("#PageSum").val();
+        //判断开始时间不能大于结束时间
+        if (time != "" && time1 != "") {
+            if ((time.replace(/-/g, "/")) > (time1.replace(/-/g, "/"))) {
+                alert('结束时间不能小于开始时间！');
+                return false;
+            }
+        }
+        var order = $("#OrderBy").attr("Order") == "" ? "desc" : $("#OrderBy").attr("Order");
+        var orderValue = $("#OrderBy").attr("Value") == "" ? "balance" : $("#OrderBy").attr("Value");
+
+        $.ajax(
+        {
+            type: "POST",
+            url: "/ProductStock/Execl",
+            datatype: "text",
+            data: {
+                "scode": scode,
+                "style": style,
+                "price": price,
+                "price1": price1,
+                "cat": cat,
+                "brand": brand,
+                "stcok": stcok,
+                "stcok1": stcok1,
+                "time": time,
+                "time1": time1,
+                "CatLB": CatLB,
+                "Vencode": vencode,
+                "MenuId": "@ViewData["myMenuId"]",
+                "orderValue": orderValue,
+                "order": order
+            },
+            success: function (data) {
+                location.href = data;
+                //alert(data);
+            }
+        })
+
+    }
+
+    //关闭入库界面
+    function ColseInsert() {
+        $(".PopBg").hide();
+        $(".myPopdiv").hide();
+    }
+    //显示入库界面
+    function storage(scode, vencode) {
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/ProductStock/PageShowRk",
+                data: {
+                    "Scode": scode,
+                    "Vencode": vencode
+                },
+                success: function (data) {
+                    var da = data.split('❤')
+                    $("#tdScode").html(da[0]);//货号
+                    $("#tdVenName").html(da[1]);//数据源名称
+                    $("#lbCountBalance").html(da[2]);//总库存
+                    $("#TableShopBalance").html(da[3]);//写入表
+                    $("#AllCounts").html(da[4]);//总记录数
+                    $("#Count").html(da[5]);//总页数
+                    $("#SurplusBalance").html(da[6]);//剩余库存
+                    $(".PopBg").height($(document).height());
+                    $(".PopBg").show();
+                    $("#Insert").show();
+                }
+            })
+
+    }
+    //保存分配
+    function SaveBalanceByShop() {
+        var balance = $("#BalanceSum").val().trim();
+        var shopid = $("#DropShop").val();
+        if (shopid == "") {
+            alert("请选择需要分配的店铺");
+            return false;
+        }
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/ProductStock/SaveBalance",
+                data:
+                    {
+                        "Balance": balance,
+                        "ShopId": shopid
+                    },
+                success: function (data) {
+                    RefeshShopBalance()
+                    alert(data);
+                }
+            })
+    }
+    function PageIndex(index) {
+        var pageretrun = $("#PageReturn").val();
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/ProductStock/PageChageIndexShow",
+                data:
+                    {
+                        "PageReturn": pageretrun,
+                        "Index": index
+                    },
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#TableShopBalance").empty;
+                    $("#PageNum").empty;
+                    $("#AllCounts").empty;//总记录数
+                    $("#Count").empty;//总页数
+                    $("#SurplusBalance").empty;//剩余库存
+                    $("#TableShopBalance").html(da[0]);//写入表
+                    $("#PageNum").html(da[1]);//当前页码
+                    $("#Count").html(da[2]);//总记录数
+                    $("#AllCounts").html(da[3]);//总页数
+                    $("#SurplusBalance").html(da[4]);//剩余库存
+                }
+            })
+    }
+    //库存添加成功后刷新库存
+    function RefeshShopBalance() {
+        var index = 0;
+        var pageretrun = $("#PageReturn").val();
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/ProductStock/PageChageIndexShow",
+                data:
+                    {
+                        "PageReturn": pageretrun,
+                        "Index": index
+                    },
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#TableShopBalance").empty;
+                    $("#PageNum").empty;
+                    $("#AllCounts").empty;//总记录数
+                    $("#Count").empty;//总页数
+                    $("#SurplusBalance").empty;//剩余库存
+                    $("#TableShopBalance").html(da[0]);//写入表
+                    $("#PageNum").html(da[1]);//当前页码
+                    $("#Count").html(da[2]);//总记录数
+                    $("#AllCounts").html(da[3]);//总页数
+                    $("#SurplusBalance").html(da[4]);//剩余库存
+                }
+            })
+    }
+    //修改库存---打开修改界面
+    var ScodeUpdateShop;
+    var ShopIdUdateShop;
+    var SaveBalance;
+    function UpdateShopBalance(scode, shopid, shopName, Balance) {
+        ScodeUpdateShop = scode;
+        ShopIdUdateShop = shopid;
+        SaveBalance = Balance;
+        $("#updatescode").html(scode);
+        $("#udpateshopname").html(shopName)
+        $("#updatebalance").val(Balance)
+        $("#test").show();
+    }
+    ///确认修改库存
+    function OkSaveUpdate() {
+        var balance = $("#updatebalance").val();
+        $.ajax(
+            {
+                type: "POST", 
+                datatype: "text",
+                url: "/ProductStock/UpdateBalanceByShopId",
+                data:
+                    {
+                        "scode": ScodeUpdateShop,
+                        "shopid": ShopIdUdateShop,
+                        "balance": balance,
+                        "ThisBalance": SaveBalance
+                    },
+                success: function (data) {
+                    alert(data)
+                    ColseUpdate()
+                    RefeshShopBalance()
+
+                }
+            })
+    }
+
+    function selPage(url, menuid, obj) {
+        var params = JSON.stringify(obj).replace(/\"/g, "'");
+        console.log(obj);
+        $.post(url, {
+            menuId: menuid,
+            pageIndex: 1,
+            pageSize: $("#selPages").val(),
+            params: params,
+        }, function (data) { $("#tableStcok").html(""); var ss = data.split("-----"); $("#tableStcok").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+    }
+    ///导出款号数据
+    function OutPutStyle()
+    {
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/ProductStock/ExcelStyle",
+                data:
+                    {
+                        "Style": $("#StyleBig").val() == "" ? "" : $("#StyleBig").val(),
+                        "Cat": $("#BrandBig").val() == "" ? "" : $("#BrandBig").val(),
+                        "Cat2": $("#Cat2").val() == "" ? "" : $("#Cat2").val(),
+                        "MaxPrice": $("#PriceMaxBig").val() == "" ? "" : $("#PriceMaxBig").val(),
+                        "MinPrice": $("#PriceMinBig").val() == "" ? "" : $("#PriceMinBig").val(),
+                        "MaxStock": $("#StcokMaxBig").val() == "" ? "" : $("#StcokMaxBig").val(),
+                        "MinStock": $("#StcokMinBig").val() == "" ? "" : $("#StcokMinBig").val(),
+                    },
+                success: function (data)
+                {
+                    location.href = data;
+                }
+            })
+    }
+</script>
+<style type="text/css">
+    #ShortcutStorAge
+    {
+        font-size: 12px;
+    }
+
+    #Marker ul
+    {
+        list-style-type:none;
+    }
+        #Marker ul li
+        {
+            margin-top:15px;
+            text-align:left;
+        }
+</style>
+
+<div style="border: 1px  solid gray; height: auto;">
+
+    <span class="spanProperty">
+        <span class="spanPropertyName">款号：</span>
+        <input type='text' id='StyleBig' class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">类别：</span>
+        <input type="text" id="Cat2" onclick="GetDropToType(this.id)" class="spanPropertyValue" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">品牌：</span>
+        <input type='text' id='BrandBig' onclick="GetDropToBrand(this.id)"  class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">最小价格：</span>
+        <input type="text" id="PriceMinBig" class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">最大价格：</span>
+        <input type="text" id="PriceMaxBig" class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">最小库存：</span>
+        <input type="text" id="StcokMinBig" class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">最大库存：</span>
+        <input type="text" id="StcokMaxBig" class="spanPropertyValue">
+    </span>
+ <br />
+    <input type="button" value="查询" class="spanPropertySearch" onclick="StcokSearch()" />
+    <input type="button" value="导出款号" class="spanPropertySearch" onclick="OutPutStyle()" />
+    <div id="StcokTop" style="font-size: 12px; overflow-x: scroll; border: solid 1px lightblue">
+    </div>
+    <div class="divJump">
+        <select id="PageByStyle" onchange = "return ChangeByStyle()">@Html.Raw(ViewData["PageSum"])</select>
+        <a href="#" onclick="PageIndexChageByStyle(0)">首页</a>
+        <a href="#" onclick="PageIndexChageByStyle(1)">上一页</a>
+        当前第<span id="thisPgeStcok"></span>页
+            <input type="text" id="PageSumStcok"/>
+        <a href="#" onclick="PageIndexChageByStyle(2)">跳转</a>
+        <a href="#" onclick="PageIndexChageByStyle(3)">下一页</a>
+        <a href="#" onclick="PageIndexChageByStyle(4)">末页</a>
+        <span id="PageCountStcok"></span>
+        页<span id="RecordStcok"></span>条记录
+    </div>
+</div>
+<div style="border: 1px solid gray;">
+<div>
+<div style="height: auto;">
+    <span class="spanProperty">
+        <span class="spanPropertyName">款号：</span>
+        <input type='text' id='Style' class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">货号：</span>
+        <input type='text' id='Scode' class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">最小价格：</span>
+        <input type="text" id="PriceMin" class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">最大价格：</span>
+        <input type="text" id="PriceMax" class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">季节：</span>
+        <input type="text" id="Season" class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">类别：</span>
+        <input type="text" id="Type" onclick="GetDropToType(this.id)"  class="spanPropertyValue" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">品牌：</span>
+        <input type='text' id='Brand' onclick="GetDropToBrand(this.id)" class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">最小库存：</span>
+        <input type="text" id="StcokMin" class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">最大库存：</span>
+        <input type="text" id="StcokMax" class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">描述：</span>
+        <input type="text" id="Descript" class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">开始时间：</span>
+        <input type="text"  id="MinTime" class="spanPropertyValue"  onfocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">结束时间：</span>
+        <input type="text"  id="MaxTime" class="spanPropertyValue"  onfocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">供应商：</span>
+        <select id="VendCodeByScode" class="spanPropertyValue">@Html.Raw(ViewData["Vencode"])</select>
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">图片:</span>
+        <select id="Imagefile" class="spanPropertyValue"><option value="">请选择</option>
+                    <option value="1">有图</option>
+                    <option value="2">无图</option>
+       </select>
+    </span>
+    <br />
+    <input type="button" id="ScodeSerach" value="查询" onclick="ScodeSerach()" class="spanPropertySearch" /><span style="margin-left: 22px;"></span>
+
+    <input type="button" value="导出数据" class="spanPropertySearch" onclick="    Excel()" />
+</div>
+
+</div>
+<div id="tableStcok" style="width: 100%; height: auto; font-size: 12px; color: #808080; overflow-x: scroll; border: solid 1px lightblue">
+    </div>
+    <div id="divJump" class="divJump">
+        <span id="spanPage" style="font-weight:400;"></span>
+    共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span>条数据
+    </div>
+    <div id="divShowPic" style="position: absolute"></div>
+</div>
+
+
+
+<div class="PopBg"></div>
+<div class="myPopdiv" style="left: 10%; top: 20%; width: auto; height: 500px" id="Insert">
+    <div class="divclose" onclick="ColseInsert()">×</div>
+    <div class="Poptitle">库存分配</div>
+    <div class="PopContent">
+        <div style="margin: auto;">
+            <table style="width: auto;">
+                <tr style="height: 30px;">
+                    <td style="font-weight: bold;">货号</td>
+                    <td id="tdScode" style="color: red;"></td>
+                    <td id="tdVenName" style="color: red; font-weight: bold;"></td>
+                    <td>
+                        <label style="font-weight: bold;">共有</label>
+                        <label id="lbCountBalance" style="color: red;"></label>
+                        <label style="font-weight: bold;">件</label>
+                        &nbsp;&nbsp;
+                    <label style="font-weight: bold;">剩余库存</label>
+                        <label style="font-weight: bold; color: red;" id="SurplusBalance"></label>
+                    </td>
+                </tr>
+                <tr style="height: 30px;">
+                    <td style="font-weight: bold;">店铺</td>
+                    <td>
+                      <select id="DropShop">@Html.Raw(ViewData["Shop"])</select>  
+                    </td>
+                    <td style="font-weight: bold;">分配库存</td>
+                    <td style="width: auto;">
+                        <input type="text" id="BalanceSum" />&nbsp;&nbsp;<input type="button" value="确认分配" onclick="SaveBalanceByShop()" /></td>
+                </tr>
+            </table>
+        </div>
+        <div id="TableShopBalance"></div>
+        <div class="divJump">
+            <a href="#" onclick="PageIndex(0)">首页</a>
+            <a href="#" onclick="PageIndex(1)">上一页</a>
+            <input type="text" id="PageReturn" />
+            <a href="#" onclick="PageIndex(2)">跳页</a>
+            共<span id="Count"></span>页&nbsp;&nbsp;
+    当前第<span id="PageNump">1</span> 页&nbsp;&nbsp;
+    共<span id='AllCountsp'></span>条数据
+    <a href="#" onclick="PageIndex(3)">下一页</a>
+            <a href="#" onclick="PageIndex(4)">末页</a>
+        </div>
+        <div id="test" class="myPopdiv" style="position: absolute; width: 250px; height: 250px; top: 30%; left: 30%; display: none;">
+            <div style="position: absolute; top: 10px; right: 10px; width: 20px; cursor: pointer;" onclick="ColseUpdate()">x</div>
+            <div style="border: solid;">
+                <table>
+                    <tr>
+                        <td>货号</td>
+                        <td id="updatescode"></td>
+                    </tr>
+                    <tr>
+                        <td>店铺</td>
+                        <td id="udpateshopname"></td>
+                    </tr>
+                    <tr>
+                        <td>库存</td>
+                        <td>
+                            <input type="text" style="width: 50px;" id="updatebalance" /></td>
+                    </tr>
+                </table>
+                <input type="button" id="OkSaveUpdate" value="确认修改" onclick="OkSaveUpdate()" />
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function ColseUpdate() {
+        $("#test").hide();
+    }
+    ///标记是否为次品
+    function OkMarker() {
+        var sum = $("#SUM").val();
+        if (sum < 0) {
+            alert("标记库存不能小于0！")
+            return false;
+        }
+        var remark = $("#Remark").val();
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/ProductStock/Marker",
+                data:
+                    {
+                        "scode": sscode,
+                        "vencode": svencode,
+                        "Sum": sum,
+                        "Remark": remark
+                    },
+                success: function (data) {
+                    alert(data);
+                    ColseInsert()
+                    PageIndexChange(2)
+                }
+            })
+    }
+    var sscode;
+    var svencode;
+    function Marker(scode, vencode) {
+        sscode = scode;
+        svencode = vencode;
+        $("#Marker").show();
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+    }
+
+
+</script>
+<div class="PopBg"></div>
+<div class="myPopdiv" style="left: 10%; top: 20%; min-width: 300px; min-height: 200px" id="Marker">
+    <div class="divclose" onclick="ColseInsert()">×</div>
+    <div class="Poptitle">货物标记</div>
+    <div class="PopContent">
+        <ul>
+            <li>
+                <label>残次品：<input type="checkbox" id="Defective" class="Marker" /></label></li>
+            <li><label>数量 ：<input type="text" style="width: 70px;" id="SUM" /></label></li>
+            <li><label>备注 ：<textarea id="Remark"  style="vertical-align:middle"></textarea></label></li>
+        </ul>
+        <br />
+        <br />
+
+        <input type="button" value="确认标记" onclick="OkMarker()" />
+        <br />
+        <br />
+        <br />
+    </div>
+</div>
+
+
+<div class="PopBg"></div>
+<div class="myPopdiv" style="left: 10%; top: 20%; min-width: 300px; min-height: 200px" id="OpenExcel">
+        <div class="divclose" onclick="ColseInsert()">×</div>
+        <div class="Poptitle">选择导出内容</div>
+</div>
+<script type="text/ecmascript">
+    //鼠标悬停 查看大图
+    function showPic(obj) {
+        var src = $(obj).attr("src");
+        var y = $(obj).offset().top;
+        var x = $(obj).offset().left;
+        $("#divShowPic").css("top", y - 60);
+        $("#divShowPic").css("left", x + 60);
+        $("#divShowPic").html("<img src='" + src + "' style='height:200px;width:200px' />")
+        $("#divShowPic").show();
+    }
+    //失去鼠标焦点 隐藏大图
+    function HidePic() {
+        $("#divShowPic").hide();
+    }
+</script>
+
+
+<script type="text/javascript">
+
+
+    $.getDropDownList("#BrandBig");
+    $.getDropDownList("#Brand");
+    function GetDropToBrand(e) {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Productstock/Brand",
+            data: {
+                sql: sql,
+                value: $("#"+e).val()
+            },
+            success: function (data) {
+                var d1 = eval(data);
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].BrandAbridge + "'>" + d1[i].BrandName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }
+
+
+    $.getDropDownList("#Cat2");
+    $.getDropDownList("#Type");
+    function GetDropToType(e)
+    {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Productstock/Type",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+                
+                var d1 = eval(data);
+
+
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].TypeNo + "'>" + d1[i].TypeName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+
+
+    function OrderBy(value,obj)
+    {
+        if ($(obj).attr("title") == "asc") {
+            $(obj).attr("title", "desc");
+        }
+        else
+        {
+            $(obj).attr("title", "asc");
+        }
+
+        $("#OrderBy").attr("Value", value);
+        $("#OrderBy").attr("Order", $(obj).attr("title"));
+        ScodeSerach();
+
+    }
+
+</script>
+<style type="text/css">
+        #StcokTable th:hover {
+            cursor:pointer;
+        }
+
+</style>
+<label id="OrderBy" Value="" Order="" hidden="hidden"></label>

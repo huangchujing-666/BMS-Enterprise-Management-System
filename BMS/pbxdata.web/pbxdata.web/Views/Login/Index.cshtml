@@ -1,0 +1,484 @@
+﻿<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<link href="~/Css/All.css" rel="stylesheet" />
+<!-- bootstrap -->
+<link href="~/Css/MyCss/bootstrap-overrides.css" rel="stylesheet" />
+<link href="~/Css/MyCss/bootstrap-responsive.css" rel="stylesheet" />
+<link href="~/Css/MyCss/bootstrap.css" rel="stylesheet" />
+<!-- global styles -->
+<link href="~/Css/MyCss/layout.css" rel="stylesheet" />
+<link href="~/Css/MyCss/icons.css" rel="stylesheet" />
+<link href="~/Css/MyCss/elements.css" rel="stylesheet" />
+<!-- libraries -->
+<link href="~/Css/MyCss/font-awesome.css" rel="stylesheet" />
+
+<!-- this page specific styles -->
+<link href="~/Css/MyCss/signin.css" rel="stylesheet" />
+
+<!-- open sans font -->
+@*<link href='http://fonts.useso.com/css?family=Open+Sans:300italic,400italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css' />*@
+
+<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<script src="~/js/bootstrap.min.js"></script>
+<script src="~/js/jquery-latest.js"></script>
+<script src="~/js/theme.js"></script>
+<script>
+    //$().ready(function () {
+
+    //    $("#btnSub").click(function () {
+    //        var txtuser = $("#txtuser").val();
+    //        var txtpwd = $("#txtpwd").val();
+    //        //$.post('/Login/updatedata', { txtuser: txtuser, txtpwd: txtpwd }, function (data) {
+    //        //    alert(data);
+    //        //})
+    //    })
+
+
+
+    //})
+    $(
+       function () {
+           $.ajax(
+               {
+                   type: "GET",
+                   url: "http://192.168.0.124:8111/Home/selectProcessState"
+               }
+               );
+           //window.location.href = "http://192.168.0.124:8111/Home/selectProcessState";
+           //history.go(-1);
+       }
+       );
+</script>
+@*<style type="text/css">
+    body, html
+    {
+        margin: 0px;
+        padding: 0px;
+        height: 100%;
+        width: 100%;
+        text-align: center;
+    }
+
+    #divContainer
+    {
+        margin: auto;
+        width: 80%;
+        height: 100%;
+        background-color: #DADADA;
+        overflow: hidden;
+        background: -webkit-linear-gradient(white, lightblue); /* Safari 5.1 - 6.0 */
+        background: -o-linear-gradient(white, lightblue); /* Opera 11.1 - 12.0 */
+        background: -moz-linear-gradient(white, lightblue); /* Firefox 3.6 - 15 */
+        background: linear-gradient(white, lightblue); /* 标准的语法 */
+    }
+
+    #divLogin
+    {
+        margin: auto;
+        margin-top: 300px;
+        padding-top: 20px;
+        width: 400px;
+        height: 250px;
+        line-height: 250px;
+        position: relative;
+        background-color: lightblue;
+        border: 5px outset #8dc2e2;
+        background: -webkit-linear-gradient(white, lightblue); /* Safari 5.1 - 6.0 */
+        background: -o-linear-gradient(white, lightblue); /* Opera 11.1 - 12.0 */
+        background: -moz-linear-gradient(white, lightblue); /* Firefox 3.6 - 15 */
+        background: linear-gradient(white, lightblue); /* 标准的语法 */
+    }
+
+    .divRegistered
+    {
+        float: left;
+        height: 380px;
+        width: 420px;
+        line-height: 300px;
+        border: 5px solid #8dc2e2;
+        position: absolute;
+        background-color: white;
+        left: 400px;
+        top: -5px;
+        background: -webkit-linear-gradient(white, lightblue); /* Safari 5.1 - 6.0 */
+        background: -o-linear-gradient(white, lightblue); /* Opera 11.1 - 12.0 */
+        background: -moz-linear-gradient(white, lightblue); /* Firefox 3.6 - 15 */
+        background: linear-gradient(white, lightblue); /* 标准的语法 */
+        display: none;
+    }
+
+    #divLogin table
+    {
+        margin: auto;
+        width: 60%;
+    }
+
+    .txt
+    {
+        width: 180px;
+        border-radius: 3px;
+        height: 30px;
+    }
+
+    .login_btn
+    {
+        width: 85px;
+        height: 35px;
+        font-size: 1em;
+        font-weight: bold;
+    }
+
+    .Reg_btn
+    {
+        width: 85px;
+        height: 35px;
+        font-size: 1em;
+        font-weight: bold;
+    }
+
+    .divRegistered table
+    {
+        text-align: center;
+    }
+
+        .divRegistered table td
+        {
+            text-align: left;
+        }
+
+    #divCheckCode
+    {
+        float: right;
+        margin-right: 10px;
+        height: 30px;
+        line-height: 30px;
+        width: 50px;
+        background-color: #DADADA;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    a:hover
+    {
+        text-decoration: underline;
+    }
+</style>*@
+<style type="text/css">
+    html, body
+    {
+        width: 100%;
+    }
+
+    body
+    {
+        background: url(/image/landscape.jpg) no-repeat center center fixed;
+        background-size: cover;
+    }
+</style>
+<body>
+    <div class="bg-switch visible-desktop">
+        <div class="bgs">
+            <a href="#" data-img="landscape.jpg" class="bg active">
+                <img src="~/image/landscape.jpg" />
+            </a>
+            <a href="#" data-img="blueish.jpg" class="bg">
+                <img src="~/image/blueish.jpg" />
+            </a>
+            <a href="#" data-img="7.jpg" class="bg">
+                <img src="~/image/7.jpg" />
+            </a>
+            <a href="#" data-img="8.jpg" class="bg">
+                <img src="~/image/8.jpg" />
+            </a>
+            <a href="#" data-img="9.jpg" class="bg">
+                <img src="~/image/9.jpg" />
+            </a>
+            <a href="#" data-img="10.jpg" class="bg">
+                <img src="~/image/10.jpg" />
+            </a>
+            <a href="#" data-img="11.jpg" class="bg">
+                <img src="~/image/11.jpg" />
+            </a>
+        </div>
+    </div>
+    <form method="post">
+        <div class="row-fluid login-wrapper">
+
+            <h2>BMS</h2>
+            <br />
+
+            <div class="span4 box">
+                <div class="content-wrap">
+                    <h6>登录</h6>
+                    <input id="txtuser" class="span12" type="text" placeholder="用户名" name="userName" />
+                    <input id="txtpwd" class="span12" type="password" placeholder="密　码" name="password" />
+                    <a href="#" class="forgot">忘记密码?</a>
+                    <div class="remember">
+                        <input id="remember-me" type="checkbox" />
+                        <label for="remember-me">记住密码</label>
+                    </div>
+                    <input class="btn-glow primary login" id="btnSub" type="submit" value="登陆" />
+
+                </div>
+            </div>
+
+            <div class="span4 no-account">
+                <p>没有帐号?</p>
+                <a href="~/Login/Signup">注册</a>
+            </div>
+        </div>
+    </form>
+    @*<div id="divContainer">
+        <form method="post">
+            <div id="divLogin">
+                <table>
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding-bottom: 20px"><span style="font-size: 1.5em; color: blue; font-weight: bold">用户登录</span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right">
+                            <label style="white-space: nowrap">用户名：</label></td>
+                        <td colspan="2">
+                            <input id="txtuser" class="txt" type="text" name="userName" /></td>
+                    </tr>
+                    <tr style="height: 10px">
+                        <td colspan="3"></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right">
+                            <label style="white-space: nowrap">密　码：</label></td>
+                        <td colspan="2">
+                            <input id="txtpwd" class="txt" type="password" name="password" /></td>
+                    </tr>
+                    <tr style="height: 20px">
+                        <td colspan="3"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <input class="login_btn" id="btnSub" type="submit" value="登陆" /></td>
+                        <td>
+                            <a href="#" onclick="ShowRegistered()" style="color: red; font-size: 0.5em">新用户注册</a></td>
+                    </tr>
+                </table>
+                <div class="divRegistered">
+                    <table style="width: 85%;">
+                        <tr>
+                            <td colspan="3" style="padding-bottom: 10px; padding-top: 20px; text-align: center"><span style="font-size: 1.5em; color: blue; font-weight: bold">注册页面</span></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right; width: 75px">
+                                <label style="white-space: nowrap">用户名：</label></td>
+                            <td>
+                                <input id="txtReuser" class="txt" type="text" />
+
+                            </td>
+                            <td style="width: 85px;">
+                                <label id="labUserCheck" style="color: red; font-size: 0.5em; text-align: right"></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right">
+                                <label style="white-space: nowrap">密　码：</label></td>
+                            <td colspan="2">
+                                <input id="txtRepwd" class="txt" type="password" /></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right">
+                                <label style="white-space: nowrap">姓　名：</label></td>
+                            <td colspan="2">
+                                <input id="txtReName" class="txt" type="text" /></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right">
+                                <label style="white-space: nowrap">性　别：</label></td>
+                            <td colspan="2">
+                                <label>男<input style="width: 15px" type="radio" name="sex" value="1" checked="checked" /></label>&nbsp;&nbsp;&nbsp;&nbsp;<label>女<input style="width: 15px" type="radio" name="sex" value="0" /></label></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right">
+                                <label style="white-space: nowrap">电　话：</label></td>
+                            <td>
+                                <input id="txtReTelphone" class="txt" type="text" /></td>
+                            <td style="width: 85px;">
+                                <label id="labPhoneCheck" style="color: red; font-size: 0.5em;"></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right">
+                                <label style="white-space: nowrap">地　址：</label></td>
+                            <td colspan="2">
+                                <input id="txtReAddress" class="txt" type="text" /></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right">
+                                <label style="white-space: nowrap">邮　箱：</label></td>
+                            <td>
+                                <input id="txtReEmail" class="txt" type="text" />
+
+                            </td>
+                            <td style="width: 85px;">
+                                <label id="labEmailCheck" style="color: red; font-size: 0.5em;"></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right">验证码：</td>
+                            <td>
+                                <input type="text" id="txtCheckCode" class="txt" style="width: 90px;" /><div id="divCheckCode" onclick="ChangeCode()"></div>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <input class="Reg_btn" type="button" value="确定" onclick="UserRegistered()" /><input class="Reg_btn" type="button" value="取消" onclick="    Close()" style="margin-left: 10px" /></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+        </form>
+    </div>*@
+
+</body>
+<script type="text/javascript">
+
+    $(function () {
+        // bg switcher
+        var $btns = $(".bg-switch .bg");
+        $btns.click(function (e) {
+            e.preventDefault();
+            $btns.removeClass("active");
+            $(this).addClass("active");
+            var bg = $(this).data("img");
+
+            $("body").css("background-image", "url('/image/" + bg + "')");
+        });
+
+    });
+    //function ShowRegistered() {
+    //    $(".divRegistered").find(".txt").each(function () {
+    //        $(this).val("")
+    //    })
+    //    $(".divRegistered").toggle();
+    //    ChangeCode();
+    //}
+    //function Close() {
+    //    $(".divRegistered").hide();
+    //}
+    //function UserRegistered() {
+    //    var UserName = $("#txtReuser").val().trim();
+    //    var Password = $("#txtRepwd").val().trim();
+    //    var RealName = $("#txtReName").val().trim();
+    //    var Sex = $("input[name=sex]:checked").val();
+    //    var txtReTelphone = $("#txtReTelphone").val().trim();
+    //    var txtReAddress = $("#txtReAddress").val().trim();
+    //    var txtReEmail = $("#txtReEmail").val().trim();
+    //    var CheckCode = $("#txtCheckCode").val().trim();
+    //    Check();
+    //    if (UserName == "" || Password == "" || RealName == "" || txtReTelphone == "" || txtReAddress == "" || txtReEmail == "") {
+    //        alert("请把信息输入完整!")
+    //        return;
+    //    }
+    //    if ($("#labUserCheck") == "该帐户已注册!") {
+    //        return;
+    //    }
+    //    //if (txtReTelphone != "") {//判断
+    //    //    var reg = /^(((13[0-9]{1})|15[0-9]{1}|18[0-9]{1})+\d{8})$/;
+    //    //    if (!reg.test(txtReTelphone)) {
+    //    //        $("#labPhoneCheck").html("手机号格式不正确!");
+    //    //        return;
+    //    //    }
+    //    //    else {
+    //    //        $("#labPhoneCheck").html("");
+    //    //    }
+    //    //}
+    //    if (txtReEmail != "") {//判断
+    //        var reg = /^([a-zA-Z0-9_-])+@@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/;
+    //        if (!reg.test(txtReEmail)) {
+    //            $("#labEmailCheck").html("邮箱格式不正确!");
+    //            return;
+    //        }
+    //        else {
+    //            $("#labEmailCheck").html("");
+    //        }
+    //    }
+    //    if ($("#divCheckCode").html() != CheckCode) {
+    //        alert("验证码错误!"); return;
+    //    }
+    //    $.ajax({
+    //        type: "POST",
+    //        url: "/Login/UserRegistered?UserName=" + UserName + "&Password=" + Password + "&RealName=" + RealName + "&Sex=" + Sex + "&txtReTelphone=" + txtReTelphone + "&txtReAddress=" + txtReAddress + "&txtReEmail=" + txtReEmail + "&CheckCode=" + CheckCode,
+    //        success: function (data) {
+    //            alert(data)
+    //            $(".divRegistered").hide();
+    //        },
+    //        error: function () {
+    //            alert("error")
+    //        },
+
+    //    })
+    //}
+    //function Check() {
+    //    $(".divRegistered").find("input").each(function () {
+    //        if ($(this).val().trim() == "") {
+    //            $(this).css("background-color", "orange")
+    //        }
+
+    //    })
+    //}
+    //$(".divRegistered").find(".txt").each(function () {
+    //    $(this).focus(function () {
+    //        $(this).css("background-color", "white")
+    //    })
+    //})
+    //$("#txtReuser").focusout(function () {
+    //    var UserName = $("#txtReuser").val().trim();
+    //    $.ajax({
+    //        type: "GET",
+    //        url: "/Login/CheckUserName?UserName=" + UserName,
+    //        success: function (data) {
+    //            $("#labUserCheck").html(data)
+    //        },
+    //        error: function () {
+    //            alert("error!")
+    //        }
+    //    })
+
+    //})
+    //function CheckMail() {
+    //    var mail = $('#txtReEmail').val();
+    //    if (mail != '') {//判断
+    //        var reg = /^([a-zA-Z0-9_-])+@@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/;
+    //        if (!reg.test(mail)) {
+    //            $("#labEmailCheck").html("邮箱格式不正确!");
+    //            return false;
+    //        }
+    //        else {
+    //            $("#labEmailCheck").html("");
+    //        }
+    //    }
+    //}
+    //function ChangeCode() {
+    //    $.ajax({
+    //        type: "POST",
+    //        url: "/Login/CheckCode",
+    //        success: function (data) {
+    //            $("#divCheckCode").html(data)
+    //        },
+    //        error: function () {
+    //            alert("error!")
+    //        }
+    //    })
+    //}
+    //ChangeCode();
+</script>
+@*    <form method="post">
+            <input name="userName" type="text" class="login_name" id="name" value="admin" />
+            <input name="password" type="password" class="login_password" id="pass" value="qwaszx" />
+            <input type="image" src="~/Content/Images/login_button.png" class="login_btn" id="sit" />
+        </form>*@

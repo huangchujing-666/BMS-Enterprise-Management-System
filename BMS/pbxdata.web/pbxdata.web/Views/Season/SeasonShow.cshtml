@@ -1,0 +1,306 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<script src="~/js/pageIndex.js"></script>
+<style type="text/css">
+    header
+    {
+        border: 1px solid #DDDDDD;
+        background-color: #F4F4F4;
+        height: 30px;
+        line-height: 30px;
+        padding-left: 15px;
+    }
+    .divContainer
+    {
+        border: solid 1px lightblue;
+        overflow: hidden;
+    }
+
+    .nodatacss
+    {
+        font-size: 12px;
+        color: red;
+        height: 25px;
+        line-height: 25px;
+        text-align: center;
+        border: 1px solid #000000;
+    }
+
+    .divclose
+    {
+        position: absolute;
+        right: 8px;
+        top: 3px;
+        cursor: pointer;
+        font-size: 2em;
+        font-weight: bolder;
+        width: 30px;
+        height: 30px;
+    }
+
+        .divclose:hover
+        {
+            color: red;
+        }
+
+    #PopEditContent, #PopAddContent
+    {
+        left: 40%;
+        top: 40%;
+        width: 300px;
+        min-height: 200px;
+    }
+
+    .PopContent
+    {
+        margin-top: 5px;
+        border: 1px solid lightblue;
+        height: 180px;
+        width: 99%;
+        background-color: white;
+        padding-top: 15px;
+    }
+
+        .PopContent div
+        {
+            margin-top: 5px;
+        }
+
+    #selEditSeason, #selEditVencode
+    {
+        width: 150px;
+    }
+</style>
+
+<header style="width: 100%; padding-top: 10px;">
+    <span class='spanProperty'><span class='spanPropertyName'>季节名称：</span><input class='spanPropertyValue' id='txtSeachCat1' type='text'></span>
+    <input type='button' value=' 查  询 ' onclick="OnSearch()" class='spanPropertySearch' />
+    <input type='button' value='添    加 ' onclick="AddClick()" class='spanPropertySearch' />
+</header>
+
+<div id="divContainer">
+    <table id="mytable" class="mytable" border="0" cellpadding="0" cellspacing="0">
+    </table>
+    <div id="nodata"></div>
+    <div class="divJump" style="">
+        <span id="spanPage" style="font-weight: 400;"></span>
+        共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span>条数据
+    </div>
+</div>
+<div id="PopAddContent" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: left;">修改季节</div>
+    <div class="PopContent">
+        <div>季节:<input type="text" id="txtAddCat1" /></div>
+        <div style="text-align: center">
+            <input type="button" name="Update" value=" 保  存 " onclick="AddSeason()" /><input type="button" name="Close" value=" 关  闭 " onclick="    Close()" style="margin-left: 50px" />
+        </div>
+    </div>
+</div>
+<div id="PopEditContent" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: left;">修改季节</div>
+    <div class="PopContent">
+        <div>季节:<input type="text" id="txtEditCat1" /><input type="hidden" id="hidCat1" /></div>
+        <div style="text-align: center">
+            <input type="button" name="Update" value=" 保  存 " onclick="UpdateSeason()" /><input type="button" name="Close" value=" 关  闭 " onclick="    Close()" style="margin-left: 50px" />
+        </div>
+    </div>
+</div>
+<div class="PopBg"></div>
+<script type="text/javascript">
+
+
+    /*搜索*/
+    function OnSearch() {
+        $("#nodata").html("");
+        $("#nodata").removeAttr("class", "nodatacss");
+
+        console.log("111");
+        var SerarchCat = $("#txtSeachCat1").val();
+        var params = "{SerarchCat:'" + SerarchCat + "'}";
+        $.post("/Season/OnSearch", {
+            menuId: "@ViewData["myMenuId"]",
+            pageIndex: 1,
+            pageSize: 10,
+            params: params
+        }, function (data) {
+            $("#mytable").html("");
+            var ss = data.split("-----");
+            if (ss[0].indexOf("***NoData***")>0) {
+                $("#mytable").html(ss[0].replace("***NoData***", ""));
+                $("#nodata").attr("class", "nodatacss");
+                var width = $("#mytable").css("width");
+                $("#nodata").css("width", width);
+                $("#nodata").html("暂无数据！");
+                $("#PageCount").html(ss[1]);
+                $("#AllCounts").html(ss[2]);
+            }
+            else {
+                $(".mytable").append(ss[0]);
+                $("#PageCount").html(ss[1]);
+                $("#AllCounts").html(ss[2]);
+            }
+
+        });
+
+        var b = $.PageFunc("/Season/OnSearch", "@ViewData["myMenuId"]", params);
+        $("#spanPage").html(b);
+        $("#txtTiao").val(1);
+        $("#PageNum").html(1);
+    }
+
+
+
+    function selPage(url, menuid, obj) {
+        var params = JSON.stringify(obj).replace(/\"/g, "'");
+        console.log(obj);
+        $.post(url, {
+            menuId: menuid,
+            pageIndex: 1,
+            pageSize: $("#selPages").val(),
+            params: params
+        }, function (data) {
+            $("#mytable").html("");
+            var ss = data.split("-----");
+            if (ss[0].indexOf("***NoData***") > 0) {
+                $("#mytable").html(ss[0].replace("***NoData***", ""));
+                $("#nodata").attr("class", "nodatacss");
+                var width = $("#mytable").css("width");
+                $("#nodata").css("width", width);
+                $("#nodata").html("暂无数据！");
+                $("#PageCount").html(ss[1]);
+                $("#AllCounts").html(ss[2]);
+            }
+            else {
+                $(".mytable").append(ss[0]);
+                $("#PageCount").html(ss[1]);
+                $("#AllCounts").html(ss[2]);
+            }
+        });
+    }
+
+    /*获得table*/
+    function GetTable(obj, selpages) {
+        var lists = [];
+        lists.push($("#txtSeachCat1").val().trim() == null ? "" : $("#txtSeachCat1").val().trim())
+        $.ajax({
+            type: "get",
+            url: "/Season/OnSearch",
+            data: { "menuId": "@ViewData["myMenuId"]", "lists": lists.join(","), "page": obj, "selpages": selpages },
+            success: function (data) {
+                selpages = selpages * 1;
+                var tabledata = [];
+                var tabledata = data.split("-*-");
+                var tabstr = tabledata[0];
+                if (tabstr.indexOf("---NoData---") > 0) {
+                    $("#mytable").html(tabledata[0].replace("---NoData---", ""));
+                    $("#nodata").attr("class", "nodatacss");
+                    var width = $("#mytable").css("width");
+                    $("#nodata").css("width", width);
+                    $("#nodata").html("暂无数据！");
+                    $("#AllCounts").html(tabledata[1])
+                    $("#PageCount").html(Math.ceil(tabledata[1] * 1 / selpages))
+                }
+                $("#mytable").html(tabledata[0]);
+                $("#AllCounts").html(tabledata[1])
+                $("#PageCount").html(Math.ceil(tabledata[1] * 1 / selpages))
+
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }
+
+    /*关闭按钮取消修改*/
+    function Close() {
+        $(".PopBg").hide();
+        $(".myPopdiv").hide();
+    }
+
+    /*添加季节弹窗*/
+    function AddClick() {
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopAddContent").show();
+        $("#txtAddCat1").val("");
+    }
+
+    /*添加季节*/
+    function AddSeason() {
+        var Cat1 = $("#txtAddCat1").val().trim();
+        if (Cat1 != "") {
+            $.ajax({
+                type: "POST",
+                url: "/Season/AddSeason",
+                data: { "Cat1": Cat1 },
+                success: function (data) {
+                    $.MsgBox.Alert("提示", data);
+                    OnSearch();
+                    //GetTable($("#txtTiao").val().trim(), $("#selPages").val().trim());
+                    
+                },
+                error: function () {
+                    alert("添加失败！")
+                },
+            })
+        }
+        else {
+            $.MsgBox.Alert("提示", "请输入季节!");
+        }
+    }
+    /*编辑按钮获取需要编辑季节信息*/
+    function EditSeason(Id, Cat1) {
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopEditContent").show();
+        $("#txtEditCat1").val(Cat1);
+        $("#hidCat1").val(Cat1);
+        $("#txtEditCat1").attr("title", Id);
+    }
+
+    /*保存编辑季节*/
+    function UpdateSeason() {
+        var Cat1 = $("#txtEditCat1").val().trim();
+        var Id = $("#txtEditCat1").attr("title");
+        if ($("#hidCat1").val() == Cat1) {
+            return false;
+        }
+        if (Cat1 != "") {
+            $.ajax({
+                type: "POST",
+                url: "/Season/UpdateSeason",
+                data: { "Cat1": Cat1, "Id": Id },
+                success: function (data) {
+                    $.MsgBox.Alert("提示", data);
+                    OnSearch();
+                    //GetTable($("#txtTiao").val().trim(), $("#selPages").val().trim());
+                    EditSeason(Id, Cat1);
+                },
+                error: function () {
+                    alert("修改失败！")
+                },
+            })
+        }
+        else {
+            $.MsgBox.Alert("提示", "请输入季节!");
+        }
+    }
+    /*删除季节*/
+    function DeleteSeason(Cat1) {
+        $.MsgBox.Confirm("删除", "确定要删除吗？", function () {
+            $.post("/Season/DeleteSeason", { Cat1: Cat1 }, function (data) { if (data != "") { $.MsgBox("提示", data) } OnSearch(); @*GetTable($("#txtTiao").val().trim(), $("#selPages").val().trim());*@ })
+        })
+    }
+
+</script>
+
+
+

@@ -1,0 +1,215 @@
+﻿@model IEnumerable<pbxdata.model.users>
+
+@{
+    ViewBag.Title = "用户列表";
+}
+
+<div style="color:#FF5F3E;font-weight:bolder;line-height:20px;">用户列表</div>
+
+
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<script type="text/javascript">
+    $().ready(function () {
+
+        $.post("/Users/getData", { menuId: "@ViewData["myMenuId"]", id: "@ViewData["id"]" }, function (data) { $(".mytable").append(data) })
+
+        $.post("/RoleHelper/getRoleData", function (data) { $("#usersRole").html(data) });
+
+        //添加用户
+        $("#btnAdd").click(function () {
+            var usersName = $("#usersName").val();
+            var usersPwd = $("#usersPwd").val();
+            var usersRealName = $("#usersRealName").val();
+            var usersSex = 0;
+            if ($("#usersSex").attr("checked")) {
+                usersSex = 0;
+            } else {
+                usersSex = 1;
+            }
+            var usersPhone = $("#usersPhone").val();
+            var usersAddress = $("#usersAddress").val();
+            var usersEmail = $("#usersEmail").val();
+            var usersIndex = $("#usersIndex").val();
+            var usersManage = $("#usersManage").val();
+            var usersRole = $("#usersRole").val();
+            if ($("input:hidden").val() == "该帐户已注册!") {
+                alert("该用户名称已注册！");
+                return;
+            }
+             if (usersRole==0) {
+                   alert("请选择用户角色！");
+                   return;
+             }
+            if (usersName == "" || usersPwd == "" || usersRealName == "" || usersPhone == "" || usersAddress == "" || usersEmail == "" || usersIndex == "" || usersManage == "") {
+                alert("请把信息输入完整！");
+                return;
+            }
+            if (usersEmail!="") {
+                var reg = /^([a-zA-Z0-9_-])+@@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/;
+                if (!reg.test(usersEmail)) {
+                    alert("邮箱不合法，请重新输入");
+                    return;
+                }
+            }
+            $.post('/Users/addUsers', { usersName: usersName, usersPwd: usersPwd, usersRealName: usersRealName, usersSex: usersSex, usersPhone: usersPhone, usersAddress: usersAddress, usersEmail: usersEmail, usersIndex: usersIndex, usersManage: usersManage, usersRole: usersRole }, function (data) {
+                alert(data);
+            })
+        })
+            })
+
+    //动态获取编辑DIV
+    function userEdit(obj) {
+        $.post("/Users/editUsers", { id: obj, menuId: "@ViewData["myMenuId"]" }, function (data) {
+            //alert(data);
+            var data1 = '<div style="line-height:20px; text-align:right;border-bottom:solid 1px #808080;height:20px;"><a onclick="javascript:closeDivEdit()" style="cursor:pointer;">X　</a></div>'+data;
+            $("#popDivEdit").html(data1);
+            $("#usersRoleEdit").val($("#usersRoleEdit").attr("title"))
+            })
+
+        //$.post("/RoleHelper/getRoleData", function (data) { $("#usersRoleEdit").html(data); $("#usersRoleEdit").val($("#usersRoleEdit").attr("title")) });
+    }
+
+    //更新用户
+    function userSave() {
+        var Id = $("#Id").val();
+        var personaId = $("#usersRoleEdit").val();
+        var userName = $("#userName").val();
+        var userPwd = $("#userPwd").val();
+        var userRealName = $("#userRealName").val();
+        var userSex = $('input[name="radio1"]:checked').val();
+        var UserPhone = $("#UserPhone").val();
+        var UserAddress = $("#UserAddress").val();
+        var UserEmail = $("#UserEmail").val();
+        var userIndex = $("#userIndex").val();
+        var UserManage = $("#UserManage").val();
+        var Def1 = $("#Def1").val();
+        var Def2 = $("#Def2").val();
+        var Def3 = $("#Def3").val();
+        var Def4 = $("#Def4").val();
+        var Def5 = $("#Def5").val();
+        ShopAllocation(Id);
+        $.post('/Users/updateUsers', {
+            personaId:personaId,
+            userName: userName,
+            userPwd: userPwd,
+            userRealName: userRealName,
+            userSex: userSex,
+            UserPhone: UserPhone,
+            UserAddress: UserAddress,
+            UserEmail: UserEmail,
+            userIndex: userIndex,
+            UserManage: UserManage,
+            Def1: Def1,
+            Def2: Def2,
+            Def3: Def3,
+            Def4: Def4,
+            Def5: Def5,
+            Id: Id,
+            menuId: "@ViewData["myMenuId"]"
+        }, function (data) {
+            
+            alert(data);
+        })
+    }
+    ///给用户分配店铺
+    function ShopAllocation(UserId)
+    {
+        var ShopId = "";
+        $("input[class=Check]").each(function ()
+        {
+            if ($(this).attr("checked") == "checked")
+            {
+                ShopId += "," + $(this).attr("shopid");
+            }
+        })
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/Users/Allocation",
+                data:
+                    {
+                        "UserId": UserId,
+                        "ShopId": ShopId
+                },
+                success: function (data)
+                {
+                }
+            })
+    }
+    //删除用户
+    function del(obj) {
+        var statu = confirm("确定要删除吗?");
+        if (!statu) {
+            return false;
+        }
+
+        $.post("/Users/delUsers", {id:obj}, function (data) { alert(data); });
+    }
+
+</script>
+
+<div id="popDiv" class="mydiv" style="display: none;width:400px;height:300px;left:32%;top:28%;">
+    <div style="line-height:20px; text-align:right;border-bottom:solid 1px #808080;height:20px;">
+        <a onclick="javascript:closeDiv()" id="AddClose" style="cursor:pointer;">X　</a>
+    </div>
+    <div>用户名称：<input value="" id="usersName" style="" /><input type="hidden" id="labCheckName" value="" /></div>
+    <div>用户密码：<input value="" id="usersPwd" type="password"  /></div>
+    <div>真实姓名：<input value="" id="usersRealName" /></div>
+    <div>用户性别：
+        <span style="width:135px;display:-moz-inline-box; display:inline-block;">
+            <input style="width:18px;" id="usersSex" name="radio1" type="radio" value="0" checked="checked" />男
+            <input style="width:18px;" id="usersSex1" name="radio1" type="radio" value="1" />女
+        </span>
+    </div>
+    <div>用户电话：<input value="" id="usersPhone" /></div>
+    <div>用户地址：<input value="" id="usersAddress" /></div>
+    <div>用户邮件：<input value="" id="usersEmail" /></div>
+    <div>用户排序：<input value="" id="usersIndex" /></div>
+    <div>用户管理：<input value="" id="usersManage" /></div>
+    <div>用户角色：
+        <select id="usersRole">
+
+        </select>
+    </div>
+
+    <div><button id="btnAdd" value="添加">添加</button></div>
+</div>
+<div id="popDivEdit" class="mydiv" style="display: none;width:500px;min-height:320px;left:30%;top:15%;">
+    
+</div>
+<div id="bg" class="bg" style="display: none;"></div>
+<table class="mytable" rules="all">
+
+</table>
+
+<script type="text/javascript">
+    $("#usersName").focusout(function () {
+        var username = $("#usersName").val().trim();
+        $.ajax({
+            type: "GET",
+            url: "/Login/CheckUserName?UserName=" + username,
+            success: function (data) {
+                $("input:hidden").val(data);
+            },
+            error: function () {
+                alert("error!");
+            }
+        })
+    })
+
+    $("#AddClose").click(function(){
+        $("#usersName").val("");
+        $("#usersPwd").val("");
+        $("#usersRealName").val("");
+        $("#usersPhone").val("");
+        $("#usersAddress").val("");
+        $("#usersEmail").val("");
+        $("#usersIndex").val("");
+        $("#usersManage").val("");
+        $("#usersRole").val(0);
+    })
+</script>

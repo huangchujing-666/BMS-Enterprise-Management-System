@@ -1,0 +1,78 @@
+﻿<!--商检订单回执--><!--
+<?xml version="1.0" encoding="utf-8" ?>
+<ROOT>
+<Head>
+  <MessageID>psp000000000000000001724332</MessageID>
+  <MessageType>DOCREC</MessageType>
+  <Sender>ICIP</Sender>
+  <Receiver>1000000019</Receiver>
+  <SendTime>2015-02-06 16:34:46</SendTime>
+  <Version>1.0</Version>
+</Head>
+<Declaration>
+  <OrgMessageID>CUST000000000000000000457155</OrgMessageID>
+  <OrgMessageType>661103</OrgMessageType>
+  <OrgSenderID>1000000019</OrgSenderID>
+  <OrgReceiverID>ICIP</OrgReceiverID>
+  <OrgRecTime>20150206163634</OrgRecTime>
+  <Status>10</Status>
+  <Notes>入库成功!</Notes>
+</Declaration>
+</ROOT>
+
+
+--><!--商检商品回执--><!--
+<?xml version="1.0" encoding="utf-8"?>
+<Root>
+<Head>
+  <MessageID>psp000000000000000003037102</MessageID>
+  <MessageType>661105REC</MessageType>
+  <Sender>ICIP</Sender>
+  <Receiver>1000000019</Receiver>
+  <SendTime>20150526095148</SendTime>
+  <FunctionCode/>
+  <Version>1.0</Version>
+</Head>
+<Declaration>
+  <GoodsRegRecList>
+    <Record>
+      <CargoBcode>CUSTSP1505250015</CargoBcode>
+      <CbeComcode>1000000964</CbeComcode>
+      <Gcode>1030310717</Gcode>
+      <CIQGoodsNO>ICIP03150525000060</CIQGoodsNO>
+      <RegStatus>10</RegStatus>
+      <RegNotes/>
+    </Record>
+  </GoodsRegRecList>
+</Declaration>
+</Root>
+
+
+
+
+
+
+
+
+
+
+
+--><!--海关订单回执--><!--
+<?xml version="1.0" encoding="utf-8"?>
+<ResponseMessage>
+<ResponseHead>
+  <SenderID>111111111</SenderID>
+  <MessageID>1111</MessageID>
+  <MessageType>1111</MessageType>
+  <ReturnDate>201506271706</ReturnDate>
+  <OldMessageId>1111</OldMessageId>
+  <AttachedFlag>0</AttachedFlag>
+</ResponseHead>
+<ResponseBodyList>
+  <ResponseBody>
+    <DocumentNo>2125665</DocumentNo>
+    <ReturnCode>c01</ReturnCode>
+    <ReturnInfo>入库成功!</ReturnInfo>
+  </ResponseBody>
+</ResponseBodyList>
+</ResponseMessage>-->

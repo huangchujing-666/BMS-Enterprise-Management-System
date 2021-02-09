@@ -1,0 +1,572 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/Search.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<style type="text/css">
+    header
+    {
+        border: 1px solid #DDDDDD;
+        background-color: #F4F4F4;
+        /*height: 30px;
+        line-height: 30px;
+        padding-left: 15px;*/
+        width:100%;
+        padding-top:10px;
+    }
+    .divContainer
+    {
+        border: solid 1px lightblue;
+        overflow: hidden;
+    }
+
+    .divclose
+    {
+        position: absolute;
+        right: 8px;
+        top: 3px;
+        cursor: pointer;
+        font-size: 2em;
+        font-weight: bolder;
+        width: 30px;
+        height: 30px;
+    }
+
+        .divclose:hover
+        {
+            color: red;
+        }
+
+    #PopEditContent, #PopAddContent
+    {
+        left: 40%;
+        top: 40%;
+        width: 300px;
+        min-height: 200px;
+    }
+
+    .PopContent
+    {
+        height: 180px;
+        width: 99%;
+        padding-top: 15px;
+    }
+
+        .PopContent div
+        {
+            margin-top: 5px;
+        }
+
+    #selProducttype, #selEditTypeName, #selEditVencode
+    {
+        width: 150px;
+    }
+</style>
+
+<header>
+    <span class='spanProperty'><span class='spanPropertyName'>类别名称：</span><input class='spanPropertyValue' id='txtSeachName' type='text'></span>
+    <span class='spanProperty'><span class='spanPropertyName'>供应商类别：</span><input class='spanPropertyValue' id='txtSeachVenName' type='text'></span>
+    @*类别名称：@Html.TextBox("txtSeachName") 供应商类别名称：@Html.TextBox("txtSeachVenName") 供应商：<select id="selVencode"></select>*@
+    <span class='spanProperty'><span class='spanPropertyName'>供应商：</span><select id='selVencode' class='spanPropertyValue'></select></span>
+    <span class='spanProperty'><span class='spanPropertyName'>是否绑定：</span><select id='selbangd' class='spanPropertyValue'><option value="">请选择</option><option value="0">是</option>
+        <option value="1">否</option></select></span>
+@*    是否绑定:
+    <select id="selbangd">
+        <option value="">请选择</option>
+        <option value="0">是</option>
+        <option value="1">否</option>
+    </select>*@
+     <input type='button' value=' 查  询 ' onclick="OnSearch()" class='spanPropertySearch' />
+  @*  <input type='button' value=' 添  加 ' onclick="AddClick()" class='spanPropertySearch' />*@
+    @*<input type="button" onclick="OnSearch()" value=" 查  询 " /><a href="#" onclick="AddClick()" style="margin-left: 10px">添    加</a>*@
+</header>
+<div id="divContainer">
+    <table id="mytable" class="mytable" border="0" cellpadding="0" cellspacing="0">
+    </table>
+    <div class="divJump" style="">
+        <select id="selPages" onchange="selPage()">
+            <option>5</option>
+            <option selected="selected">10</option>
+            <option>20</option>
+            <option>50</option>
+            <option>100</option>
+        </select>
+        <a href="#" onclick="TurnPage(1)">首页</a>
+        <a href="#" onclick="TurnPage(2)">上一页</a>
+        <input type="text" id="txtTiao" name="txtTiao" value="1" style="width: 35px;" onkeyup="OnTiaoChange();" />
+        <a href="#" onclick="TurnPage(3)">下一页</a>
+        <a href="#" onclick="TurnPage(4)">尾页</a>
+        @*@Html.TextBox("txtTiao","", new { style = "width:20px;", onkeyup = "OnTiaoChange();" })*@
+        <a href="#" onclick="TurnPage(5)">跳转</a>
+        共<span id="PageCount" ></span>页&nbsp;&nbsp;当前第<span id="PageNum" ></span>页&nbsp;&nbsp;共<span id="AllCounts" ></span>条数据
+    </div>
+</div>
+<div id="PopEditContent" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: left;">修改类别</div>
+    <div class="PopContent">
+        <div>供应商类别名称：<input id="txtEditTypeNameVen" type="text" title="" /></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;供应商：<select id="selEditVencode"></select></div>
+        <div>
+            &nbsp;&nbsp;&nbsp;类别搜索：<input id="txtEditSearchTypeName" type="text" title="" oninput="SearchEditProducttype()" />
+        </div>
+        <div>
+            &nbsp;&nbsp;&nbsp;类别名称：<select id="selEditTypeName"></select>
+        </div>
+        <div style="text-align: center">
+            <input type="button" name="Update" value=" 保  存 " onclick="UpdateTypeName()" /><input type="button" name="Close" value=" 关  闭 " onclick="    Close()" style="margin-left: 50px" />
+        </div>
+    </div>
+</div>
+<div id="PopAddContent" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: left;">添加供应商类别</div>
+    <div class="PopContent">
+        <div>
+            供应商类别名称：<input id="txtAddVenTypeName" type="text" title="" />
+        </div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;供应商：<input id="txtAddVen" type="text" title="" /></div>
+        <div>
+            &nbsp;&nbsp;&nbsp;类别搜索：<input id="txtSearchTypeName" type="text" title="" oninput="SearchProducttype()" />
+        </div>
+        <div>
+            &nbsp;&nbsp;&nbsp;类别名称：<select id="selProducttype"></select>
+        </div>
+        <div style="text-align: center">
+            <input type="button" name="Update" value=" 保  存 " onclick="AddType()" /><input type="button" name="Close" value=" 关  闭 " onclick="    Close()" style="margin-left: 50px" />
+        </div>
+    </div>
+</div>
+<div class="PopBg"></div>
+<script type="text/javascript">
+    /*搜索*/
+    function OnSearch() {
+        GetTable(1, $("#selPages").val().trim());
+        $("#txtTiao").val(1);
+        $("#PageNum").html(1);
+    }
+
+    /*获得table*/
+    function GetTable(obj, selpages) {
+        var lists = [];
+        lists.push($("#txtSeachName").val().trim() == null ? "" : $("#txtSeachName").val().trim())
+        lists.push($("#txtSeachVenName").val().trim() == null ? "" : $("#txtSeachVenName").val().trim())
+        lists.push($("#selVencode").find("option:selected").val() == null ? "" : $("#selVencode").find("option:selected").val());
+        lists.push($("#selbangd").find("option:selected").val() == null ? "" : $("#selbangd").find("option:selected").val());
+        $.ajax({
+            type: "get",
+            url: "/Category/VenProducttypeSearch",
+            data: { "menuId": "@ViewData["myMenuId"]", "lists": lists.join(","), "page": obj, "selpages": selpages },
+            success: function (data) {
+                selpages = selpages * 1;
+                var tabledata = [];
+                var tabledata = data.split("-*-");
+                $("#mytable").html(tabledata[0]);
+                $("#AllCounts").html(tabledata[1])
+                $("#PageCount").html(Math.ceil(tabledata[1] * 1 / selpages))
+
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }
+    function selPage() {//---------设置显示数目
+        $("#txtTiao").val(1);
+        $("#PageNum").html(1);
+        GetTable(1, $("#selPages").val().trim())
+    }
+    /*跳转*/
+    function TurnPage(obj) {//-----翻页---
+        var pages = $("#selPages").val().trim();
+        switch (obj) {
+            case 1: GetTable(1, pages);//----首页
+                $("#txtTiao").val(1);
+                $("#PageNum").html(1)
+                break;
+            case 2:;//----上一页
+                if ($("#txtTiao").val().trim() == "1") {
+                    return false;
+                }
+                else {
+                    GetTable($("#txtTiao").val().trim() * 1 - 1, pages)
+                    $("#txtTiao").val($("#txtTiao").val().trim() * 1 - 1);
+                    $("#PageNum").html($("#txtTiao").val().trim())
+                }
+                break;
+            case 3://----下一页
+                if ($("#txtTiao").val().trim() == $("#PageCount").html()) {
+                    return false;
+                }
+                else {
+                    GetTable($("#txtTiao").val().trim() * 1 + 1, pages);
+                    $("#txtTiao").val($("#txtTiao").val().trim() * 1 + 1);
+                    $("#PageNum").html($("#txtTiao").val().trim())
+                }
+
+                break;
+            case 4: GetTable($("#PageCount").html(), pages);//----尾页
+
+                $("#txtTiao").val($("#PageCount").html());
+                $("#PageNum").html($("#PageCount").html())
+                break;
+            case 5: GetTable($("#txtTiao").val().trim(), pages);//----跳转
+                $("#PageNum").html($("#txtTiao").val().trim());
+
+                break;
+
+        }
+    }
+
+    ///*点击添加供应商类别按钮*/
+    //function AddClick() {
+    //    $(".PopBg").height($(document).height());
+    //    $(".PopBg").show();
+    //    $("#PopAddContent").show();
+    //    $("#txtAddVenTypeName").val("");
+    //    $("#txtAddVen").val("");
+    //    $("#selProducttype").html("");
+    //    $("#txtSearchTypeName").val("");
+    //}
+
+    ///*确定添加供应商类别*/
+    //function AddType() {
+    //    var TypeNameVen = $("#txtAddVenTypeName").val().trim();
+    //    var Vencode = $("#txtAddVen").val().trim();
+    //    var TypeNo = $("#selProducttype").find("option:selected").val();
+    //    $.ajax({
+    //        type: "GET",
+    //        url: "/Category/AddProducttypeVen?TypeNo=" + TypeNo + "&TypeNameVen=" + TypeNameVen + "&Vencode=" + Vencode,
+    //        success: function (data) {
+    //            $.MsgBox.Alert("提示", data);
+    //            GetTable($("#txtTiao").val().trim(), $("#selPages").val().trim());
+
+    //        },
+    //        error: function () {
+    //            alert("添加失败！")
+    //        },
+    //    })
+    //}
+    /*关闭按钮取消修改*/
+    function Close() {
+        $(".PopBg").hide();
+        $(".myPopdiv").hide();
+    }
+    /*查询供应商类别表中的类别*/
+    function SearchProducttype() {
+        var TypeName = $("#txtSearchTypeName").val().trim();
+        $.ajax({
+            type: "GET",
+            url: "/Category/SearchProducttype?TypeName=" + TypeName,
+            success: function (data) {
+                $("#selProducttype").html(data);
+            }
+        })
+    }
+
+    /*编辑按钮获取需要编辑供应商类别信息*/
+    function EditAttribute(Id, TypeName, TypeNameVen, Vencode) {
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopEditContent").show();
+        $("#txtEditTypeNameVen").attr("title", Id)
+        $("#txtEditTypeNameVen").val(TypeNameVen)
+        //$("#txtEditVencode").val(Vencode)
+        $("#txtEditSearchTypeName").val(TypeName)
+        $("#selEditVencode").attr("disabled", "disabled");
+        $.ajax({
+            type: "GET",
+            url: "/Category/GetVencodelist?SourceCode=" + Vencode,
+            success: function (data) {
+                $("#selEditVencode").html(data)
+                
+            },
+            error: function () {
+            },
+        })
+        $.ajax({
+            type: "GET",
+            url: "/Category/SearchProducttype?TypeName=" + TypeName,
+            success: function (data) {
+                $("#selEditTypeName").html(data);
+            }
+        })
+    }
+
+    /*保存编辑供应商类别信息*/
+    function UpdateTypeName() {
+        var Id = $("#txtEditTypeNameVen").attr("title");
+        var TypeNameVen = $("#txtEditTypeNameVen").val().trim();
+        var Vencode = $("#selEditVencode").find("option:selected").val();
+        var TypeNo = $("#selEditTypeName").find("option:selected").val();
+
+        $.ajax({
+            type: "GET",
+            url: "/Category/UpdateProducttypeVen?Id=" + Id + "&TypeNameVen=" + TypeNameVen + "&TypeNo=" + TypeNo + "&Vencode=" + Vencode,
+            success: function (data) {
+                $.MsgBox.Alert("提示", data);
+                GetTable($("#txtTiao").val().trim(), $("#selPages").val().trim());
+            },
+            error: function () {
+                alert("修改失败！")
+            },
+        })
+    }
+    /*查询供应商类别表中的类别*/
+    function SearchEditProducttype() {
+        var TypeName = $("#txtEditSearchTypeName").val().trim();
+        $.ajax({
+            type: "GET",
+            url: "/Category/SearchProducttype?TypeName=" + TypeName,
+            success: function (data) {
+                $("#selEditTypeName").html(data);
+            }
+        })
+    }
+    /*删除供应商类别表中的类别*/
+    function DeleteType(obj) {
+        $.MsgBox.Confirm("删除", "确定要删除吗？", function () {
+            $.ajax({
+                type: "GET",
+                url: "/Category/deleteProducttypeVen?Id=" + obj,
+                success: function (data) {
+                    GetTable($("#txtTiao").val().trim(), $("#selPages").val().trim());
+                }
+            })
+        })
+    }
+    /*获取供应商编码下拉表*/
+    $.ajax({
+        type: "GET",
+        url: "/Category/GetVencodelist?SourceCode=0",
+        success: function (data) {
+            $("#selVencode").html(data)
+        },
+        error: function () {
+        },
+    })
+
+</script>
+<script type="text/ecmascript">
+    function Serach()
+    {
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/Category/SerachTypeNo",
+                data:
+                    {
+                        "TypeName": $("#TypeName").val() == null ? "" : $("#TypeName").val(),
+                        "TypeNameVen": $("#VenName").val() == null ? "" : $("#VenName").val()
+
+                    },
+                success: function (data)
+                {
+                    var da = data.split('❤');
+                    $("#ExcelTable").html(da[0]);
+                    $("#PageCountM").html(da[1]);
+                    $("#PageNumM").html(da[3]);
+                    $("#returnPage").val(da[3]);
+                    $("#AllCountsM").html(da[2]);
+                }
+            })
+    }
+    $(function ()
+    {
+        $.ajax(
+            {
+                type: "POST",
+                dataype: "text",
+                url: "/Category/TypeNo",
+                success: function (data)
+                {
+                    $("#TypeNo").html(data)
+                }
+            })
+    })
+    //打开添加类别界面
+    function InsertType()
+    {
+        $("#Insert").show();
+    }
+    //确认添加
+    function OkInsert()
+    {
+        var Vencode = "";
+        if ($("#IsBrand").attr("checked") == "checked") {
+            Vencode = $("#Brand").find("option:selected").text() == null ? "" : $("#Brand").find("option:selected").text()
+        }
+        else{
+            Vencode = $("#Vencode").val() == null ? "" : $("#Vencode").val();
+        }
+        var typeno = $("#TypeNo").val() == null ? "" : $("#TypeNo").val();
+        var typeName = $("#TypeNo").find("option:selected").text() == null ? "" : $("#TypeNo").find("option:selected").text();
+        var typeNameVen = $("#TypeNameVen").val() == null ? "" : $("#TypeNameVen").val();
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/Category/InsertProducttypeVenExcel",
+                data:
+                    {
+                        "typeno": typeno,
+                        "typeName": typeName,
+                        "typeNameVen": typeNameVen,
+                        "Vencode":Vencode
+
+                    },
+                success: function (data)
+                {
+                    alert(data);
+                    Close();
+                    Serach()
+                }
+            })
+    }
+    function TypeChange()
+    {
+        var typename = $("#Sreach").val();
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/Category/TypeNameChange",
+                data: {
+                    "typename":typename
+                },
+                success: function (data)
+                {
+                    $("#TypeNo").html();
+                    $("#TypeNo").html(data);
+                }
+            })
+    }
+    ///删除对应类别
+    function DeleteTypeVen(Id) {
+        if (confirm("是否确认删除？")) {
+            $.ajax(
+                {
+                    type: "post",
+                    datatype: "text",
+                    url: "/Category/DeleteTypeExcel",
+                    data: {
+                        "Id": Id
+                    },
+                    success: function (data) {
+                        alert(data)
+                        Serach()
+                    }
+                })
+        }
+    }
+    ///是否是为品牌方添加数据
+    function IsBrand()
+    {
+        if ($("#IsBrand").attr("checked") == "checked") {
+            $("#Brand1").show();
+            $("#Brand2").show();
+            $("#VencodeDiv").hide();
+        }
+        else
+        {
+            $("#Brand1").hide();
+            $("#Brand2").hide();
+            $("#VencodeDiv").show();
+        }
+    }
+</script>
+<header>
+    <span class='spanProperty'><span class='spanPropertyName'>类别名称：</span><input class='spanPropertyValue' id='TypeName' type='text'></span>
+@*    类别名称：<input type="text" id="TypeName" />
+    供应商类别名称:<input type="text" id="VenName" />&nbsp;&nbsp<input type="button" value="查询" onclick="Serach()"/>&nbsp;&nbsp<input type="button" value="添加" onclick="InsertType()" />*@
+    <span class='spanProperty'><span class='spanPropertyName'>供应商类别：</span><input class='spanPropertyValue' id='VenName' type='text'></span>
+    <input type='button' value=' 查  询 ' onclick="Serach()" class='spanPropertySearch' />
+    <input type='button' value=' 添  加 ' onclick="InsertType()" class='spanPropertySearch' />
+</header>
+<div id="ExcelTable">
+
+</div>
+<div>
+    <div class="divJump" style="">
+        <select id="Page" onchange="selPage()">
+            <option>5</option>
+            <option selected="selected">10</option>
+            <option>20</option>
+            <option>50</option>
+            <option>100</option>
+        </select>
+        <a href="#" onclick="TurnPage(1)">首页</a>
+        <a href="#" onclick="TurnPage(2)">上一页</a>
+        <input type="text" id="returnPage" name="txtTiao" style="width: 35px;"/>
+        <a href="#" onclick="TurnPage(3)">下一页</a>
+        <a href="#" onclick="TurnPage(4)">尾页</a>
+        @*@Html.TextBox("txtTiao","", new { style = "width:20px;", onkeyup = "OnTiaoChange();" })*@
+        <a href="#" onclick="TurnPage(5)">跳转</a>
+        共<span id="PageCountM" ></span>页&nbsp;&nbsp;当前第<span id="PageNumM" ></span>页&nbsp;&nbsp;共<span id="AllCountsM" ></span>条数据
+    </div>
+</div>
+<div class="myPopdiv" id="Insert" style="margin-left:20%;width:300px;text-align:left;">
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: left;">添加类别</div>
+    <div class="PopContent">
+        <div>类别搜索：<input type="text" id="Sreach" onchange="TypeChange()"/></div>
+        <div>类别名称：<select id="TypeNo"></select><input type="checkbox"  id="IsBrand" onchange="IsBrand()"/>品牌方</div>
+        <div id="Brand1">品牌搜索：<input type="text" id="BrandSearch" onchange="BrandChange()"/></div>
+        <div id="Brand2">类别名称：<select id="Brand"></select></div>
+        <div id="VencodeDiv">供应商：<select id="Vencode"></select></div>
+        <div>供应商类别名：<input id="TypeNameVen" type="text" /></div>
+        
+        <div><input onclick="OkInsert()" type="button" value="确认添加" /></div>
+    </div>
+</div>
+<div class="PopBg"></div>
+<script type="text/javascript">
+    ///加载类别列表
+    $(function () {
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/Brand/Brand",
+                success: function (data) {
+                    $("#Brand").html(data);
+                    $("#Brand1").hide();
+                    $("#Brand2").hide();
+                }
+            })
+    })
+    ///加载供应商信息
+    $(function ()
+    {
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/Category/VencodeList",
+                success: function (data) {
+                    $("#Vencode").html(data)
+                }
+            })
+    })
+    ///搜索类别名称
+    function BrandChange() {
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/Brand/ChageBrand",
+                data:
+                    {
+                        "Brand": $("#BrandSearch").val() == null ? "" : $("#BrandSearch").val()
+                    },
+                success: function (data) {
+                    $("#Brand").html();
+                    $("#Brand").html(data);
+                }
+            })
+    }
+</script>
+

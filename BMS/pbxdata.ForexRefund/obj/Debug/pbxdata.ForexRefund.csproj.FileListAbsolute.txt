@@ -1,0 +1,7 @@
+F:\project\BMS1\BMS\pbxdata.ForexRefund\bin\Debug\pbxdata.ForexRefund.dll
+F:\project\BMS1\BMS\pbxdata.ForexRefund\bin\Debug\pbxdata.ForexRefund.pdb
+F:\project\BMS1\BMS\pbxdata.ForexRefund\bin\Debug\pbxstock.dbutility.dll
+F:\project\BMS1\BMS\pbxdata.ForexRefund\bin\Debug\pbxstock.dbutility.pdb
+F:\project\BMS1\BMS\pbxdata.ForexRefund\obj\Debug\pbxdata.ForexRefund.csprojResolveAssemblyReference.cache
+F:\project\BMS1\BMS\pbxdata.ForexRefund\obj\Debug\pbxdata.ForexRefund.dll
+F:\project\BMS1\BMS\pbxdata.ForexRefund\obj\Debug\pbxdata.ForexRefund.pdb

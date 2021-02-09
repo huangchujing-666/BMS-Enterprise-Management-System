@@ -1,0 +1,366 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+
+<style type="text/css">
+
+    #PopEditContent, #PopAddContent
+    {
+        left: 30%;
+        top: 30%;
+        min-height: 200px;
+        width: 300px;
+    }
+
+    .PopContent
+    {
+
+        height: 180px;
+        width: 99%;
+        padding-top: 15px;
+    }
+
+        .PopContent div
+        {
+            margin-top: 5px;
+        }
+
+
+    .divHeader
+    {
+        border: 1px solid #DDDDDD;
+        background-color: #F4F4F4;
+        height: 30px;
+        line-height: 30px;
+        padding-left: 15px;
+    }
+
+        /*.divHeader a
+        {
+            display: inline-block;
+            height: 25px;
+            width: 80px;
+            text-align: center;
+            line-height: 25px;
+            margin-top: 2px;
+            text-decoration: none;
+        }
+
+            .divHeader a:hover
+            {
+                border: 1px solid lightblue;
+                border-radius: 5px;
+            }*/
+
+    .mytable tr th:first-child
+    {
+        width: 50px;
+    }
+
+    .divclose
+    {
+        position: absolute;
+        right: 8px;
+        top: 3px;
+        cursor: pointer;
+        font-size: 2em;
+        font-weight: bolder;
+        width: 30px;
+        height: 30px;
+    }
+
+        .divclose:hover
+        {
+            color: red;
+        }
+</style>
+<header class="divHeader" style="width:100%; padding-top:10px;">
+    <span class="spanProperty"><span class="spanPropertyName">类别名称：</span><input class="spanPropertyValue" id="txtName" type="text"></span>
+     <input type="button" value="查  询" onclick="OnSearch()" class="spanPropertySearch" /><input type="button" value="添加大类别" onclick="AddClick()" class="spanPropertySearch" />
+    @*类别名称:<input type="text" id="txtName" />
+    <input type="button" value=" 查  询 " onclick="OnSearch()" /><a href="#" onclick="AddClick()">添加大类别</a>*@
+</header>
+<div style="border: solid 1px lightblue; overflow: hidden">
+    <table id="mytable" class="mytable" border="0" cellpadding="0" cellspacing="0">
+    </table>
+    <div class="divJump">
+           <span id="spanPage" style="font-weight: 400;"></span>
+        共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span>条数据
+           @* <select id="selPages" onchange="selPage()">
+                <option>5</option>
+                <option selected="selected">10</option>
+                <option>20</option>
+                <option>50</option>
+                <option>100</option>
+            </select>
+
+            <a href="#" onclick="TurnPage(1)">首页</a>
+            <a href="#" onclick="TurnPage(2)">上一页</a>
+            <input type="text" id="txtTiao" value="" style="width: 35px;" />
+            <a href="#" onclick="TurnPage(3)">下一页</a>
+            <a href="#" onclick="TurnPage(4)">尾页</a>
+            @Html.TextBox("txtTiao","", new { style = "width:20px;", onkeyup = "OnTiaoChange();" })
+            <a href="#" onclick="TurnPage(5)">跳转</a>
+            共<span id="PageCount" ></span>页&nbsp;&nbsp;当前第<span id="PageNum" ></span>页&nbsp;&nbsp; 共 <span id="AllCounts" ></span>条数据*@
+    </div>
+</div>
+<div class="PopBg"></div>
+<div id="PopEditContent" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: left;">修改大类别</div>
+    <div class="PopContent">
+        <div>名称：<input id="txtBigtypeName" type="text" title="" /></div>
+        <div>排序：<input id="txtbigtypeIndex" type="text" title="" /></div>
+        <div style="text-align: center">
+            <input type="button" name="Update" value=" 保  存 " onclick="UpdateBigTypeName()" /><input type="button" name="Close" value=" 关  闭 " onclick="    Close()" style="margin-left: 50px" />
+        </div>
+    </div>
+</div>
+<div id="PopAddContent" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: left;">添加大类别</div>
+    <div class="PopContent">
+        <div>名称：<input id="txtAddBigtypeName" type="text" /></div>
+        <div style="text-align: center">
+            <input type="button" name="Update" value=" 保  存 " onclick="AddBigType()" /><input type="button" name="Close" value=" 关  闭 " onclick="    Close()" style="margin-left: 50px" />
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function selPage(url, menuid, obj) {
+        var params = JSON.stringify(obj).replace(/\"/g, "'");
+        $.post(url, {
+            menuId: menuid,
+            pageIndex: 1,
+            pageSize: $("#selPages").val(),
+            params: params
+        }, function (data) {
+            $("#mytable").html("");
+            var ss = data.split("-----");
+            $("#mytable").append(ss[0]);
+            $("#PageCount").html(ss[1]);
+            $("#AllCounts").html(ss[2]);
+        });
+    };
+    $(function () {
+
+    })
+
+    /*添加大类别按钮*/
+    function AddClick() {
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopAddContent").show();
+        $("#txtAddBigtypeName").val("");
+    }
+
+    /*编辑大类别*/
+    function EditBigType(Id, BigTypeName, bigtypeIndex) {
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopEditContent").show();
+        $("#txtBigtypeName").val(BigTypeName)
+        $("#txtbigtypeIndex").val(bigtypeIndex)
+        $("#txtBigtypeName").attr("title", Id)
+    }
+
+    /*确定添加大类别*/
+    function AddBigType() {
+        var BigtypeName = $("#txtAddBigtypeName").val();
+        $.ajax({
+            type: "GET",
+            url: "/Product/AddBigType?BigtypeName=" + BigtypeName,
+            success: function (data) {
+                if (data) {
+                    alert("添加成功！")
+                    OnSearch();
+                    //GetTable($("#selPages").val(), $("#txtTiao").val());
+                    Close();
+                }
+                else {
+                    alert("添加失败！")
+                }
+            },
+            error: function () {
+                alert("添加失败！")
+            },
+        })
+    }
+
+    /*修改大类别信息*/
+    function UpdateBigTypeName() {
+        var Id = $("#txtBigtypeName").attr("title");
+        var BigtypeName = $("#txtBigtypeName").val().trim();
+        var bigtypeIndex = $("#txtbigtypeIndex").val().trim();
+        if (BigtypeName == "" || bigtypeIndex == "") {
+            alert("大类别名称或排序不能为空!"); return false;
+        }
+        $.ajax({
+            type: "GET",
+            url: "/Product/UpdateBigType?Id=" + Id + "&BigtypeName=" + BigtypeName + "&bigtypeIndex=" + bigtypeIndex,
+            success: function (data) {
+                if (data == "存在") {
+                    alert("该名称已存在！")
+                }
+                else if (data == "修改失败") {
+                    alert("修改失败！")
+                }
+                else if (data == "修改成功") {
+                    alert("修改成功！");
+                    OnSearch();
+                    //GetTable($("#selPages").val(), $("#txtTiao").val());
+                }
+
+            },
+            error: function () {
+                alert("修改失败！")
+            },
+        })
+    }
+
+    /*删除大类别*/
+    function DeleteBigType(Id) {
+        if (confirm("确定要删除吗？")) {
+            $.ajax({
+                type: "GET",
+                url: "/Product/DeleteBigType?Id=" + Id,
+                success: function (data) {
+                    if (data) {
+                        alert("删除成功！");
+                        OnSearch();
+                        //GetTable($("#selPages").val(), $("#txtTiao").val());
+                        Close();
+                    }
+                    else {
+                        alert("删除失败！")
+                    }
+                },
+                error: function () {
+                    alert("删除失败！")
+                },
+            })
+        }
+        return false;
+
+    }
+    /*跳转*/
+
+    //function TurnPage(obj) {//-----翻页---
+    //    var selPages = $("#selPages").val();
+    //    if ($("#txtTiao").val() == "") {
+
+    //        return false;
+    //    }
+
+    //    switch (obj) {
+    //        case 1: GetTable(selPages, 1);//----首页
+    //            $("#txtTiao").val(1);
+    //            $("#PageNum").html(1)
+    //            break;
+    //        case 2:;//----上一页
+    //            if ($("#txtTiao").val() == "1") {
+    //                return false;
+    //            }
+    //            else {
+    //                GetTable(selPages, $("#txtTiao").val() * 1 - 1);
+    //                $("#txtTiao").val($("#txtTiao").val() * 1 - 1);
+    //                $("#PageNum").html($("#txtTiao").val())
+    //            }
+    //            break;
+    //        case 3://----下一页
+    //            if ($("#txtTiao").val() == $("#PageCount").html()) {
+    //                return false;
+    //            }
+    //            else {
+    //                GetTable(selPages, $("#txtTiao").val() * 1 + 1);
+    //                $("#txtTiao").val($("#txtTiao").val() * 1 + 1);
+    //                $("#PageNum").html($("#txtTiao").val())
+    //            }
+
+    //            break;
+    //        case 4: GetTable(selPages, $("#PageCount").html());//----尾页
+
+    //            $("#txtTiao").val($("#PageCount").html());
+    //            $("#PageNum").html($("#PageCount").html())
+    //            break;
+    //        case 5: GetTable(selPages, $("#txtTiao").val());//----跳转
+    //            $("#PageNum").html($("#txtTiao").val());
+
+    //            break;
+
+    //    }
+    //}
+    /*取消修改或者添加*/
+    function Close() {
+        $(".PopBg").hide();
+        $("#PopEditContent,#PopAddContent").hide();
+    }
+    @* $(function () {
+        $.post("/Product/getDataBigType", { menuId: "@ViewData["myMenuId"]" }, function (data) {
+            $(".mytable").html(data)
+        })
+    })
+    function selPage() {//---设置显示数目
+        var selPages = $("#selPages").val();
+        GetTable(selPages, 1)
+        $("#txtTiao").val(1)
+        $("#PageNum").html(1)
+    }
+    function GetTable(selPages, Page) {//---得到mytable的数据
+        $.ajax({
+            type: "get",
+            url: "/Product/SearchBigType",
+            data: { "menuId": "@ViewData["myMenuId"]", "Name": $("#txtName").val(), "page": Page, "selpages": selPages },
+            success: function (data) {
+                selPages = selPages * 1
+                var tabledata = [];
+                var tabledata = data.split("-*-");
+                $("#mytable").html(tabledata[0]);
+                $("#AllCounts").html(tabledata[1])
+                $("#PageCount").html(Math.ceil(tabledata[1] * 1 / selPages))
+
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+*@
+
+   
+
+</script>
+<script type="text/javascript">
+    function OnSearch() {//---搜索
+        var Name = $("#txtName").val();
+        var params = "{Name:'" + Name + "'}";
+        $.post("/Product/SearchBigType", {
+            menuId: "@ViewData["myMenuId"]",
+            pageIndex: 1,
+            pageSize: 10,
+            params: params
+        }, function (data) {
+            var ss = data.split("-----");
+            $("#mytable").html("");
+            $("#mytable").append(ss[0]);
+            $("#PageCount").html(ss[1]);
+            $("#AllCounts").html(ss[2]);
+        });
+
+        var b = $.PageFunc("/Product/SearchBigType", "@ViewData["myMenuId"]", params);
+        $("#spanPage").html(b);
+        $("#txtTiao").val(1);
+        $("#PageNum").html(1);
+        //var selPages = $("#selPages").val();
+        //GetTable(selPages, 1)
+        //$("#txtTiao").val(1);
+        //$("#PageNum").html(1);
+    };
+
+</script>

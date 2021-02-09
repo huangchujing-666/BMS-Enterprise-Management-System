@@ -1,0 +1,120 @@
+﻿@model System.Data.DataTable
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script type="text/javascript">
+    function OnDelete(id) {
+        if (confirm("确认删除？")) {
+            $.ajax(
+                {
+                    type: "GET",
+                    url: "/DeleteDataSources/" + id,
+                    datatype: "text",
+                    success: function (data) {
+                        if (data == "true") {
+                            alert("删除成功！");
+                            $("tr #" + id).remove();
+                        }
+                        else {
+                            alert(data);
+                        }
+                    }
+                });
+        }
+    }
+</script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<style type="text/css">
+    #mytable {
+        border: solid #999; /* 设置边框属性；样式(solid=实线)、颜色(#999=灰) */
+        border-width: 1px 0 0 1px; /* 设置边框状粗细：上 右 下 左 = 对应：1px 0 0 1px */
+        font-size: 12px;
+        border: solid 1px #808080;
+        width: auto;
+        border-collapse: collapse;
+    }
+
+        #mytable caption {
+            font-size: 12px;
+            font-weight: bolder;
+        }
+
+        #mytable th, table td {
+            border: solid #999;
+            height: 25px;
+            border-width: 0 1px 1px 0;
+            padding: 2px;
+        }
+
+        #mytable td {
+            height: 25px;
+            width: auto;
+            text-align: center;
+        }
+
+    #Div {
+        margin-top: 10px;
+        width: 100%;
+        height: 98%;
+        font-size: 12px;
+        color: #808080;
+        overflow-x: scroll;
+        overflow-y: scroll;
+    }
+</style>
+<div id="Div">
+    <table id="mytable" class="mytable">
+        @if (ViewData["Insert"].ToString() == "true")
+        {
+            <tr>
+                <th colspan="20"><a href="/SystemManager/InsertDataSources" style="float: left;">添加数据源信息</a></th>
+            </tr>
+        }
+        <tr>
+            @{int i = 0;}
+            @foreach (System.Data.DataColumn cl in Model.Columns)
+            {
+                <th>@cl.ColumnName</th>
+                i++;
+            }
+        </tr>
+        @if (Model.Rows.Count > 0)
+        {
+            foreach (System.Data.DataRow dr in Model.Rows)
+            {
+            <tr id="@dr["编号"]">
+                @for (int j = 0; j < i; j++)
+                {
+                    if (j == i - 1)
+                    {
+                    <td>
+
+                        @if (dr[j].ToString().Contains("修改"))
+                        {
+                            <a href='/SystemManager/UpdateDataSources? id =@dr["编号"].ToString()& menuId =@ViewData["menuId"].ToString()' >修改</a>
+                        }
+                        @if (dr[j].ToString().Contains("删除"))
+                        {
+                            <a href="#" onclick='OnDelete('@dr["编号"].ToString()')'>删除</a>
+                        }
+                        @if (dr[j].ToString().Contains("该数据源更新日志"))
+                        {
+                            <a href='/SystemManager/SourcesUpdataLog? id =@dr["数据源编号"].ToString()& menuId =@ViewData["menuId"].ToString()'>该数据源更新日志</a>
+                        }
+                        @if (!dr[j].ToString().Contains("修改") && !dr[j].ToString().Contains("删除"))
+                        {
+                            @:无权限
+                        }
+                    </td>
+                    }
+                    else
+                    {
+                    <td>@dr[j]</td>
+                    }
+                }
+            </tr>
+            }
+        }
+    </table>
+</div>
+
+
+

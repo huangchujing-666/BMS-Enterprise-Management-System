@@ -1,0 +1,273 @@
+﻿<script src="~/js/jquery-1.8.2.min.js" type="text/javascript"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+
+<style type="text/css">
+    *
+    {
+        font-size: 12px;
+        padding: 0px;
+        margin: 0px;
+    }
+
+    ul
+    {
+        list-style-type: none;
+    }
+
+    .Container
+    {
+        margin-top: 30px;
+    }
+
+    a
+    {
+        text-decoration: none;
+    }
+
+        a:hover
+        {
+            color: red;
+        }
+
+    .mytable
+    {
+        min-width: 700px;
+    }
+</style>
+<div class="Container">
+    <div>
+        <div>销售统计</div>
+        <div id="SalesCount">
+            <table class="mytable"></table>
+        </div>
+    </div>
+    <div>
+        <div>今日销售统计</div>
+        <div id="SalesCount1">
+            <table class="mytable"></table>
+        </div>
+    </div>
+</div>
+
+<div class="Container">
+    <div>
+        <div>退款退货统计</div>
+        <div id="RefundCount">
+            <table class="mytable"></table>
+        </div>
+    </div>
+    <div>
+        <div>今日退款退货统计</div>
+        <div id="RefundCount1">
+            <table class="mytable"></table>
+        </div>
+    </div>
+</div>
+<div class="clearfix"></div>
+
+<div class="Container">
+    <div>
+        <div>商品统计</div>
+        <div id="ProductCount">
+            <table class="mytable">
+                <tr>
+                    <th></th>
+                    <th>库存</th>
+                    <th>总品牌数</th>
+                    <th>总类别数</th>
+                    <th>总款数</th>
+                    <th>总件数</th>
+                    <th>有图片sku数</th>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>所有</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><a class="aShow" title="" href="#">显示</a></td>
+                    <td>库存为0</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><a class="aShow" title="0" href="#">显示</a></td>
+                    <td>库存大于0</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><a class="aShow" title="5" href="#">显示</a></td>
+                    <td>库存大于5</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><a class="aShow" title="10" href="#">显示</a></td>
+                    <td>库存大于10</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><a class="aShow" title="20" href="#">显示</a></td>
+                    <td>库存大于20</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+
+
+</div>
+<div class="Container">
+    <div>
+        <div>今日来货统计</div>
+        <div id="GoodsCount">
+            <table class="mytable"></table>
+        </div>
+        <div>今日出货统计</div>
+        <div id="ShipmentCount">
+            <table class="mytable"></table>
+        </div>
+    </div>
+</div>
+<div class="clearfix"></div>
+<div class="Container">
+    <div style="float: left;">
+        <div>库存总数前20品牌</div>
+        <div id="BrandRank"></div>
+    </div>
+    <div style="float: left; margin-left: 20px;">
+        <div>库存总数前20类别</div>
+        <div id="TypeRank"></div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+
+    /*销售统计--总数*/
+    $.ajax({
+        type: "POST",
+        url: "/DataChart/ReturnInfo",
+        data: { "test": $("#tex").val() },
+        success: function (data) {
+            var s = "";
+            data = eval("(" + data + ")");
+            s += "<tr><th>支付笔数</th><th>支付总金额</th><th>销售总件</th><th>未支付笔数</th><th>未支付金额</th></tr>";
+            s += "<tr><td>" + data[0].Count + "</td><td>" + data[0].SumPrice + "</td><td>" + data[0].BalaceCount + "</td><td>" + data[0].BalaceCount1 + "</td><td>" + data[0].SumPrice1 + "</td></tr>"
+            $("#SalesCount").find("table").html(s);
+        }
+    })
+
+    /*销售统计--今日*/
+    $.ajax({
+        type: "POST",
+        url: "/DataChart/ReturnInfoT",
+        data: { Mintime: "1", Maxtime: "1" },
+        success: function (data) {
+            var s = "";
+            data = eval("(" + data + ")");
+            s += "<tr><th>支付笔数</th><th>支付总金额</th><th>销售总件</th><th>未支付笔数</th><th>未支付金额</th></tr>";
+            s += "<tr><td>" + data[0].Count + "</td><td>" + data[0].SumPrice + "</td><td>" + data[0].BalaceCount + "</td><td>" + data[0].BalaceCount1 + "</td><td>" + data[0].SumPrice1 + "</td></tr>"
+            $("#SalesCount1").find("table").html(s);
+        }
+    })
+
+
+
+    /*退款退货统计-总数*/
+    $.ajax({
+        type: "POST",
+        url: "/DataChart/Refund",
+        data: { "test": $("#tex").val() },
+        success: function (data) {
+            var s = "";
+            var s1 = "";
+            data = eval("(" + data + ")");
+
+            s += "<tr><th>总退款笔数</th><th>总退款金额</th><th>总退货笔数</th><th>总退货金额</th><th>总退货件数</th></tr>";
+            s += "<tr><td>" + data[0].Refund + "</td><td>" + data[0].RefundM + "</td><td>" + data[0].ReturnGoods + "</td><td>" + data[0].ReturnGoodsM + "</td><td>" + data[0].ReturnBalance + "</td></tr>"
+            s1 += "<tr><th>今日退款笔数</th><th>今日退款金额</th><th>今日退货笔数</th><th>今日退货金额</th><th>今日退货件数</th></tr>";
+            s1 += "<tr><td>" + data[0].Refund1 + "</td><td>" + data[0].RefundM1 + "</td><td>" + data[0].ReturnGoods1 + "</td><td>" + data[0].ReturnGoodsM1 + "</td><td>" + data[0].ReturnBalance1 + "</td></tr>"
+            $("#RefundCount").find("table").html(s);
+            $("#RefundCount1").find("table").html(s1);
+        }
+    })
+
+
+    /*商品统计*/
+    $.ajax({
+        type: "POST",
+        url: "/DataChart/ReturnProduct",
+        data: { "test": $("#tex").val() },
+        success: function (data) {
+            var s = "";
+            data = eval("(" + data + ")");
+            var table = $("#ProductCount").find("table tr:eq(1)");
+            table.find("td:eq(2)").html(data[0].Brand);
+            table.find("td:eq(3)").html(data[0].TypeName);
+            table.find("td:eq(4)").html(data[0].Style);
+            table.find("td:eq(5)").html(data[0].Balance);
+            table.find("td:eq(6)").html(data[0].Imagefile);
+        }
+    })
+
+
+    /*出货统计--今日*/
+    $.post("/DataChart/GetShipmentReportT", {}, function (data) { $("#ShipmentCount").find("table").html(data); })
+
+
+    /*来货统计--近体*/
+    $.post("/DataChart/GetLaiHuoReportT", {}, function (data) { $("#GoodsCount").find("table").html(data); })
+
+    /*商品统计--根据库存显示*/
+    $(".aShow").each(function () {
+        $(this).click(function () {
+            var table = $(this).parent().parent();
+            $.post("/DataChart/ProductCount", { Balance: $(this).attr("title") }, function (data) {
+                data = eval("(" + data + ")");
+                //console.log(data);
+                table.find("td:eq(2)").html(data[0].Brand);
+                table.find("td:eq(3)").html(data[0].TypeName);
+                table.find("td:eq(4)").html(data[0].Style);
+                table.find("td:eq(5)").html(data[0].Balance);
+                table.find("td:eq(6)").html(data[0].Imagefile);
+            })
+        })
+    })
+
+    /*Top20 品牌以及类别*/
+    $.ajax({
+        type: "POST",
+        url: "/DataChart/TopBrand",
+        data: {},
+        success: function (data) {
+            var s = data.split("-*-");
+            $("#BrandRank").html(s[0]);
+            $("#TypeRank").html(s[1]);
+        }
+    })
+</script>

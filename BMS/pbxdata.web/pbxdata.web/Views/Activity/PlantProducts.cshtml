@@ -1,0 +1,204 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+
+
+<script src="~/js/DropDowndiv.js"></script>
+<script type="text/ecmascript">
+    $(function () {
+        $("#Serach").click(function () {
+
+            var Scode = $("#Scode").val() == null ? "" : $("#Scode").val();
+            var Style = $("#Style").val() == null ? "" : $("#Style").val();
+            var Cat = $("#Cat").val() == null ? "" : $("#Cat").val();
+            var Cat2 = $("#Cat2").val() == null ? "" : $("#Cat2").val();
+            var PlaseNo = $("#test").html();
+            var Params = "{ Scode: '" + Scode + "', Style: '" + Style + "', Cat: '" + Cat + "', Cat2: '" + Cat2 + "', PlaseNo: '" + PlaseNo + "' }";
+            $.post("/Activity/GetPlantProduct", {
+                menuId: $("#test").attr("title"),
+                pageIndex: 1,
+                pageSize: 10,
+                params: Params,
+            }, function (data) { $("#PlantProduct").html(""); var ss = data.split("-----"); $("#PlantProduct").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]);  })
+            var b = $.PageFunc("/Activity/GetPlantProduct", "@ViewData["myMenuId"]", Params);
+            $("#spanPage").prepend(b);
+            $("#txtTiao").val(1);
+            $("#PageNum").html(1);
+        })
+    })
+
+</script>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>PlantProducts</title>
+</head>
+<body>
+    <div>
+    <div id="test" title="@ViewData["myMenuId"]">@ViewBag.PlaseNo</div>
+    <span class="spanProperty">
+        <span class="spanPropertyName">货号：</span>
+        <input type='text' id='Scode' class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">款号：</span>
+        <input type='text' id='Style' class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">品牌：</span>
+        <input id="Cat" type="text" onclick="GetDropToBrand(this.id)" class="spanPropertyValue"/>
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">类别：</span>
+        <input id="Cat2" type="text" onclick="GetDropToType(this.id)" class="spanPropertyValue"/>
+    </span>
+        <br />
+    <input type="button"  value="查询"  class="spanPropertySearch" id="Serach"/>
+</div>
+<div id="PlantProduct">
+</div>
+<div class="divJump">
+        <span id="spanPage" style="font-weight:400;"></span>
+    共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span>条数据
+</div>
+    <div id="divShowPic" style="position: absolute"></div>
+<div class="PopBg"></div>
+<div id="Update" class="myPopdiv" style="margin-left:20%;width:502px;text-align:left;margin-top:-17%">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">修改价格</div>
+    <div class="PopContent">
+    <table>
+        <tr>
+            <td>吊牌价:</td>
+            <td><label id="Pricea"></label></td>
+            <td>零售价:</td>
+            <td><label id="Priceb"></label></td>
+        </tr>
+        <tr>
+            <td>VIP价:</td>
+            <td><label id="Pricec"></label></td>
+            <td>批发价:</td>
+            <td><label id="Pricee"></label></td>
+        </tr>
+        <tr>
+            <td>成本价:</td>
+            <td><label id="Priced"></label></td>
+            <td>店铺价:</td>
+            <td><input type="text" id="LocPrice" /></td>
+        </tr>
+        <tr>
+            <td>活动价:</td>
+            <td><input type="text"  id="ActivityPrice"/></td>
+            <td>活动库存:</td>
+            <td><input type="text"  id="Balance"/></td>
+        </tr>
+        <tr>
+            <td><input type="button" value="确定价格" onclick="OkPrice()"/></td>
+        </tr>
+    </table>
+        </div>
+</div>
+<script type="text/ecmascript">
+    //鼠标悬停 查看大图
+    function showPic(obj) {
+        var src = $(obj).attr("src");
+        var y = $(obj).offset().top;
+        var x = $(obj).offset().left;
+        $("#divShowPic").css("top", y - 60);
+        $("#divShowPic").css("left", x + 60);
+        $("#divShowPic").html("<img src='" + src + "' style='height:200px;width:200px' />")
+        $("#divShowPic").show();
+    }
+    //失去鼠标焦点 隐藏大图
+    function HidePic() {
+        $("#divShowPic").hide();
+    }
+
+    function selPage(url, menuid, obj) {
+        var params = JSON.stringify(obj).replace(/\"/g, "'");
+        console.log(obj);
+        $.post(url, {
+            menuId: menuid,
+            pageIndex: 1,
+            pageSize: $("#selPages").val(),
+            params: params,
+        }, function (data) { $("#PlantProduct").html(""); var ss = data.split("-----"); $("#PlantProduct").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+    }
+</script>
+
+
+<script type="text/javascript">
+
+    $.getDropDownList("#Cat");
+    function GetDropToBrand(e) {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Productstock/Brand",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+                var d1 = eval(data);
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].BrandAbridge + "'>" + d1[i].BrandName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }
+
+
+    $.getDropDownList("#Cat2");
+    function GetDropToType(e) {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Productstock/Type",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+
+                var d1 = eval(data);
+
+
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].TypeNo + "'>" + d1[i].TypeName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+
+</script>
+</body>
+</html>

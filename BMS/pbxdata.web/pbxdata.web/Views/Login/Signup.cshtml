@@ -1,0 +1,162 @@
+﻿<!-- bootstrap -->
+<link href="~/Css/MyCss/bootstrap-overrides.css" rel="stylesheet" />
+<link href="~/Css/MyCss/bootstrap-responsive.css" rel="stylesheet" />
+<link href="~/Css/MyCss/bootstrap.css" rel="stylesheet" />
+
+<!-- global styles -->
+<link href="~/Css/MyCss/icons.css" rel="stylesheet" />
+<link href="~/Css/MyCss/layout.css" rel="stylesheet" />
+<link href="~/Css/MyCss/elements.css" rel="stylesheet" />
+<!-- libraries -->
+
+<link href="~/Css/MyCss/font-awesome.css" rel="stylesheet" />
+
+<!-- this page specific styles -->
+<link href="~/Css/MyCss/signup.css" rel="stylesheet" />
+
+<!-- open sans font -->
+@*<link href='http://fonts.useso.com/css?family=Open+Sans:300italic,400italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css' />*@
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<div class="header">
+    <h2>BMS</h2>
+</div>
+<br />
+<div class="row-fluid login-wrapper">
+    <div class="box">
+        <div class="content-wrap">
+            <h6>注 册</h6>
+            <div >用户名：<input id="txtReuser" class="span12" type="text" placeholder="用户名" /><label id="labUserCheck" style="color: red; font-size: 0.5em; text-align: right"></label></div>
+            <div >密　码：<input id="txtRepwd" class="span12" type="password" placeholder="密  码" /></div>
+            <div >姓　名：<input id="txtReName" class="span12" type="text" placeholder="姓　名" /></div>
+
+            <div  style="line-height:50px; ">
+                @*<label class="lab" style="" >性　别</label>*@
+                <span >性　别：</span>
+                <span style="display:-moz-inline-box; display:inline-block;width:194px;text-align:center">
+                男<input style="" type="radio" name="sex" value="1" checked="checked" />&nbsp;&nbsp;&nbsp;&nbsp;女<input style="width: 15px" type="radio" name="sex" value="0" />
+                </span>
+            </div>
+            <div >电　话：<input id="txtReTelphone" class="span12" type="text" placeholder="电　话" /><label id="labPhoneCheck" style="color: red; font-size: 0.5em; text-align: right"></label></div>
+            <div >地　址：<input id="txtReAddress" class="span12" type="text" placeholder="地　址" /></div>
+            <div >邮　箱：<input id="txtReEmail" class="span12" type="text" placeholder="邮　箱" /></div>
+             <label id="labEmailCheck" style="color: red; font-size: 0.5em;"></label>
+            <div >验证码：<input id="txtCheckCode" class="span12" type="text" placeholder="验证码" /></div>
+          <div id="divCheckCode" onclick="ChangeCode()"></div><div style="color:red;">点击刷新验证码</div>
+            <div class="action">
+                <button class="btn-glow primary signup" onclick="UserRegistered()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="span4 already">
+        <p>已经有帐号了!</p>
+        <a href="~/Login/Index">返回登录</a>
+    </div>
+</div>
+
+<!-- scripts -->
+<script src="~/js/bootstrap.min.js"></script>
+<script src="~/js/jquery-latest.js"></script>
+<script src="~/js/theme.js"></script>
+
+
+<script type="text/javascript">
+
+
+    function UserRegistered() {
+        console.log("111");
+        var UserName = $("#txtReuser").val().trim();
+        var Password = $("#txtRepwd").val().trim();
+        var RealName = $("#txtReName").val().trim();
+        var Sex = $("input[name=sex]:checked").val();
+        var txtReTelphone = $("#txtReTelphone").val().trim();
+        var txtReAddress = $("#txtReAddress").val().trim();
+        var txtReEmail = $("#txtReEmail").val().trim();
+        var CheckCode = $("#txtCheckCode").val().trim();
+        if (UserName == "" || Password == "" || RealName == "" || txtReTelphone == "" || txtReAddress == "" || txtReEmail == "") {
+            alert("请把信息输入完整!")
+            return;
+        }
+        console.log("22");
+
+        ///检测帐号是否已注册
+        if ($("#labUserCheck") == "该帐户已注册!") {
+            return;
+        }
+        console.log("33");
+        ///手机号码格式
+        if (txtReTelphone != "") {//判断
+            var reg = /^(((13[0-9]{1})|15[0-9]{1}|18[0-9]{1})+\d{8})$/;
+            if (!reg.test(txtReTelphone)) {
+                $("#labPhoneCheck").html("手机号格式不正确!");
+                return;
+            }
+            else {
+                $("#labPhoneCheck").html("");
+            }
+        }
+        console.log("44");
+        ///邮箱格式
+        if (txtReEmail != "") {//判断
+            var reg = /^([a-zA-Z0-9_-])+@@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/;
+            if (!reg.test(txtReEmail)) {
+                $("#labEmailCheck").html("邮箱格式不正确!");
+                return;
+            }
+            else {
+                $("#labEmailCheck").html("");
+            }
+        }
+        
+        ///验证码
+        if ($("#divCheckCode").html() != CheckCode) {
+            alert("验证码错误!"); return;
+        }
+        $.ajax({
+            type: "POST",
+            url: "/Login/UserRegistered?UserName=" + UserName + "&Password=" + Password + "&RealName=" + RealName + "&Sex=" + Sex + "&txtReTelphone=" + txtReTelphone + "&txtReAddress=" + txtReAddress + "&txtReEmail=" + txtReEmail + "&CheckCode=" + CheckCode,
+            success: function (data) {
+                alert(data);
+
+            },
+            error: function () {
+                alert("error")
+            },
+
+        })
+    }
+
+
+    ///获取用户名查看是否已注册
+    $("#txtReuser").focusout(function () {
+        var UserName = $("#txtReuser").val().trim();
+        $.ajax({
+            type: "GET",
+            url: "/Login/CheckUserName?UserName=" + UserName,
+            success: function (data) {
+                $("#labUserCheck").html(data)
+            },
+            error: function () {
+                alert("error!")
+            }
+        })
+
+    })
+
+
+
+    ///验证码
+    function ChangeCode() {
+        $.ajax({
+            type: "POST",
+            url: "/Login/CheckCode",
+            success: function (data) {
+                $("#divCheckCode").html(data)
+            },
+            error: function () {
+                alert("error!")
+            }
+        })
+    }
+    ChangeCode();
+</script>

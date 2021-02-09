@@ -1,0 +1,221 @@
+﻿@model pbxdata.model.productsourceConfig
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/textValidate.js"></script>
+<script type="text/javascript">
+    var Mod = function () {
+        this.Id = "";
+        this.SourceCode = "";
+        this.SourcesAddress = "";
+        this.UserId = "";
+        this.UserPwd = "";
+        this.DataSources = "";
+        this.DataSourcesLevel = "";
+        this.TimeStart = 0;
+        this.IsUpdate = "false";
+    }
+    function SunClick() {
+        var mod = new Mod();
+        mod.Id = '@ViewData["Id"]';
+        mod.SourceCode = $("#SourceCode").val();
+        mod.SourcesAddress = $("#SourcesAddress").val();
+        mod.UserId = $("#UserId").val();
+        mod.UserPwd = $("#UserPwd").val();
+        mod.DataSources = $("#DataSources").val();
+        mod.DataSourcesLevel = $("#DataSourcesLevel").val();
+        mod.TimeStart = $("#TimeStart").val();
+        mod.IsUpdate = '@ViewData["IsUpdate"]';
+        $.ajax(
+            {
+                type: "POST",
+                url: "/SystemManager/InsertDataSourcesPost",
+                data:mod,
+                datatype: "text",
+                success: function (data) {
+                    if (data == "true") {
+                        alert("保存成功！");
+                    }
+                    else if (data == "false") {
+                        alert("保存失败！");
+                    }
+                    else if (data == "Exist") {
+                        alert("已存在改供应商信息！");
+                    }
+                    else {
+                        alert(data + "保存失败！");
+                    }
+                }
+            }
+            );
+        return false;
+    }
+    function onsubmitClick() {
+        var temp = $("input[onblur]");
+        for (var i = 0; i < temp.length; i++) {
+            $(temp[i]).focus().blur();
+        }
+        temp = $("span");
+        var id = "";
+        for (var i = 0; i < temp.length; i++) {
+            //alert($(temp[i]).html());
+            if ($(temp[i]).html().trim().replace(" ", "") != "") {
+                id = $(temp[i]).attr("id").substr(3, $(temp[i]).attr("id").length);
+                $("#" + id).focus();
+                return false;
+            }
+        }
+        // alert("true");
+        SunClick();
+        return false;
+    }
+    function click1() {
+        window.history.go(-1);
+    }
+</script>
+<style type="text/css">
+    #mytable {
+        border: solid #999; /* 设置边框属性；样式(solid=实线)、颜色(#999=灰) */
+        border-width: 1px 0 0 1px; /* 设置边框状粗细：上 右 下 左 = 对应：1px 0 0 1px */
+        font-size: 12px;
+        border: solid 1px #808080;
+        width: auto;
+        border-collapse: collapse;
+    }
+
+        #mytable caption {
+            font-size: 12px;
+            font-weight: bolder;
+        }
+
+        #mytable th, table td {
+            border: solid #999;
+            height: 25px;
+            border-width: 0 1px 1px 0;
+            padding: 2px;
+        }
+
+        #mytable td {
+            height: 25px;
+            width: auto;
+            text-align:left;
+        }
+    #mytabe td input {
+        height:20px;
+    }
+    #customDiv {
+        margin-top: 10px;
+        width: 100%;
+        height: 78%;
+        font-size: 12px;
+        color: #808080;
+        overflow-x: scroll;
+    }
+</style>
+<div>
+    <form id="Insert" action="/InsertDataSourcesPost" onsubmit="return onsubmitClick()">
+        <table id="mytable">
+            @if (ViewData["IsUpdate"].ToString() == "true")
+            {
+                <caption>修改数据源信息</caption>
+            }
+            else
+            {
+                <caption>添加数据源信息</caption>
+            }
+            @if (ViewData["IsUpdate"].ToString() != "true")
+            {
+                <tr>
+                    <td>供应商编号：</td>
+                    <td>
+                        <select id="SourceCode">
+                            @foreach (var v in (ViewData["dicScode"] as Dictionary<string, string>))
+                            {
+                                <option  value="@v.Key">@v.Value</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>服务器地址：</td>
+                    <td>@Html.TextBox("SourcesAddress", "", new { onblur="IsIp('SourcesAddress')" })<span id="sp_SourcesAddress"></span></td>
+                </tr>
+                <tr>
+                    <td>服务器登陆名：</td>
+                    <td>@Html.TextBox("UserId", "", new { onblur="IsNull('UserId')" })<span id="sp_UserId"></span></td>
+                </tr>
+                <tr>
+                    <td>密码：</td>
+                    <td>@Html.TextBox("UserPwd", "", new { onblur="IsNull('UserPwd')" })<span id="sp_UserPwd"></span></td>
+                </tr>
+                <tr>
+                    <td>数据库名称：</td>
+                    <td>@Html.TextBox("DataSources", "", new { onblur="IsNull('DataSources')" })<span id="sp_DataSources"></span></td>
+                </tr>
+                <tr>
+                    <td>数据源等级：</td>
+                    <td>@Html.TextBox("DataSourcesLevel", "", new { onblur="IsNull('DataSourcesLevel')" })<span id="sp_DataSourcesLevel"></span></td>
+                </tr>
+                <tr>
+                    <td>下次启动间隔(秒)：</td>
+                    <td>@Html.TextBox("TimeStart", "", new { onblur="IsNull('TimeStart');IsInteger('TimeStart')" })<span id="sp_TimeStart"></span></td>
+                </tr>
+            }
+            else
+            {
+                string[] dic = (ViewData["dic"] as Dictionary<string, string>).Keys.ToArray();
+                <tr>
+                    <td>供应商编号：</td>
+                    <td>
+                        @Html.TextBox("SourceCode", Model.SourceCode,new { disabled = "disabled" })
+                    </td>
+                </tr>
+                if (dic.Contains("SourcesAddress"))
+                {
+                <tr>
+                    <td>服务器地址：</td>
+                    <td>@Html.TextBox("SourcesAddress",Model.SourcesAddress, new { onblur="IsIp('SourcesAddress')" })<span id="sp_SourcesAddress"></span></td>
+                </tr>
+                }
+                if (dic.Contains("UserId"))
+                {
+                <tr>
+                    <td>服务器登陆名：</td>
+                    <td>@Html.TextBox("UserId",Model.UserId,new { onblur="IsNull('UserId')" })<span id="sp_UserId"></span></td>
+                </tr>
+                }
+                if (dic.Contains("UserPwd"))
+                {
+                <tr>
+                    <td>密码：</td>
+                    <td>@Html.TextBox("UserPwd",Model.UserPwd,new { onblur="IsNull('UserPwd')" })<span id="sp_UserPwd"></span></td>
+                </tr>
+                }
+                if (dic.Contains("DataSources"))
+                {
+                <tr>
+                    <td>数据库名称：</td>
+                    <td>@Html.TextBox("DataSources",Model.DataSources,new { onblur="IsNull('DataSources')" })<span id="sp_DataSources"></span></td>
+                </tr>
+                }
+                if (dic.Contains("DataSourcesLevel"))
+                {
+                <tr>
+                    <td>数据源等级：</td>
+                    <td>@Html.TextBox("DataSourcesLevel",Model.DataSourcesLevel,new { onblur="IsNull('DataSourcesLevel')" })<span id="sp_DataSourcesLevel"></span></td>
+                </tr>
+                }
+                if (dic.Contains("DataSourcesLevel"))
+                {
+                <tr>
+                    <td>下次启动间隔(秒)：</td>
+                    <td>@Html.TextBox("TimeStart", Model.TimeStart.ToString(), new { onblur="IsNull('TimeStart');IsInteger('TimeStart')" })<span id="sp_TimeStart"></span></td>
+                </tr>
+                }
+            }
+            <tr>
+                <td colspan="2">
+                    <input type="submit" style="float: left;" value="保存" /><input type="button" value="返回" onclick="click1()" />@*<a href="javascript:history.go(-1);" style="float: left; margin-top: 4px;">返回</a>*@
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>

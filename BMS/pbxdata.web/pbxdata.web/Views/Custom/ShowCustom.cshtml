@@ -1,0 +1,599 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<script src="~/js/pageIndex.js"></script>
+
+<style type="text/css">
+    *
+    {
+        margin: 0px;
+        padding: 0px;
+    }
+
+    header
+    {
+        border: 1px solid #DDDDDD;
+        background-color: #F4F4F4;
+        padding: 5px;
+    }
+
+        /*header input
+        {
+            height: 20px;
+        }
+
+        header li
+        {
+            float: left;
+            margin-left: 5px;
+            margin-top: 7px;
+        }
+
+        header a
+        {
+            display: inline-block;
+            margin-left: 5px;
+            height: 18px;
+            width: 70px;
+            text-align: center;
+            line-height: 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            border: 1px solid gray;
+            background: linear-gradient(to top,#DADADA,white);
+        }
+
+            header a:hover
+            {
+                color: red;
+            }
+
+            header a:active
+            {
+                background: linear-gradient(to top,white,#DADADA);
+            }*/
+
+    .divContainer
+    {
+        border: solid 1px lightblue;
+        overflow: hidden;
+    }
+
+    .divclose
+    {
+        position: absolute;
+        right: 8px;
+        top: 3px;
+        cursor: pointer;
+        font-size: 2em;
+        font-weight: bolder;
+        width: 30px;
+        height: 30px;
+    }
+
+        .divclose:hover
+        {
+            color: red;
+        }
+
+    #PopEditContent, #PopAddContent
+    {
+        left: 30%;
+        top: 25%;
+        min-height: 200px;
+    }
+
+    #PopCheckOrder
+    {
+        left: 20%;
+        top: 10%;
+        height: 600px;
+    }
+
+        #PopCheckOrder img
+        {
+            width: 50px;
+            height: 50px;
+        }
+
+        #PopCheckOrder .PopContainer
+        {
+            height: 550px;
+            overflow: scroll;
+        }
+
+    .PopContainer
+    {
+        margin-top: 5px;
+        padding: 5px;
+        border: 1px solid lightblue;
+        background-color: white;
+        min-height: 100px;
+        min-width: 710px;
+    }
+
+    .PopContent
+    {
+        min-height: 100px;
+        width: 710px;
+    }
+
+    .btnClose
+    {
+        margin-left: 15px;
+    }
+
+    .PopContent li
+    {
+        margin-top: 5px;
+        text-align: right;
+        width: 220px;
+        float: left;
+    }
+
+        .PopContent li input
+        {
+            width: 150px;
+            height: 20px;
+        }
+
+    .PopContent select
+    {
+        width: 150px;
+    }
+
+    .PopContent span
+    {
+        display: inline-block;
+        width: 3px;
+        color: red;
+    }
+
+    #divShowPic
+    {
+        position: absolute;
+    }
+
+    .mytable td:last-child a
+    {
+        margin-left: 10px;
+    }
+
+        .mytable td:last-child a:last-child
+        {
+            margin-right: 10px;
+        }
+
+    .mytable a
+    {
+        text-decoration: none;
+    }
+
+        .mytable a:hover
+        {
+            color: red;
+        }
+
+    .liRemark
+    {
+        clear: both;
+        text-align: left!important;
+    }
+
+        .liRemark textarea
+        {
+            width: 300%;
+            height: 50px;
+        }
+
+    #TBAddress
+    {
+        min-width: 708px !important;
+    }
+</style>
+
+@*<header id="SearchHeader">
+</header>*@
+<header id="SearchHeader" style="width:100%; padding-top:10px;">
+
+</header>
+<div id="divContainer">
+    <table id="mytable" class="mytable" border="0" cellpadding="0" cellspacing="0">
+    </table>
+    @*<div id="mytable" class="mytable" style="width:100%; padding-top">
+
+    </div>*@
+    <div class="divJump" style="">
+        <span id="spanPage" style="font-weight: 400;"></span>
+        共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span>条数据
+       @* <select id="selPages" onchange="selPage()">
+            <option>1</option>
+            <option>5</option>
+            <option selected="selected">10</option>
+            <option>20</option>
+            <option>50</option>
+            <option>100</option>
+        </select>
+        <a href="#" onclick="TurnPage(1)">首页</a>
+        <a href="#" onclick="TurnPage(2)">上一页</a>
+        <input type="text" id="txtTiao" name="txtTiao" value="1" style="width: 35px;" onkeyup="OnTiaoChange();" />
+        <a href="#" onclick="TurnPage(3)">下一页</a>
+        <a href="#" onclick="TurnPage(4)">尾页</a>
+        <a href="#" onclick="TurnPage(5)">跳转</a>
+        共<span id="PageCount"></span>页&nbsp;&nbsp;当前第<span id="PageNum"></span>页&nbsp;&nbsp;共<span id="AllCounts"></span>条数据*@
+    </div>
+</div>
+<div id="PopAddContent" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: left;">添加客户信息(<span style="color: red">*为必填</span>)</div>
+    <div class="PopContainer">
+        <div class="PopContent">
+            <ul>
+                <li>客户ID:<input type="text" id="txtAddCustomerId" /><span>*</span></li>
+                <li>店铺/平台:<input type="text" id="txtAddShop" /><span>*</span></li>
+                <li>联系人:<input type="text" id="txtAddContactperson" /><span>*</span></li>
+                <li>性别:<select id="selAddSex">
+                    <option value="">请选择</option>
+                    <option value="0">女</option>
+                    <option value="1">男</option>
+                </select><span>*</span></li>
+                <li>年龄:<input type="text" id="txtAddAge" /><span></span></li>
+                <li>生日:<input type="date" id="txtAddBirthday" /><span></span></li>
+                <li>身份证:<input type="text" id="txtAddIDNumber" /><span></span></li>
+                <li>电话:<input type="text" id="txtAddTelephone" /><span></span></li>
+                <li>手机号:<input type="text" id="txtAddPhone" /><span></span></li>
+                <li>微信:<input type="text" id="txtAddWeixin" /><span></span></li>
+                <li>QQ:<input type="text" id="txtAddQQNo" /><span></span></li>
+                <li>用户等级:<input type="text" id="txtAddCustomerLevel" /><span>*</span></li>
+                <li class="liRemark">备注:<textarea id="txtAddRemark"></textarea><span></span></li>
+            </ul>
+            <div class="clearfix"></div>
+            <div style="margin-top: 10px;">
+                <input type="button" value=" 保   存 " onclick="SaveAdd()" /><input type="button" class="btnClose" value=" 关   闭 " onclick="    Close()" />
+            </div>
+        </div>
+    </div>
+</div>
+<div id="PopEditContent" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: left;">修改客户信息</div>
+    <div class="PopContainer">
+        <div class="PopContent">
+        </div>
+        <div class="AddressPopContent"></div>
+        <div class="clearfix"></div>
+        <div style="margin-top: 10px;">
+            <input type="button" value=" 保   存 " onclick="SaveEdit()" /><input type="button" class="btnClose" value=" 关   闭 " onclick="    Close()" />
+        </div>
+    </div>
+</div>
+<div id="PopCheckOrder" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: left;">查看客户订单信息</div>
+    <div class="PopContainer">
+        <div id="CheckOrderContent">
+            <table class="mytable"></table>
+        </div>
+        <div class="clearfix"></div>
+        <div style="margin-top: 10px;">
+            <input type="button" class="btnClose" value=" 关   闭 " onclick="    Close()" />
+        </div>
+    </div>
+</div>
+<div class="PopBg"></div>
+<div id="divShowPic" class="divShowPic"></div>
+<script type="text/javascript">
+
+    /*搜索权限*/
+    $.post("/Custom/SearchList", { "menuId": "@ViewData["myMenuId"]" }, function (data) { $("#SearchHeader").html(data); });
+
+    function serarchCustom() {
+        console.log("111");
+        var CustomerId = $("#txtSearchCustomerId").val();
+        var Shop = $("#txtSearchShop").val();
+        var Sex = $("#selSearchSex").find("option:selected").val();
+        var CustomerLevel = $("#txtSearchCustomerLevel").val();
+
+        var params = "{CustomerId:'" + CustomerId + "',Shop:'" + Shop + "',Sex:'" + Sex + "',CustomerLevel:'" + CustomerLevel + "'}";
+        $.post("/Custom/OnSearch", {
+            menuId: "@ViewData["myMenuId"]",
+            pageIndex: 1,
+            pageSize: 10,
+            params: params,  //搜索条件（参数）
+        }, function (data) { $(".mytable").html(""); var ss = data.split("-----"); $(".mytable").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+
+        var b = $.PageFunc("/Custom/OnSearch", "@ViewData["myMenuId"]", params);
+        $("#spanPage").html(b);
+        $("#txtTiao").val(1);
+        $("#PageNum").html(1);
+    }
+
+
+    function selPage(url, menuid, obj) {
+        var params = JSON.stringify(obj).replace(/\"/g, "'");
+        console.log(obj);
+        $.post(url, {
+            menuId: menuid,
+            pageIndex: 1,
+            pageSize: $("#selPages").val(),
+            params: params,
+        }, function (data) { $("#mytable").html(""); var ss = data.split("-----"); $("#mytable").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+
+    }
+ @*   /*搜索*/
+    function OnSearch() {
+        GetTable(1, $("#selPages").val().trim());
+        $("#txtTiao").val(1);
+        $("#PageNum").html(1);
+    }
+
+    /*获得table*/
+    function GetTable(obj, selpages) {
+        var lists = [];
+        lists.push($("#txtSearchCustomerId").val() == null ? "" : $("#txtSearchCustomerId").val().trim())
+        lists.push($("#txtSearchShop").val() == null ? "" : $("#txtSearchShop").val().trim())
+        lists.push($("#selSearchSex").find("option:selected").val() == null ? "" : $("#selSearchSex").find("option:selected").val())
+        lists.push($("#txtSearchCustomerLevel").val() == null ? "" : $("#txtSearchCustomerLevel").val().trim())
+        $.ajax({
+            type: "get",
+            url: "/Custom/OnSearch",
+            data: { "menuId": "@ViewData["myMenuId"]", "lists": lists.join(","), "page": obj, "selpages": selpages },
+            success: function (data) {
+                selpages = selpages * 1;
+                var tabledata = [];
+                var tabledata = data.split("-*-");
+                $("#mytable").html(tabledata[0]);
+                $("#AllCounts").html(tabledata[1])
+                $("#PageCount").html(Math.ceil(tabledata[1] * 1 / selpages))
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }*@
+    //function selPage() {//---------设置显示数目
+    //    $("#txtTiao").val(1);
+    //    $("#PageNum").html(1);
+    //    GetTable(1, $("#selPages").val().trim())
+    //}
+    /*跳转*/
+    //function TurnPage(obj) {//-----翻页---
+    //    var pages = $("#selPages").val().trim();
+    //    switch (obj) {
+    //        case 1: GetTable(1, pages);//----首页
+    //            $("#txtTiao").val(1);
+    //            $("#PageNum").html(1)
+    //            break;
+    //        case 2:;//----上一页
+    //            if ($("#txtTiao").val().trim() == "1") {
+    //                return false;
+    //            }
+    //            else {
+    //                GetTable($("#txtTiao").val().trim() * 1 - 1, pages)
+    //                $("#txtTiao").val($("#txtTiao").val().trim() * 1 - 1);
+    //                $("#PageNum").html($("#txtTiao").val().trim())
+    //            }
+    //            break;
+    //        case 3://----下一页
+    //            if ($("#txtTiao").val().trim() == $("#PageCount").html()) {
+    //                return false;
+    //            }
+    //            else {
+    //                GetTable($("#txtTiao").val().trim() * 1 + 1, pages);
+    //                $("#txtTiao").val($("#txtTiao").val().trim() * 1 + 1);
+    //                $("#PageNum").html($("#txtTiao").val().trim())
+    //            }
+
+    //            break;
+    //        case 4: GetTable($("#PageCount").html(), pages);//----尾页
+
+    //            $("#txtTiao").val($("#PageCount").html());
+    //            $("#PageNum").html($("#PageCount").html())
+    //            break;
+    //        case 5: GetTable($("#txtTiao").val().trim(), pages);//----跳转
+    //            $("#PageNum").html($("#txtTiao").val().trim());
+
+    //            break;
+
+    //    }
+    //}
+
+    /*关闭按钮取消修改*/
+    function Close() {
+        $(".PopBg").hide();
+        $(".myPopdiv").hide();
+    }
+
+    /*添加按钮*/
+    function AddClick() {
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopAddContent").show();
+        $(".PopContent").find("input[type=text]").val("");
+    }
+
+    /*确定添加*/
+    function SaveAdd() {
+        if ($("#txtAddCustomerId").val().trim() == "") {
+            return false;
+        }
+        var list = [];
+        list.push($("#txtAddCustomerId").val().trim());
+        list.push($("#txtAddShop").val().trim());
+        list.push($("#txtAddContactperson").val().trim());
+        list.push($("#selAddSex").find("option:selected").val());
+        list.push($("#txtAddAge").val().trim());
+        list.push($("#txtAddBirthday").val().trim());
+        list.push($("#txtAddIDNumber").val().trim());
+        list.push($("#txtAddTelephone").val().trim());
+        list.push($("#txtAddPhone").val().trim());
+        list.push($("#txtAddWeixin").val().trim());
+        list.push($("#txtAddQQNo").val().trim());
+        list.push($("#txtAddCustomerLevel").val().trim());
+        list.push($("#txtAddRemark").val().trim());
+        $.post("/Custom/AddCustomer", { "list": list }, function (data) { $.MsgBox.Alert("提示", data); GetTable($("#txtTiao").val().trim(), $("#selPages").val().trim()); })
+    }
+
+    /*编辑客户信息按钮*/
+    function EditCustomer(Id) {
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopEditContent").show();
+        $.post("/Custom/EditCustomer", { "Id": Id }, function (data) { $("#PopEditContent").find(".PopContent").html(data); GetAddress() })
+    }
+
+
+    /*确定修改客户信息*/
+    function SaveEdit() {
+        var list = [];
+        list.push($("#txtEditCustomerId").attr("title"));
+        list.push($("#txtEditCustomerId").val().trim());
+        list.push($("#txtEditShop").val().trim());
+        list.push($("#txtEditContactperson").val().trim());
+        list.push($("#selEditSex").find("option:selected").val());
+        list.push($("#txtEditAge").val().trim());
+        list.push($("#txtEditBirthday").val().trim());
+        list.push($("#txtEditIDNumber").val().trim());
+        list.push($("#txtEditTelephone").val().trim());
+        list.push($("#txtEditPhone").val().trim());
+        list.push($("#txtEditWeixin").val().trim());
+        list.push($("#txtEditQQNo").val().trim());
+        list.push($("#txtEditCustomerLevel").val().trim());
+        list.push($("#txtEditRemark").val().trim());
+        $.post("/Custom/SaveEdit", { "list": list }, function (data) { $.MsgBox.Alert("提示", data); GetTable($("#txtTiao").val().trim(), $("#selPages").val().trim()); })
+    }
+    /*获取客户地址*/
+    function GetAddress() {
+        $.post("/Custom/CustomerAddress", { CustomerId: $("#txtEditCustomerId").val().trim() }, function (data) { $("#PopEditContent").find(".AddressPopContent").html(data) })
+    }
+
+    //--省市区下拉框
+    var selProvince = "<select id='selProvice' onchange='selectProvince()'><option value=''>请选择</option></select>";
+    var selCity = " <select id='selCity' onchange='selectCity()'><option value=''>请选择</option></select>";
+    var selDistrict = "<select id='selDistrict' ><option value=''>请选择</option></select>";
+    /*添加客户地址*/
+    function AddAddress() {
+        if (ProviceExists() > 0) {
+            return false;
+        }
+        //$(".trAddAddress").html("<td></td><td><textarea></textarea></td><td><textarea></textarea></td><td><textarea></textarea></td><td><textarea></textarea></td><td><a href='#' onclick='SaveAddAddress()'>保存</a><a href='#' onclick='GetAddress()'>取消</a></td>")
+        $(".trAddAddress").html("<td></td><td>" + selProvince + "</td><td>" + selCity + "</td><td>" + selDistrict + "</td><td><textarea></textarea></td><td><a href='#' onclick='SaveAddAddress()'>保存</a><a href='#' onclick='GetAddress()'>取消</a></td>")
+        GetProvince("");
+    }
+    /*保存添加客户地址*/
+    function SaveAddAddress() {
+        if (ProviceExists() > 1) {
+            return false;
+        }
+        var list = [];
+        list.push($("#txtEditCustomerId").val().trim());
+        $(".trAddAddress").find("select").each(function () {
+            list.push($(this).find("option:selected").text());
+        })
+        $(".trAddAddress").find("textarea").each(function () {
+            list.push($(this).val().trim());
+        })
+        $.post("/Custom/SaveAddAddress", { list: list }, function (data) { GetAddress(); });
+    }
+    /*编辑客户地址*/
+    function EditAddress(obj) {
+        if (ProviceExists() > 0) {
+            return false;
+        }
+        var Provinces = $(obj).parent().parent().find(".tdProvinces").html();
+        var City = $(obj).parent().parent().find(".tdCity").html();
+        var District = $(obj).parent().parent().find(".tdDistrict").html();
+        var CusAddress = $(obj).parent().parent().find(".tdCusAddress").html();
+        $(obj).parent().parent().find(".tdProvinces").html(selProvince);
+        $(obj).parent().parent().find(".tdCity").html(selCity);
+        $(obj).parent().parent().find(".tdDistrict").html(selDistrict);
+        $(obj).parent().parent().find(".tdCusAddress").html("<textarea>" + CusAddress + "</textarea>");
+        $(obj).parent().html("<a  href='#' onclick='SaveEditAddress(this)' >保存</a><a href='#' onclick='GetAddress()'>取消</a>")
+        GetProvince(Provinces);
+        GetCity(City);
+        GetDistrict(District);
+
+    }
+    /*保存编辑客户地址*/
+    function SaveEditAddress(obj) {
+        if (ProviceExists() > 1) {
+            return false;
+        }
+        var list = [];
+        list.push($(obj).parent().attr("title"));
+        list.push($(obj).parent().parent().find(".tdProvinces").find("select").find("option:selected").text());
+        list.push($(obj).parent().parent().find(".tdCity").find("select").find("option:selected").text());
+        list.push($(obj).parent().parent().find(".tdDistrict").find("select").find("option:selected").text());
+        list.push($(obj).parent().parent().find(".tdCusAddress").find("textarea").val().trim());
+        $.post("/Custom/SaveEditAddress", { list: list }, function (data) { GetAddress(); });
+    }
+    /*删除客户地址*/
+    function DeleteAddress(Id) {
+        $.MsgBox.Confirm("提示", "确定要删除吗?", function () {
+            $.post("/Custom/DeleteAddress", { "Id": Id }, function (data) { if (data != "") { $.MsgBox.Alert("提示", data); } GetAddress(); })
+        })
+    }
+    /*删除按钮*/
+    function DeleteCustomer(Id) {
+        $.MsgBox.Confirm("提示", "确定要删除吗?", function () {
+            $.post("/Custom/DeleteCustomer", { "Id": Id }, function (data) { if (data != "") { $.MsgBox.Alert("提示", data); } GetTable($("#txtTiao").val().trim(), $("#selPages").val().trim()); })
+        })
+    }
+
+    /*根据省名称判断下拉框选中位置*/
+    function GetProvince(obj) {
+        $.post("/Custom/GetProvince", { RegionId: "-1", RegionName: obj }, function (data) { $("#selProvice").html(data) })
+    }
+
+    /*根据市名称判断下拉框选中位置*/
+    function GetCity(obj) {
+        $.post("/Custom/GetCity", { RegionId: "-1", RegionName: obj }, function (data) { $("#selCity").html(data) })
+    }
+
+    /*根据区名称判断下拉框选中位置*/
+    function GetDistrict(obj) {
+        $.post("/Custom/GetDistrict", { RegionId: "-1", RegionName: obj }, function (data) { $("#selDistrict").html(data) })
+    }
+
+    /*实时改变市下拉框*/
+    function selectProvince() {
+        var RegionId = $("#selProvice").find("option:selected").val();
+        $.post("/Custom/GetCity", { RegionId: RegionId, RegionName: "" }, function (data) { $("#selCity").html(data) })
+    }
+
+    /*实时改变区下拉框*/
+    function selectCity() {
+        var RegionId = $("#selCity").find("option:selected").val();
+        $.post("/Custom/GetDistrict", { RegionId: RegionId, RegionName: "" }, function (data) { $("#selDistrict").html(data) })
+    }
+
+    /*判断省市下拉框个数 如果存在无法点击其他编辑的时候或者添加新地址*/
+    function ProviceExists() {
+        var len = $("#selProvice").length;
+        return len;
+    }
+
+    /*查看客户订单信息*/
+    function CheckOrder(CustomerId) {
+        $("#PopCheckOrder").show();
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $.post("/Custom/CheckOrder", { CustomerId: CustomerId }, function (data) { $("#CheckOrderContent").find(".mytable").html(data); })
+    };
+
+    /*图片错误处理*/
+    function errorImg(obj) {
+        var src = $(obj).attr("src");
+        if (src == "") {
+            $(obj).parent().html("");
+        }
+        else {
+            $(obj).parent().attr("title", src);
+            $(obj).parent().html("Img error");
+        }
+    }
+</script>

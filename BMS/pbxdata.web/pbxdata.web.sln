@@ -1,0 +1,120 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pbxdata.web", "pbxdata.web\pbxdata.web.csproj", "{C87085F0-FDCB-40D4-AE8D-3122184B74A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pbxdata.model", "..\pbxdata.model\pbxdata.model.csproj", "{6672DDAD-A0F6-4098-955E-13194B0D5A84}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pbxdata.dal", "..\pbxdata.dal\pbxdata.dal.csproj", "{00228381-30BF-4D6C-BBFF-7FDAF0A5ADD2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pbxdata.idal", "..\pbxdata.idal\pbxdata.idal.csproj", "{E7B74671-993F-4DD8-8D89-9B579DD26568}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pbxdata.helpcommon", "..\pbxdata.helpcommon\pbxdata.helpcommon.csproj", "{EFDB6348-9213-4558-9D0E-C122A56780AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pbxdata.dalfactory", "..\pbxdata.dalfactory\pbxdata.dalfactory.csproj", "{4479BD08-CCD8-416C-A65A-7F293162A3F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pbxdata.bll", "..\pbxdata.bll\pbxdata.bll.csproj", "{263BA49F-6044-4094-8F18-92AB9F1DF613}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maticsoft.DBUtility", "..\pbxstock.dbutility\Maticsoft.DBUtility.csproj", "{7D9CAE0E-FA82-4464-91CF-3A324029149B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pbxdata.tmall", "..\pbxdata.tmall\pbxdata.tmall.csproj", "{49DE8F03-FF3E-46BE-9400-05B1DD9F5C9C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pbxdata.aliyun", "..\pbxdata.aliyun\pbxdata.aliyun.csproj", "{93E2DCCE-D2E4-419D-BC83-1A43C1C9D89B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pbxdata.ForexRefund", "..\pbxdata.ForexRefund\pbxdata.ForexRefund.csproj", "{D1505789-6DD6-4F3F-B49F-DCC3CE28615A}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 12
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://192.168.1.124:8080/tfs/defaultcollection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = ..\\pbxdata.aliyun\\pbxdata.aliyun.csproj
+		SccProjectName1 = ../pbxdata.aliyun
+		SccLocalPath1 = ..\\pbxdata.aliyun
+		SccProjectUniqueName2 = ..\\pbxdata.bll\\pbxdata.bll.csproj
+		SccProjectName2 = ../pbxdata.bll
+		SccLocalPath2 = ..\\pbxdata.bll
+		SccProjectUniqueName3 = ..\\pbxdata.dal\\pbxdata.dal.csproj
+		SccProjectName3 = ../pbxdata.dal
+		SccLocalPath3 = ..\\pbxdata.dal
+		SccProjectUniqueName4 = ..\\pbxdata.dalfactory\\pbxdata.dalfactory.csproj
+		SccProjectName4 = ../pbxdata.dalfactory
+		SccLocalPath4 = ..\\pbxdata.dalfactory
+		SccProjectUniqueName5 = ..\\pbxdata.helpcommon\\pbxdata.helpcommon.csproj
+		SccProjectName5 = ../pbxdata.helpcommon
+		SccLocalPath5 = ..\\pbxdata.helpcommon
+		SccProjectUniqueName6 = ..\\pbxdata.idal\\pbxdata.idal.csproj
+		SccProjectName6 = ../pbxdata.idal
+		SccLocalPath6 = ..\\pbxdata.idal
+		SccProjectUniqueName7 = ..\\pbxdata.model\\pbxdata.model.csproj
+		SccProjectName7 = ../pbxdata.model
+		SccLocalPath7 = ..\\pbxdata.model
+		SccProjectUniqueName8 = ..\\pbxdata.tmall\\pbxdata.tmall.csproj
+		SccProjectName8 = ../pbxdata.tmall
+		SccLocalPath8 = ..\\pbxdata.tmall
+		SccProjectUniqueName9 = pbxdata.web\\pbxdata.web.csproj
+		SccProjectName9 = pbxdata.web
+		SccLocalPath9 = pbxdata.web
+		SccProjectUniqueName10 = ..\\pbxstock.dbutility\\Maticsoft.DBUtility.csproj
+		SccProjectName10 = ../pbxstock.dbutility
+		SccLocalPath10 = ..\\pbxstock.dbutility
+		SccProjectUniqueName11 = ..\\pbxdata.ForexRefund\\pbxdata.ForexRefund.csproj
+		SccProjectName11 = ../pbxdata.ForexRefund
+		SccLocalPath11 = ..\\pbxdata.ForexRefund
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C87085F0-FDCB-40D4-AE8D-3122184B74A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C87085F0-FDCB-40D4-AE8D-3122184B74A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C87085F0-FDCB-40D4-AE8D-3122184B74A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C87085F0-FDCB-40D4-AE8D-3122184B74A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6672DDAD-A0F6-4098-955E-13194B0D5A84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6672DDAD-A0F6-4098-955E-13194B0D5A84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6672DDAD-A0F6-4098-955E-13194B0D5A84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6672DDAD-A0F6-4098-955E-13194B0D5A84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00228381-30BF-4D6C-BBFF-7FDAF0A5ADD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00228381-30BF-4D6C-BBFF-7FDAF0A5ADD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00228381-30BF-4D6C-BBFF-7FDAF0A5ADD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00228381-30BF-4D6C-BBFF-7FDAF0A5ADD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7B74671-993F-4DD8-8D89-9B579DD26568}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7B74671-993F-4DD8-8D89-9B579DD26568}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7B74671-993F-4DD8-8D89-9B579DD26568}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7B74671-993F-4DD8-8D89-9B579DD26568}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFDB6348-9213-4558-9D0E-C122A56780AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFDB6348-9213-4558-9D0E-C122A56780AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFDB6348-9213-4558-9D0E-C122A56780AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFDB6348-9213-4558-9D0E-C122A56780AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4479BD08-CCD8-416C-A65A-7F293162A3F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4479BD08-CCD8-416C-A65A-7F293162A3F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4479BD08-CCD8-416C-A65A-7F293162A3F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4479BD08-CCD8-416C-A65A-7F293162A3F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{263BA49F-6044-4094-8F18-92AB9F1DF613}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{263BA49F-6044-4094-8F18-92AB9F1DF613}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{263BA49F-6044-4094-8F18-92AB9F1DF613}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{263BA49F-6044-4094-8F18-92AB9F1DF613}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D9CAE0E-FA82-4464-91CF-3A324029149B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D9CAE0E-FA82-4464-91CF-3A324029149B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D9CAE0E-FA82-4464-91CF-3A324029149B}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{7D9CAE0E-FA82-4464-91CF-3A324029149B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D9CAE0E-FA82-4464-91CF-3A324029149B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49DE8F03-FF3E-46BE-9400-05B1DD9F5C9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49DE8F03-FF3E-46BE-9400-05B1DD9F5C9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49DE8F03-FF3E-46BE-9400-05B1DD9F5C9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49DE8F03-FF3E-46BE-9400-05B1DD9F5C9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93E2DCCE-D2E4-419D-BC83-1A43C1C9D89B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93E2DCCE-D2E4-419D-BC83-1A43C1C9D89B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93E2DCCE-D2E4-419D-BC83-1A43C1C9D89B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93E2DCCE-D2E4-419D-BC83-1A43C1C9D89B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1505789-6DD6-4F3F-B49F-DCC3CE28615A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1505789-6DD6-4F3F-B49F-DCC3CE28615A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1505789-6DD6-4F3F-B49F-DCC3CE28615A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1505789-6DD6-4F3F-B49F-DCC3CE28615A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

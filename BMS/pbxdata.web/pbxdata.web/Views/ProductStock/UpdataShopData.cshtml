@@ -1,0 +1,132 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<script type="text/javascript">
+    var Url = "http://112.74.75.82:8081/Update/";
+    $(function () {
+        load()
+    })
+    function load() {
+        $.ajax(
+            {
+                type: "POST",
+                url: "/ProductStock/PageFristShowShop",
+                datatype: "text",
+                success: function (data) {
+                    $("#Balance").html(data);
+                }
+            })
+    }
+    ///商品更新 
+    function ShopBalance(Def3, Thread) {
+        var threadcount = Thread;
+        window.location.href = Url + "ProductUpdate/" + Def3 + "/" + threadcount;
+    }
+    //停止库存更新
+    function StopShopBalance(Def3) {
+        window.location.href = Url + "StopProduct/" + Def3 + "/" + "true";
+    }
+    ///刷新数据
+    function Refresh() {
+        $.ajax(
+            {
+                type: "POST",
+                url: "/ProductStock/PageFristShowShop",
+                datatype: "text",
+                success: function (data) {
+                    $("#Balance").html(data);
+                }
+            })
+    }
+    //设置时间
+    var table = "";
+    function SetTimeOut(tablename) {
+        table = tablename;
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#Insert").show();
+
+    }
+    ///确认设置
+    function SetTime() {
+        var time = $("#Time").val();
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/ProductStock/SetTimeOutShop",
+                data: {
+                    "Id": table,
+                    "SetTime": time
+                },
+                success: function (data) {
+                    $(".PopBg").hide();
+                    $("#Insert").hide();
+                    alert(data)
+                    Refresh();
+                }
+            })
+    }
+    var Def3 = "";
+    function SetThread(def3) {
+        Def3 = def3;
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#SetThread").show();
+    }
+    //确认设置
+    function Thread() {
+        var Thread = $("#Thread").val();
+        $.ajax(
+            {
+                type: "POST",
+                url: "/ProductStock/SetThread",
+                data: {
+                    "Thread": Thread,
+                    "Def3": Def3
+                },
+                datatype: "text",
+                success: function (data) {
+                    $(".PopBg").hide();
+                    $("#SetThread").hide();
+                    alert(data)
+                    Refresh();
+                }
+            })
+    }
+
+    //关闭弹窗
+    function Close() {
+        $(".PopBg").hide();
+        $(".myPopdiv").hide();
+    }
+</script>
+<style type="text/css">
+    .PopContent
+    {
+        min-height: 50px;
+        min-width: 200px;
+    }
+</style>
+<div id="FunctionBalance">
+    <table id="Balance" class="mytable" rules="all">
+    </table>
+</div>
+<div class="PopBg"></div>
+<div class="myPopdiv" style="left: 30%;" id="Insert">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">设置更新时间间隔：</div>
+    <div class="PopContent">
+        <input type="text" id="Time" style="width: 50px;" /><input type="button" value="确认" onclick="SetTime()" />
+    </div>
+</div>
+<div class="PopBg"></div>
+<div class="myPopdiv" style="left: 30%;" id="SetThread">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">设置线程个数：</div>
+    <div class="PopContent">
+        <input type="text" id="Thread" style="width: 50px;" /><input type="button" value="确认" onclick="Thread()" />
+    </div>
+</div>

@@ -1,0 +1,102 @@
+﻿@model IEnumerable<pbxdata.model.tableFiledPerssion>
+
+@{
+    ViewBag.Title = "表格列表";
+}
+
+<div style="color:#FF5F3E;font-weight:bolder;line-height:20px;">表格列表</div>
+
+
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<script>
+    $().ready(function () {
+        var count = 0;
+        $("#ckbTableAll").click(function () {
+            var c = $("input[name=ckbTable]");
+            c.each(function (i, n) {
+                if (count%2==0) {
+                    $(this).attr("checked", "checked");
+                }else {
+                    $(this).removeAttr("checked");
+                }
+            })
+            count++;
+        })
+    })
+
+</script>
+<div id="popDiv" class="mydiv" style="display: none;width:400px;height:300px;left:45%;top:40%;">
+    <div style="line-height:20px; text-align:right;border-bottom:solid 1px #808080;height:20px;">
+        <a onclick="javascript:closeDiv()" style="cursor:pointer;">X　</a>
+    </div>
+    <div>功能名称：<input value="" id="funName" /></div>
+    <div>菜单名称：<select id="menuSelect"></select> </div>
+    <div>功能排序：<input value="" id="funIndex" /></div>
+
+    <div><button id="btnFunAdd" value="添加">添加</button></div>
+
+</div>
+<div id="bg" class="bg" style="display: none;"></div>
+<table class="mytable" rules="all">
+    <tr>
+        <th colspan="9" class="mytableadd">
+            @*@Html.ActionLink("添加", "adddata")*@
+            <div style="padding-top: 20px;">
+                @*<a href="#"  onclick="javascript: showDiv()" >添加</a>*@
+            </div>
+        </th>
+    </tr>
+    <tr>
+        <th><input type="checkbox" id="ckbTableAll"  style="width:10px;"/></th>
+        <th>
+            表格名称
+        </th>
+        <th>
+            字段等级
+        </th>
+        <th>
+            表格状态
+        </th>
+        <th>
+            字段状态
+        </th>
+        <th>
+            排序
+        </th>
+        <th>
+            操作人
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td><input type="checkbox" name="ckbTable" title="@Html.DisplayFor(modelItem => item.Id)"  style="width:10px;"/></td>
+        <td>
+            @Html.DisplayFor(modelItem => item.tableName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.tableLevel)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.tableNameState)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.tableFiledState)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.tableIndex)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UserId)
+        </td>
+        <td>
+            @Html.ActionLink("查看字段", "getFiled", new { id=item.Id })
+        </td>
+    </tr>
+}
+
+</table>

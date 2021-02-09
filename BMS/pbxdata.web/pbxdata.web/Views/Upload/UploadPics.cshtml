@@ -1,0 +1,26 @@
+﻿@*<form action="/Upload/UploadPictures" method="post" enctype="multipart/form-data">
+    <input type="file" name="FileUpload" />
+   <input type="submit" value="Upload" />
+    <div id="test"></div>
+</form>*@
+<script src="~/js/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+</script>
+<input type="button" value="Upload" onclick="test()" />
+<div id="divtest"></div>
+
+<script type="text/javascript">
+    function test() {
+        $.ajax({
+            type: "Get",
+            url: "/Upload/UploadPictures",
+            success: function (data) {
+                $("#divtest").html(data)
+            },
+            error: function () {
+                alert("error!")
+            },
+        })
+    }
+</script>

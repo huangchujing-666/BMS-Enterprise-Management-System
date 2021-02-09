@@ -1,0 +1,132 @@
+﻿@model IEnumerable<pbxdata.model.menu>
+
+@{
+    ViewBag.Title = "分配菜单权限";
+}
+
+@*<div id="navigateTop" style="color:#FF5F3E;font-weight:bolder;line-height:20px;">@ViewData["roleId"]->分配菜单权限</div>*@
+<div id="navigateTop" style="color: #FF5F3E; font-weight: bolder; line-height: 20px;"><span id="navigateTopRoleName"></span><span id="navigateTopMenuName"></span><span id="navigateTopFunName"></span></div>
+
+
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<script>
+    $().ready(function () {
+        //获取角色名称
+        //$.post('/PublicHelp/getRoleName', { roleId: "@ViewData["roleId"]" }, function (data) { $("#navigateTop").html(data + "->分配菜单权限") });
+        //获取角色名称
+        $.post('/PublicHelp/getRoleName', { roleId: "@ViewData["roleId"]" }, function (data) { $("#navigateTopRoleName").html(data + "->分配菜单权限"); });
+
+
+
+
+        var count = 0;
+        //全选
+        $("#ckbTableAll").click(function () {
+            var c = $("input[name=ckbTable]");
+            c.each(function (i, n) {
+                if (count % 2 == 0) {
+                    $(this).attr("checked", "checked");
+                } else {
+                    $(this).removeAttr("checked");
+                }
+            })
+            count++;
+        })
+
+        //分配权限
+        $("#aAllot").click(function () {
+            var s = "";
+            var c = $("input[name=ckbTable]");
+            c.each(function (i, n) {
+                if ($(this).attr("checked")) {
+                    s += $(this).attr("title") + ",";
+                }
+            })
+            //s = s.substring(s.length - 1, 1);
+
+            //把勾选的字段改为1（tableNameState(默认显示为1，不显示为0)）
+            $.post('/Role/allotMenu', { menuId: s,roleId:"@ViewData["roleId"]" }, function (data) { alert(data) })
+        })
+
+
+        //撤销权限
+        $("#aCancel").click(function () {
+            var s = "";
+            var c = $("input[name=ckbTable]");
+            c.each(function (i, n) {
+                if ($(this).attr("checked")) {
+                    s += $(this).attr("title") + ",";
+                }
+            })
+            //s = s.substring(s.length - 1, 1);
+
+            //把勾选的字段改为0（tableNameState(默认显示为1，不显示为0)）
+            $.post('/Role/cancelMenu', { menuId: s, roleId: "@ViewData["roleId"]" }, function (data) { alert(data) })
+        })
+
+        //ViewData["menuIdC"]
+        //遍历所有的check，分辨哪些存在权限，给予勾选
+        var menuIdC = "@ViewData["menuIdC"]";
+        var menuIdCs = menuIdC.split(",");
+        var c = $("input[name=ckbTable]");
+        c.each(function (i, n) {
+            for (var i = 0; i < menuIdCs.length; i++) {
+                if ($(this).attr("title") == menuIdCs[i]) {
+                    $(this).attr("checked", "checked");
+                }
+               
+            }
+                
+        })
+
+    })
+
+</script>
+
+
+<table class="mytable" rules="all">
+    <tr>
+        <th colspan="3" class="mytableadd">
+            @*@Html.ActionLink("添加", "adddata")*@
+            <div style="padding-top: 20px;">
+                @if (ViewData["menuFPQX"].ToString() == "1")
+                {
+                    <a href="#" id="aAllot">分配权限</a>
+                    <a href="#" id="aCancel">取消权限</a>
+                }
+
+
+                @Html.ActionLink("返回", "getRole", new {id=@ViewData["roleId"] })
+                @*<a href="~/Role/getRole?menuId=@ViewData["menuId"]" id="aReturn">返回</a>*@
+            </div>
+        </th>
+    </tr>
+    <tr>
+        <th>
+            <input type="checkbox" id="ckbTableAll" style="width: 10px;" /></th>
+        <th>菜单
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                <input type="checkbox" name="ckbTable" title="@Html.DisplayFor(modelItem => item.Id)"  style="width:10px;"/></td>
+            <td>
+                @Html.DisplayFor(modelItem => item.menuName)
+            </td>
+            <td>
+                @if (ViewData["funList"].ToString() == "1")
+                {
+                    @Html.ActionLink("功能列表", "allotFunPermisson", new { id = item.Id, roleid = @ViewData["roleId"] }) 
+                }
+            </td>
+        </tr>
+    }
+
+</table>

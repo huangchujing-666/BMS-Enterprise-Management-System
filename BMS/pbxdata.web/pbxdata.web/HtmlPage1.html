@@ -1,0 +1,389 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8;" />
+
+    <title></title>
+    <script src="js/jquery-1.8.2.min.js"></script>
+    <script src="js/divShow.js"></script>
+    <link href="Css/divShow.css" rel="stylesheet" />
+    <script src="js/pageIndex.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+
+    <style type="text/css">
+        *
+        {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        body
+        {
+            overflow: scroll;
+            overflow-x: hidden;
+        }
+
+        /*#aaa
+        {
+            width: 100px;
+            height: 100px;
+            font-size: 10px;
+            transition: width 2s, height 2s, transform 2s;
+        }
+
+            #aaa:hover
+            {
+                width: 200px;
+                height: 200px;
+                -webkit-transform: rotate(180deg);
+                transform: rotate(180deg);
+            }*/
+
+        .spanContainer
+        {
+            position: relative;
+        }
+
+            .spanContainer select
+            {
+                width: 125px;
+                height: 20px;
+            }
+
+            .spanContainer input[type='text']
+            {
+                position: absolute;
+                width: 105px;
+                right: 20px;
+                top: -4px;
+                height: 20px;
+            }
+
+        .txtPass
+        {
+            float: left;
+            margin-left: 2px;
+            width: 25px;
+            height: 25px;
+            text-align: center;
+        }
+
+        .liouter
+        {
+            padding: 5px;
+            border: 1px solid gray;
+            float: left;
+            margin-left: 10px;
+        }
+
+            .liouter img
+            {
+                width: 60px;
+                height: 60px;
+                cursor: pointer;
+            }
+
+        .PopImg
+        {
+            display: none;
+            position: absolute;
+            left: 50%;
+            top: 40%;
+            z-index: 100;
+        }
+
+            .PopImg img
+            {
+                width: 100px;
+                height: 100px;
+                margin-left: 0px;
+                margin-top: 0px;
+                cursor: pointer;
+                z-index: 100;
+            }
+
+        .button
+        {
+            float: left;
+            width: 100px;
+            margin: 0 0 0 100px;
+            height: 50px;
+            width: 100px;
+            border-radius: 5px;
+            border: none;
+            background: linear-gradient(to top, #DADADA, gray);
+            cursor: pointer;
+            line-height: 50px;
+            text-align: center;
+        }
+
+            .button:active
+            {
+                background: linear-gradient(to top, gray, #DADADA);
+            }
+
+        .Container
+        {
+            
+        }
+        .Container ul
+        {
+        }
+        .Container span
+        {
+            font-weight:bolder;
+            color:blue;
+        }
+        .ulCount
+        {
+            list-style-type: none;
+            margin-top: 10px;
+            
+        }
+
+            .ulCount li
+            {
+                float: left;
+                width: 200px;
+            
+            }
+        #divRank
+        {
+            margin-left:200px;
+            margin-top:10px;
+        }
+        #divRank .Content
+        {
+            float:left;
+            width:200px;
+            
+            
+        }
+            #divRank .Content:last-child
+            {
+                margin-left:200px;
+            }
+
+        #BrandContainer, #TypeContainer
+        {
+   
+        }
+       
+    </style>
+</head>
+<body>
+    <div style="font-family: STHupo; font-size: 2em; font-weight: bolder">></div>
+    <div class="divJump" id="divJump"></div>
+    <div class="divJump" id="divJump1"></div>
+    <div id="aa">123</div>
+    <div id="aaa">111</div>
+  
+    <!-- <ul>
+        <li class="liouter">
+            <img src="http://best-bms.pbxluxury.com/images/AJ/M0100/06288V7/06288V7/18_06288V7.jpg" /></li>
+        <li class="liouter">
+            <img src="http://best-bms.pbxluxury.com/images/AJ/M0100/06288V7/06288V7/17_06288V7.jpg" /></li>
+        <li class="liouter">
+            <img src="http://best-bms.pbxluxury.com/images/AJ/M0100/06288V7/06288V7/16_06288V7.jpg" /></li>
+        <li class="liouter">
+            <img src="http://best-bms.pbxluxury.com/images/AJ/M0100/06288V7/06288V7/15_06288V7.jpg" /></li>
+        <li class="liouter">
+            <img src="http://best-bms.pbxluxury.com/images/AJ/M0100/06288V7/06288V7/10_06288V7.jpg" /></li>
+        <li class="liouter">
+            <img src="http://best-bms.pbxluxury.com/images/AJ/M0100/06288V7/06288V7/13_06288V7.jpg" /></li>
+    </ul>
+    <div class="clearfix"></div>
+    <input type="password" maxlength="1" class="txtPass" />
+    <input type="password" maxlength="1" class="txtPass" />
+    <input type="password" maxlength="1" class="txtPass" />
+    <input type="password" maxlength="1" class="txtPass" />
+    <input type="password" maxlength="1" class="txtPass" />
+    <input type="password" maxlength="1" class="txtPass" />
+    <input type="button" onclick="Show()" value="show" />
+
+    <div class="PopBg"></div>
+    <div class="PopImg"></div>-->
+    <div class="button" onclick="abc()">12345</div>
+    <div id="diverror"></div>
+    <button id="btn1">退款</button>
+   <!-- <select id="selProvice" onchange="selectProvie()"><option value="">请选择</option></select>
+    <select id="selCity" onchange="selectCity()"><option value="">请选择</option></select>
+    <select id="selDistrict" ><option value="">请选择</option></select>-->
+</body>
+
+</html>
+
+<script type="text/javascript">
+
+    //$.post("/Upload/GetProvice", { RegionId: "" }, function (data) { $("#selProvice").html(data) })
+
+    //function selectProvie() {
+    //    var RegionId = $("#selProvice").find("option:selected").val();
+    //    $.post("/Upload/GetCity", { RegionId: RegionId }, function (data) { $("#selCity").html(data) })
+    //}
+    //function selectCity() {
+    //    var RegionId = $("#selCity").find("option:selected").val();
+    //    $.post("/Upload/GetDistrict", { RegionId: RegionId }, function (data) { $("#selDistrict").html(data) })
+    //}
+
+    
+
+    //$(function () {
+    //    $.MsgBox.Alert("下载", "<a href='#'>1</a><br /><a href='#'>2</a><br /><a href='#'>3</a><br /><a href='#'>4</a><br />")
+    //})
+
+
+
+
+    $(".liouter").find("img").each(function () {
+        $(this).click(function () {
+            $(".PopBg").height($(document).height());
+            $(".PopBg").show();
+            $(".PopImg").html("<img src='" + $(this).attr("src") + "' onclick='hideImg()' />")
+            $(".PopImg").show("explode");
+            ScrollPic("PopImg")
+        })
+    })
+    function hideImg() {
+
+        $(".PopImg").hide("explode");
+        $(".PopBg").hide();
+
+    }
+    function ScrollPic(obj) {
+        var scrollFunc = function (e) {
+            var direct = 0;
+            ee = e || window.event;
+            if (e.wheelDelta > 0) {
+                var add = $("." + obj).find("img").css("width");
+                var x = $("." + obj).find("img").css("margin-left");
+                var y = $("." + obj).find("img").css("margin-top");
+                add = parseInt(add)
+                x = parseInt(x)
+                y = parseInt(y)
+                if (add < 700) {
+                    $("." + obj).find("img").css("width", add + 24);
+                    $("." + obj).find("img").css("height", add + 24);
+                    $("." + obj).find("img").css("margin-left", x - 12);
+                    $("." + obj).find("img").css("marginTop", y - 12);
+                    console.log(x + "," + y)
+                }
+
+            }
+            else {
+                var add = $("." + obj).find("img").css("width");
+                var x = $("." + obj).find("img").css("margin-left");
+                var y = $("." + obj).find("img").css("margin-top");
+                add = parseInt(add);
+                x = parseInt(x);
+                y = parseInt(y);
+                if (add > 300) {
+                    $("." + obj).find("img").css("width", add - 24);
+                    $("." + obj).find("img").css("height", add - 24);
+                    $("." + obj).find("img").css("margin-left", x + 12);
+                    $("." + obj).find("img").css("margin-top", y + 12);
+
+                }
+
+            }
+
+
+
+        }
+
+        window.onmousewheel = document.onmousewheel = scrollFunc; //IE/Opera/Chrome/Safari 
+    }
+    function CloseScroll() {
+
+        window.onmousewheel = document.onmousewheel = 0; //IE/Opera/Chrome/Safari
+    }
+
+
+
+
+    var KeCode = "";
+    $(".txtPass").each(function () {
+        $(this).bind("input propertychange", function () {
+            if ($(this).val() != "") {
+                $(this).next(".txtPass").focus();
+            }
+            else {
+                $(this).prev(".txtPass").focus();
+                Check();
+            }
+
+        })
+
+    })
+    function Check() {
+        if (KeCode == "8") {
+            console.log(KeCode)
+        }
+    }
+
+    function Show() {
+        var Password = "";
+        $(".txtPass").each(function () {
+            Password += $(this).val();
+        })
+        if (Password.length == 6) {
+            alert(Password);
+        }
+
+    }
+    function GetCode(e) {
+        e = e || event;
+        KeCode = e.keyCode;
+    }
+    document.onkeydown = GetCode;
+    colors = [];
+    colors.push("1");
+    colors.push("2");
+    colors.push("3");
+    colors.push("4");
+    colors.push("5");
+    colors.push("6");
+    var a = colors.map(function (item) {
+        return item * 2;
+    })
+    //var s = setInterval("aaa()", 1000);
+    //function aaa() {
+    //    var date = new Date();
+    //    $("#aa").html(date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() )
+    //}
+
+    //$(function () {
+    //    $.MsgBox.Alert("提示","1.fj是SB<br />2.是个猪")
+    //})
+
+    function abc() {
+        $.ajax({
+            type: "POST",
+            url: "/Upload/GetExcell",
+            data: { "test": $("#tex").val() },
+            success: function (data) {
+                //console.log(data);
+                $("#aa").html(data);
+                
+
+            }
+        })
+    }
+
+
+    function errorImg(obj) {
+        $(obj).hide();
+        $("#diverror").append("<div>update product set Imagefile='' where Imagefile='" + $(obj).attr("src") + "';<div/>");
+    }
+    $(function () {
+
+
+        //$.CreatJump.haveBal();
+        //$.CreatJump.NoBal1();
+    })
+
+    //CreatJump();
+    
+   
+</script>
+

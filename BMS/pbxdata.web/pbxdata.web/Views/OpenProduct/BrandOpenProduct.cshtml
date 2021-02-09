@@ -1,0 +1,138 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="~/js/textValidate.js"></script>
+<script type="text/javascript" src="~/js/My97DatePicker/WdatePicker.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<script type="text/javascript">
+    ///全选所有
+    $(function () {
+        $("#all").change(function () {
+            if ($(this).attr("checked") == "checked") {
+                $("#Vencode").find("input[type=checkbox]").attr("checked", true)
+            }
+            else {
+                $("#Vencode").find("input[type=checkbox]").attr("checked", false)
+            }
+        })
+        
+    })
+    $(function ()
+    {
+        $("#CheckAll").hide();
+        load();
+
+    })
+    function load()
+    {
+        $.ajax(
+    {
+        type: "post",
+        datatype: "text",
+        url: "/OpenProduct/ShowProductSource",
+        success: function (data) {
+            $("#Source").html(data);
+        }
+    })
+    }
+    ///全选某一项
+    function CheckAll(Id) {
+        if ($("#" + Id).attr("checked") == "checked") { // 全选 
+            $("input[name=" + Id + "]").each(function () {
+                $(this).attr("checked", true);
+            });
+        }
+        else { // 取消全选 
+            $("input[name=" + Id + "]").each(function () {
+                $(this).attr("checked", false);
+            });
+        }
+    }
+    ///开放类型  Brand-开放品牌   ProductType-开放类别
+    var OpenType;
+    var Vencode;
+    function QueryBrand(vencode)
+    {
+        $("#CheckAll").show();
+        OpenType = "Brand";
+        Vencode = vencode;
+        //var vencode = $("#VendCodeByScode").find("option:selected").val();
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/OpenProduct/GetBrandVen",
+                data: {
+                    "vencode": vencode
+                },
+                success: function (data)
+                {
+                    $("#Vencode").html(data);
+                }
+            })
+    }
+    function QueryType(vencode) {
+        $("#CheckAll").show();
+        OpenType = "ProductType";
+        Vencode = vencode;
+        //var vencode = $("#VendCodeByScode").find("option:selected").val();
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/OpenProduct/GetProductVen",
+                data: {
+                    "vencode": vencode
+                },
+                success: function (data) {
+                    $("#Vencode").html(data);
+                }
+            })
+    }
+    function openStock(OpenState)
+    {
+        var TheArray = new Array();//保存数据    品牌缩写或者 类别编号
+        $("#Vencode").find("input[checked=checked]").each(function ()
+        {
+            if ($(this).attr("Genre") == "Brand") {
+                TheArray.push($(this).attr("Id"));
+            }
+        })
+        //alert(_TheArray);
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/OpenProduct/OpenProduct",
+                data: {
+                    "OpenArry": TheArray+"",
+                    "OpenType": OpenType,
+                    "OpenState": OpenState, //2-开放库存  1-暂停库存
+                    "Vencode": Vencode
+                },
+                success: function (data)
+                {
+                    alert(data);
+                }
+            })
+    }
+    function OpenAll(vencode, openstate)
+    {
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/OpenProduct/OpenAll",
+                data: {
+                    "OpenState": openstate, //2-开放库存  1-暂停库存
+                    "Vencode": vencode
+             },
+            success: function (data) {
+                alert(data);
+                load();
+        }
+    })
+    }
+</script>
+<div id="Source"></div>
+<div id="CheckAll"><label><input type="checkbox" id="all">全选</label>&nbsp;&nbsp;&nbsp;<input type="button" value="开放库存" onclick="openStock(2)" />&nbsp;&nbsp;&nbsp;<input type="button" value="暂停库存" onclick="openStock(1)"/></div>
+
+<div id="Vencode"></div>

@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{00228381-30BF-4D6C-BBFF-7FDAF0A5ADD2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>pbxdata.dal</RootNamespace>
+    <AssemblyName>pbxdata.dal</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ActivityDAL.cs" />
+    <Compile Include="apiorderdal.cs" />
+    <Compile Include="apiorderexpressdal.cs" />
+    <Compile Include="apiorderpaydetailsdal.cs" />
+    <Compile Include="AttributeDal.cs" />
+    <Compile Include="BrandDAL.cs" />
+    <Compile Include="CheckProducdal.cs" />
+    <Compile Include="ciqproductmsgdal.cs" />
+    <Compile Include="CustomDal.cs" />
+    <Compile Include="DataChartdal.cs" />
+    <Compile Include="Dataset.cs" />
+    <Compile Include="Errorlogdal.cs" />
+    <Compile Include="ExcelOperation.cs" />
+    <Compile Include="funPermissondal.cs" />
+    <Compile Include="hscodedal.cs" />
+    <Compile Include="ItalyErrordal.cs" />
+    <Compile Include="LinqToDataTable.cs" />
+    <Compile Include="menudal.cs" />
+    <Compile Include="ordercustomsresultdal.cs" />
+    <Compile Include="paycustomsresultdal.cs" />
+    <Compile Include="personapermissondal.cs" />
+    <Compile Include="productcustomsresultdal.cs" />
+    <Compile Include="ProductDal.cs" />
+    <Compile Include="ProductOrderdal.cs" />
+    <Compile Include="productPorpertydal.cs" />
+    <Compile Include="ProductStockConfigDal.cs" />
+    <Compile Include="ProductStockDAL.cs" />
+    <Compile Include="ProductTypeDAL.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RetProductdal.cs" />
+    <Compile Include="roledal.cs" />
+    <Compile Include="Seasondal.cs" />
+    <Compile Include="Shopdal.cs" />
+    <Compile Include="shoporderdal.cs" />
+    <Compile Include="ShopProductDal.cs" />
+    <Compile Include="ShopTypeDAL.cs" />
+    <Compile Include="SoCalProductDal.cs" />
+    <Compile Include="sourceorderdal.cs" />
+    <Compile Include="SystemConfigManagerdal.cs" />
+    <Compile Include="tableFiledPerssiondal.cs" />
+    <Compile Include="taoAppUserdal.cs" />
+    <Compile Include="tbProductReMarkDal.cs" />
+    <Compile Include="usersdal.cs" />
+    <Compile Include="SystemConfigManagerdal_L.cs" />
+    <Compile Include="ProductStockDAL_L.cs" />
+    <Compile Include="ProductDal_L.cs" />
+    <Compile Include="BrandDAL_L.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\pbxdata.idal\pbxdata.idal.csproj">
+      <Project>{e7b74671-993f-4dd8-8d89-9b579dd26568}</Project>
+      <Name>pbxdata.idal</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\pbxdata.model\pbxdata.model.csproj">
+      <Project>{6672ddad-a0f6-4098-955e-13194b0d5a84}</Project>
+      <Name>pbxdata.model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\pbxstock.dbutility\Maticsoft.DBUtility.csproj">
+      <Project>{7d9cae0e-fa82-4464-91cf-3a324029149b}</Project>
+      <Name>Maticsoft.DBUtility</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,67 @@
+﻿@{
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/ExchangPic.js"></script>
+<link href="~/Css/ExchangPic.css" rel="stylesheet" />
+<style type="text/css">
+    body
+    {
+        background-color:#eee;
+    }
+</style>
+
+<div class="box" style="">
+    <ul class="ul1">
+    </ul>
+</div>
+
+
+
+<script type="text/javascript">
+    var aBox = $$$$("box");
+    var aData = [];
+    var aExample = [];
+    var i = 0;
+ 
+    //生成图片数据
+    $.ajax({
+        type: "POST",
+        url: "/DragPic/GetZhutuPic",
+        data: { "style": "@ViewData["style"]" },
+        success: function (data) {
+            var srcs = data.split("-*-");
+            for (i = 0; i < srcs.length; i++) {
+                if (srcs[i] != "") {
+                    aData[aData.length] = srcs[i];
+                }
+                
+            }
+            //循环创建多个实例
+            for (i = 0; i < aBox.length; i++) {
+                var oExample = new PhotoWall(aBox[i], aData,"Def1");
+                aExample.push(oExample)
+            }
+            this.onresize = function () {
+                for (var p in aExample) aExample[p].changeLayout()
+                
+            };
+            this.onresize();
+            DeletePeituPic();
+            
+        }
+    })
+    function DeletePeituPic() {
+        $(".ul1").find("li").find("a").each(function () {
+            $(this).click(function () {
+                var Id = $(this).parent().find("img").attr("title");
+                $.ajax({
+                    type: "POST",
+                    url: "/DragPic/DeleteZhutuPic",
+                    data: { "Id": Id },
+                    success: function (data) {
+                        history.go(0);
+                    }
+                })
+            })
+        })
+    }
+</script>

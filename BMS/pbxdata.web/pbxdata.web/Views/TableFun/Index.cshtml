@@ -1,0 +1,101 @@
+﻿@model IEnumerable<pbxdata.model.funpermisson>
+
+@{
+    ViewBag.Title = "功能管理";
+}
+
+<div style="color:#FF5F3E;font-weight:bolder;line-height:20px;">功能管理</div>
+
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<script>
+    $().ready(function () {
+        //添加菜单
+        $("#btnFunAdd").click(function () {
+            var funName = $("#funName").val();
+            var menuId = $("#menuId").val();
+            var funIndex = $("#funIndex").val();
+            var userId = $("#userId").val();
+            $.post('/TableFun/adddata', { funName: funName, menuId: menuId, funIndex: funIndex, userId: userId, }, function (data) {
+                alert(data);
+            })
+        })
+
+        $.post("/PublicHelp/getMenu", function (data) {
+            var s1 = eval('(' + data + ')');
+            var s = "<li title='100'><a>首页</a></li>";
+            for (var i = 0; i < s1.menu.length; i++) {
+                s += "<option value='" + s1.menu[i].menuid + "'>" + s1.menu[i].menuname + "</option>";
+            }
+            $("#menuSelect").html(s);
+        });
+
+
+
+    })
+
+</script>
+
+
+<div id="popDiv" class="mydiv" style="display: none;width:400px;height:300px;left:45%;top:40%;">
+    <div style="line-height:20px; text-align:right;border-bottom:solid 1px #808080;height:20px;">
+        <a onclick="javascript:closeDiv()" style="cursor:pointer;">X　</a>
+    </div>
+    <div>功能名称：<input value="" id="funName" /></div>
+    <div>菜单名称：<select id="menuSelect"></select> </div>
+    <div>功能排序：<input value="" id="funIndex" /></div>
+
+    <div><button id="btnFunAdd" value="添加">添加</button></div>
+
+</div>
+<div id="bg" class="bg" style="display: none;"></div>
+<table class="mytable" rules="all">
+        <tr>
+        <th colspan="5" class="mytableadd">
+            @*@Html.ActionLink("添加", "adddata")*@
+            <div style="padding-top: 20px;">
+                <a href="#" onclick="javascript: showDiv()" >添加</a>
+            </div>
+        </th>
+    </tr>
+    <tr>
+        <th>
+            菜单ID
+        </th>
+        <th>
+            功能名称
+        </th>
+        <th>
+            排序
+        </th>
+        <th>
+            操作人
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.MenuId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FunName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FunIndex)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UserId)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
+            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+        </td>
+    </tr>
+}
+
+</table>

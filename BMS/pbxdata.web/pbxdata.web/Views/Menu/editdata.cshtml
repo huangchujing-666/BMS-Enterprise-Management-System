@@ -1,0 +1,87 @@
+﻿@model pbxdata.model.menu
+
+@{
+    ViewBag.Title = "编辑菜单";
+}
+
+<div style="color:#FF5F3E;font-weight:bolder;line-height:20px;">编辑菜单</div>
+
+<link href="~/Css/All.css" rel="stylesheet" />
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<script>
+    $().ready(function () {
+        //更新菜单
+        $("#btnMenuSave").click(function () {
+            var id = $("#Id").val();
+            var menuName = $("#menuName").val();
+            var menuSrc = $("#MenuSrc").val();
+            var menuLevel = $("#MenuLevel").val();
+            var menuIndex = $("#MenuIndex").val();
+            var userId = $("#userId").val();
+            $.post('/Menu/updatedata', { id: id, menuName: menuName, menuSrc: menuSrc, menuLevel: menuLevel, menuIndex: menuIndex, userId: userId, }, function (data) {
+                alert(data);
+            })
+        })
+
+
+
+    })
+
+</script>
+
+@using (Html.BeginForm()) {
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>菜单编辑</legend>
+
+        <div class="editor-label">
+            ID：
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Id)
+            @Html.ValidationMessageFor(model => model.Id)
+        </div>
+
+        <div class="editor-label">
+            菜单名称：
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.menuName)
+            @Html.ValidationMessageFor(model => model.menuName)
+        </div>
+
+        <div class="editor-label">
+            菜单路径：
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.MenuSrc)
+            @Html.ValidationMessageFor(model => model.MenuSrc)
+        </div>
+
+        <div class="editor-label">
+            菜单等级：
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.MenuLevel)
+            @Html.ValidationMessageFor(model => model.MenuLevel)
+        </div>
+
+        <div class="editor-label">
+            排序：
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.MenuIndex)
+            @Html.ValidationMessageFor(model => model.MenuIndex)
+        </div>
+    </fieldset>
+}
+<p>
+            <input type="submit" value="保存" id="btnMenuSave" />
+        </p>
+<div>
+    @Html.ActionLink("返回", "getdata")
+</div>
+
+

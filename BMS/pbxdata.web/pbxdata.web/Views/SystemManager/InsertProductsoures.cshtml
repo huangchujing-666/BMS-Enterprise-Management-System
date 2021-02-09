@@ -1,0 +1,245 @@
+﻿@model pbxdata.model.productsource
+
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/jquery.form.js"></script>
+<script src="~/js/jquery.metadata.js"></script>
+<script src="~/js/jquery.validate.js"></script>
+<script src="~/js/textValidate.js"></script>
+<script type="text/javascript">
+    $("#SourceCode").focus();
+    function onsubmitClick() {
+        var temp = $("input[onblur]");
+        for (var i = 0; i < temp.length; i++) {
+            $(temp[i]).focus().blur();
+        }
+        temp = $("span");
+        var id = "";
+        for (var i = 0; i < temp.length; i++) {
+            //alert($(temp[i]).html());
+            if ($(temp[i]).html().trim().replace(" ", "") != "") {
+                id = $(temp[i]).attr("id").substr(3, $(temp[i]).attr("id").length);
+                $("#" + id).focus();
+                return false;
+            }
+        }
+        // alert("true");
+        SubFrom();
+        return false;
+    }
+    //提交表单
+    function SubFrom() {
+        // alert("a");
+        var temp = $("input[type='text']");
+        //alert(temp.length);
+        var a = new O3();
+        a.SourceCode = $("#SourceCode").val();
+        a.SourceLevel = $("#SourceLevel").val();
+        a.SourceManage = $("#SourceManage").val();
+        a.sourceName = $("#sourceName").val();
+        a.sourcePhone = $("#sourcePhone").val();
+        a.UserId = $("#UserId").val();
+        a.UserName1 = $("#UserName1").val();
+        a.IsUpdate = '@ViewData["IsUpdate"]';
+        a.Id = '@ViewData["Id"]';
+        a.Def2 = $("#Def2").val();
+        a.Def3 = $("#Def3").val();
+        $.ajax(
+            {
+                type: "POST",
+                url: "/SystemManager/InsertProductsoures1",
+                data: a,
+                success: function (data) {
+                    if (data == "true") {
+                        alert("保存成功！");
+                    }
+                    else if (data == "NoE") {
+                        alert("该供应商编号已经存在！");
+                        $("#SourceCode").focus();
+                    }
+                    else {
+                        alert(data);
+                    }
+                }
+            });
+    }
+    function O3() { //use prototype 
+
+    }
+    O3.prototype.SourceCode = "";
+    O3.prototype.sourceName = "";
+    O3.prototype.sourcePhone = "";
+    O3.prototype.SourceManage = "";
+    O3.prototype.SourceLevel = "";
+    O3.prototype.UserName1 = "";
+    O3.prototype.UserId = "";
+    O3.prototype.IsUpdate = "false";
+    O3.prototype.Id = "";
+    O3.prototype.Def2 = "";
+    O3.prototype.Def3 = "";
+</script>
+<style type="text/css">
+    #mytable {
+        border: solid #999; /* 设置边框属性；样式(solid=实线)、颜色(#999=灰) */
+        border-width: 1px 0 0 1px; /* 设置边框状粗细：上 右 下 左 = 对应：1px 0 0 1px */
+        font-size: 12px;
+        border: solid 1px #808080;
+        width: auto;
+        border-collapse: collapse;
+    }
+
+        #mytable caption {
+            font-size: 12px;
+            font-weight: bolder;
+        }
+
+        #mytable th, table td {
+            border: solid #999;
+            height: 25px;
+            border-width: 0 1px 1px 0;
+            padding: 2px;
+        }
+
+        #mytable td {
+            height: 25px;
+            text-align: center;
+        }
+
+            #mytable td input {
+                float: left;
+            }
+
+            #mytable td span {
+                color: #f00;
+                font: bold 11px;
+            }
+
+    #proDIV {
+        margin-top: 10px;
+        width: 100%;
+        height: 98%;
+        font-size: 12px;
+        color: #808080;
+        overflow-x: scroll;
+        overflow-y: scroll;
+    }
+</style>
+
+<div id="proDIV">
+    <form id="Insert" method="post" action="/SystemManager/InsertProductsoures1" onsubmit="return onsubmitClick()">
+        <table id="mytable">
+            @if (ViewData["IsUpdate"].ToString() == "true")
+            {
+                <caption>修改供应商信息</caption>
+            }
+            else
+            {
+                <caption>添加供应商信息</caption>
+            }
+            <tr>
+                <td>供应商编码</td>
+                <td>
+                    @if (ViewData["IsUpdate"].ToString() == "true")
+                    {
+                        @Html.TextBox("SourceCode", Model.SourceCode, new { onblur = "return IsNull('SourceCode')", disabled = "disabled" })
+                    }
+                    else
+                    {
+                        @Html.TextBox("SourceCode", "", new { onblur = "return IsNull('SourceCode')" })
+                    }
+                    <span id="sp_SourceCode"></span>
+                </td>
+            </tr>
+            @if (ViewData["IsUpdate"].ToString() == "true")
+            {
+                string[] dic = (ViewData["dic"] as Dictionary<string, string>).Keys.ToArray();
+                if (dic.Contains("sourceName"))
+                {
+                <tr>
+                    <td>供应商名称</td>
+                    <td>@Html.TextBox("sourceName", Model.sourceName, new { onblur = "return IsNull('sourceName')" })<span id="sp_sourceName"></span></td>
+                </tr>
+                }
+                if (dic.Contains("sourcePhone"))
+                {
+                <tr>
+                    <td>供应商电话</td>
+                    <td>@Html.TextBox("sourcePhone", Model.sourcePhone, new { onblur = "return IsPhoneOrMobile('sourcePhone')" })<span id="sp_sourcePhone"></span></td>
+                </tr>
+                }
+                if (dic.Contains("SourceManage"))
+                {  
+                <tr>
+                    <td>供应商联系人</td>
+                    <td>@Html.TextBox("SourceManage", Model.SourceManage, new { onblur = "return IsNull('SourceManage')" })<span id="sp_SourceManage"></span></td>
+                </tr>
+                }
+                if (dic.Contains("SourceLevel"))
+                {  
+                <tr>
+                    <td>供应商等级</td>
+                    <td>@Html.TextBox("SourceLevel", Model.SourceLevel, new { onblur = "return IsNull('SourceLevel')" })<span id="sp_SourceLevel"></span></td>
+                </tr>
+                }
+                if (dic.Contains("Def2") || dic.Contains("def2"))
+                {  
+                <tr>
+                    <td>更新程序地址</td>
+                    <td>@Html.TextBox("Def2", Model.Def2, new { onblur = "return IsNull('Def2')" })<span id="sp_Def2"></span></td>
+                </tr>
+                }
+                 if (dic.Contains("Def3") || dic.Contains("def3"))
+                {  
+                <tr>
+                    <td>发货地</td>
+                    <td>@Html.TextBox("Def3", Model.Def3, new { onblur = "return IsNull('Def3')" })<span id="sp_Def3"></span></td>
+                </tr>
+                }
+                <tr>
+                    <td>操作人</td>
+
+                    <td>@Html.TextBox("UserName1", Model.UserName1, new { disabled = "disabled" })
+                        @Html.TextBox("UserId", Model.UserId, new { style = "display:none;" })
+                    </td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td>供应商名称</td>
+                    <td>@Html.TextBox("sourceName", "", new { onblur = "return IsNull('sourceName')" })<span id="sp_sourceName"></span></td>
+                </tr>
+                <tr>
+                    <td>供应商电话</td>
+                    <td>@Html.TextBox("sourcePhone", "", new { onblur = "return IsPhoneOrMobile('sourcePhone')" })<span id="sp_sourcePhone"></span></td>
+                </tr>
+                <tr>
+                    <td>供应商联系人</td>
+                    <td>@Html.TextBox("SourceManage", "", new { onblur = "return IsNull('SourceManage')" })<span id="sp_SourceManage"></span></td>
+                </tr>
+                <tr>
+                    <td>供应商等级</td>
+                    <td>@Html.TextBox("SourceLevel", "", new { onblur = "return IsNull('SourceLevel')" })<span id="sp_SourceLevel"></span></td>
+                </tr>
+                <tr>
+                    <td>更新程序路径</td>
+                    <td>@Html.TextBox("Def2", "", new { onblur = "return IsNull('Def2')" })<span id="sp_Def2"></span></td>
+                </tr>
+                <tr>
+                    <td>发货地</td>
+                    <td>@Html.TextBox("Def3", "", new { onblur = "return IsNull('Def3')" })<span id="sp_Def3"></span></td>
+                </tr>
+                <tr>
+                    <td>操作人</td>
+
+                    <td>@Html.TextBox("UserName1", Model.UserName1, new { disabled = "disabled" })
+                        @Html.TextBox("UserId", Model.UserId, new { style = "display:none;" })
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td colspan="2">
+                    <input type="submit" value="保存" style="height:20px;font-size:11px; float:left;" /><a href="javascript:history.go(-1);" style="float:left; margin-top:4px;">返回</a></td>
+            </tr>
+        </table>
+    </form>
+</div>

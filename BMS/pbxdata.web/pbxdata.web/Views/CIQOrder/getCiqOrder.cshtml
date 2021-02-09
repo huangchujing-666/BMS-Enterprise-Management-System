@@ -1,0 +1,53 @@
+﻿@{
+    ViewBag.Title = "海关订单";
+}
+
+<div style="color:#FF5F3E;font-weight:bolder;line-height:20px;">海关订单</div>
+
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<script type="text/javascript">
+    $().ready(function () {
+
+        $.post("/CIQOrder/getData", { menuId: "@ViewData["myMenuId"]", pageIndex: 1, pageSize: 10 }, function (data) { var ss = data.split("-----"); $(".mytable").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+
+
+        ///商品报备
+        $("#btnProductBB").click(function () {
+            $.post("/CIQMsgOrder/ProductReport",{scode:"460859BLKF"}, function (data) { });
+        });
+
+        ///订单报备
+        $("#btnOrderBB").click(function () {
+            $.post("/CIQMsgOrder/OrderReport", { orderId: "215665" }, function (data) { });
+        });
+
+
+    })
+    
+
+    
+
+</script>
+
+<button id="btnProductBB">商品报备</button>
+<button id="btnOrderBB">订单报备</button>
+
+<div id="bg" class="bg" style="display: none;"></div>
+<table class="mytable" rules="all">
+
+</table>
+
+@*分页*@
+<div class="divJump">
+    共 <span id='PageCount' style='color: blue'></span> 页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span> 条数据
+</div>
+<script>
+    var b = $.PageFunc("/CIQOrder/getData", "@ViewData["myMenuId"]");
+    $(".divJump").prepend(b);
+</script>

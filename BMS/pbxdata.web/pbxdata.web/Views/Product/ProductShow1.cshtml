@@ -1,0 +1,60 @@
+﻿@{
+    ViewBag.Title = "ProductShow1";
+}
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/jquery-ui.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".ulPic").sortable({
+            revert: true
+        });
+        $("ul, li").disableSelection();
+    });
+</script>
+<style type="text/css">
+
+        .ulPic
+    {
+        margin: 0px;
+        padding: 0px;
+    }
+
+   .ulPic li
+        {
+            float: left;
+            width: 75px;
+            height: 75px;
+            padding: 6px;
+            background: #fff;
+            border: 1px solid #c3c3c3;
+            display: inline;
+            margin: 15px 0 0 15px;
+            list-style: none;
+            list-style-type: none;
+            position: relative;
+        }
+
+   .ulPic li img
+            {
+                margin-left: 0px;
+                width:75px;
+                 height:75px;
+            }
+
+   .ulPic li a
+            {
+                position: absolute;
+                top: 0px;
+                right: 5px;
+                cursor: pointer;
+            }
+</style>
+<h2>ProductShow1</h2>
+
+<ul class="ulPic">
+    <li class="ui-state-default"><img src="http://best-bms.pbxluxury.com/images/SSC/U4400/A09/A09REDWIN750/19_A09REDWIN750.jpg@10q.jpg" /><a>X</a></li>
+    <li class="ui-state-default"><img src="http://best-bms.pbxluxury.com/images/SSC/U4400/A09/A09REDWIN750/20_A09REDWIN750.jpg@10q.jpg" /><a>X</a></li>
+    <li class="ui-state-default"><img src="http://best-bms.pbxluxury.com/images/SSC/U4400/A09/A09REDWIN750/21_A09REDWIN750.jpg@10q.jpg" /><a>X</a></li>
+</ul>
+
+

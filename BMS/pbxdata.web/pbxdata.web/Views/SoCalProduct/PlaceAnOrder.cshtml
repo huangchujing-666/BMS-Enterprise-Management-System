@@ -1,0 +1,411 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<script type="text/javascript" src="~/js/My97DatePicker/WdatePicker.js"></script>
+
+<script src="~/js/DropDowndiv.js"></script>
+<script type="text/javascript">
+    ///全选
+    function CheckAll() {
+        if ($("#CheckAll").attr("checked") == "checked") {
+            $("input[class=Check]").each(function () {
+                $(this).attr("checked", true);
+            })
+        }
+        else {
+            $("input[class=Check]").each(function () {
+                $(this).attr("checked", false);
+            })
+        }
+    }
+    $(function ()
+    {
+        $("#SearchOrder").click(function ()
+        {
+            var style = $("#Style").val() == null ? "" : $("#Style").val();
+            var scode = $("#Scode").val() == null ? "" : $("#Scode").val();
+            var priceMin = $("#PriceMin").val() == null ? "" : $("#PriceMin").val();
+            var priceMax = $("#PriceMax").val() == null ? "" : $("#PriceMax").val();
+            var Cat = $("#Brand").val() == null ? "" : $("#Brand").val();
+            var BalanceMin = $("#StcokMin").val() == null ? "" : $("#StcokMin").val();
+            var BalanceMax = $("#StcokMax").val() == null ? "" : $("#StcokMax").val();
+            var Cat2 = $("#Type").val() == null ? "" : $("#Type").val();
+            var Imagefiledown = $("#Imagefile").val() == null ? "" : $("#Imagefile").val();
+            var Season = $("#Season").val() == null ? "" : $("#Season").val();
+
+            var Params = "{"
+                + "style:'" + style + "', scode:'" + scode + "', priceMin:'" + priceMin + "', priceMax:'" + priceMax + "', Cat:'" + Cat + "',"
+                + "BalanceMin:'" + BalanceMin + "', BalanceMax:'" + BalanceMax + "', Cat2:'" + Cat2 + "', Imagefiledown:'" + Imagefiledown + "',Season:'" + Season + "'"
+            + "}";
+            $.post("/SoCalProduct/PlaceAnOrderShow", {
+                menuId: "@ViewData["myMenuId"]",
+            pageIndex: 1,
+            pageSize: 10,
+            params: Params,
+        }, function (data) { $("#Content").html(""); var ss = data.split("-----"); $("#Content").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+
+            var b = $.PageFunc("/SoCalProduct/PlaceAnOrderShow", "@ViewData["myMenuId"]", Params);
+            $("#spanPage").html(b);
+            $("#txtTiao").val(1);
+            $("#PageNum").html(1);
+        })
+
+        
+    })
+
+
+    //选中订单
+    var Scodes = "";
+    function PlaceAnOrder()
+    {
+        $("#GoOnOrder").show();
+        $("#ClearShopCar").hide();
+        $("input[class=Check]").each(function () {
+            if ($(this).attr("checked") == "checked")
+            {
+                Scodes += $(this).attr("Scode")+"❤";
+            }
+        })
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/SoCalProduct/OrderShow",
+                data: { "Scodes": Scodes },
+                success: function (data)
+                {
+                    
+                    var da = data.split('❤');
+                    $("#Table").html(da[0]);
+                    $("#OrderId").html(da[1]);
+                    $("#PlaceAnOrder").show();
+                }
+
+            })
+    }
+    //关闭订单详情
+    function ColseUpdateBalance()
+    {
+        Scodes = "";
+        $("#PlaceAnOrder").hide();
+    }
+    //结算价格和数量
+    var strCount = "";
+    var strmoney = "";
+    function OkMoney()
+    {
+        var money = 0;
+        $(".price").each(function ()
+        {
+            strmoney += $(this).attr("price") + "❤";
+        })
+        var moneys = strmoney.split('❤');
+        var count = 0;
+        $(".count").each(function () {
+            if ($(this).val() == "") {
+                alert("请填写货物数量！")
+                return false;
+            }
+            strCount += $(this).val()+"❤";
+        })
+        var counts = strCount.split('❤');
+
+        for (var i = 0; i < counts.length - 1; i++)
+        {
+            money += (parseInt(counts[i]) * parseFloat(moneys[i]));
+            count += parseInt(counts[i]);
+        }
+        strCount = "";
+        strmoney = "";
+        $("#money").html(money);
+        $("#count").html(count);
+    }
+    //提交订单
+    function OkOrder()
+    {
+        $(".price").each(function () {
+            strmoney += $(this).attr("price") + "❤";
+        })
+        $(".count").each(function () {
+            if ($(this).val() == "")
+            {
+                alert("请填写数量！")
+                return false;
+            }
+            strCount += $(this).val() + "❤";
+        })
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/SoCalProduct/OkOrder",
+                data: {
+                    "Scodes": Scodes,
+                    "strCount": strCount,
+                    "strmoney": strmoney
+                },
+                success: function (data)
+                {
+                    Scodes = "";
+                    $("#PlaceAnOrder").hide();
+                    alert(data);
+                }
+            })
+    }
+    ///继续下单
+    function GoOnOrder()
+    {
+        var flag = true;
+        $(".price").each(function () {
+            strmoney += $(this).attr("price") + "❤";
+        });
+        $(".count").each(function () {
+            if ($(this).val() == "") {
+                alert("请填写数量！")
+                flag = false;
+            }
+            else {
+                strCount += $(this).val() + "❤";
+            }
+
+        });
+        if (!flag) {
+            return false;
+        }
+        
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/SoCalProduct/GoOnOrder",
+                data: {
+                    "Scodes": Scodes,
+                    "strCount": strCount,
+                    "strmoney": strmoney
+                },
+                success: function ()
+                {
+                    ColseUpdateBalance();
+                    strCount = "";
+                    Scodes = "";
+                    strmoney = "";
+                }
+
+            })
+    }
+    //购物车
+    function ShopCar()
+    {
+        $("#ClearShopCar").show();
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/SoCalProduct/ShopCar",
+                data: { "Scodes": Scodes },
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#Table").html(da[0]);
+                    $("#OrderId").html(da[1]);
+                    $("#PlaceAnOrder").show();
+                    $("#GoOnOrder").hide();
+                }
+
+            })
+    }
+    ///清空购物车
+    function ClearShopCar() {
+        if (confirm("是否清空购物车？")) {
+            $.ajax({
+                type: "post", datatype: "text", url: "/SoCalProduct/ClearShopCar", success: function (data) {
+                    alert(data);
+                    $("#PlaceAnOrder").hide();
+                    Search();
+                }
+            })
+        }
+    }
+    ///删除购物车中的记录
+    function Deleteshop(Scode) {
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/SoCalProduct/DeleteShop",
+                data: { "scode": Scode },
+                success: function (data) {
+                    alert(data);
+                    ShopCar();
+                }
+            })
+    }
+
+
+    //鼠标悬停 查看大图
+    function showPic(obj) {
+        var src = $(obj).attr("src");
+        var y = $(obj).offset().top;
+        var x = $(obj).offset().left;
+        $("#divShowPic").css("top", y - 60);
+        $("#divShowPic").css("left", x + 60);
+        $("#divShowPic").html("<img src='" + src + "' style='height:200px;width:200px' />")
+        $("#divShowPic").show();
+    }
+    //失去鼠标焦点 隐藏大图
+    function HidePic() {
+        $("#divShowPic").hide();
+    }
+
+
+    function selPage(url, menuid, obj) {
+        var params = JSON.stringify(obj).replace(/\"/g, "'");
+        console.log(obj);
+        $.post(url, {
+            menuId: menuid,
+            pageIndex: 1,
+            pageSize: $("#selPages").val(),
+            params: params,
+        }, function (data) { $("#Content").html(""); var ss = data.split("-----"); $("#Content").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+    }
+</script>
+<div id="Sreach"> 
+    <span class="spanProperty">
+        <span class="spanPropertyName">款号：</span>
+        <input type='text' id='Style' class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">货号：</span>
+        <input type='text' id='Scode' class="spanPropertyValue">
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">最小价格：</span>
+        <input type='text' id='PriceMin' class="spanPropertyValue">-
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">最大价格：</span>
+        <input type='text' id='PriceMax' class="spanPropertyValue" />
+    </span>
+
+    <span class="spanProperty">
+        <span class="spanPropertyName">季节：</span>
+        <input type='text' id='Season' class="spanPropertyValue"/>
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">品牌：</span>
+        <input type="text" id="Brand" class="spanPropertyValue" onclick="GetDropToBrand(this.id)" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">类别：</span>
+        <input type="text" id="Type" class="spanPropertyValue" onclick="GetDropToType(this.id)" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">最小库存：</span>
+        <input type='text' class="spanPropertyValue" id='StcokMin'>-
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">最大库存：</span>
+        <input type='text' id='StcokMax' class="spanPropertyValue" />
+    </span>
+
+    <span class="spanProperty">
+        <span class="spanPropertyName">图片状态：</span>
+        <select id='Imagefile' class="spanPropertyValue"><option value=''>请选择</option><option value='1'>有</option><option value='2'>无</option></select>
+    </span>
+    <br />
+    <input type='button' class="spanPropertySearch"  id="SearchOrder" value='查询' />
+    <input type='button' class="spanPropertySearch" onclick='PlaceAnOrder()' value='确认下单' />
+    <input type='button' class="spanPropertySearch" onclick='ShopCar()' value='我的购物车' />
+
+</div>
+<div id="Content"></div>
+<div class="divJump">
+    <span id="spanPage" style="font-weight:400;"></span>
+    共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span>条数据
+</div>
+
+<div class="PopBg"></div>
+<div class="myPopdiv" style="left: 20%; top: 30%; min-width: 200px; min-height: 200px" id="PlaceAnOrder">
+    <div style="position: absolute; top: -2px; right: 1px; width: 20px; cursor: pointer;" onclick="ColseUpdateBalance()">x</div>
+    <div style="text-align:center;font-size:15px;font-weight:bold;">订单详情</div>
+    <br />
+    <div style="text-align:left">订单编号:<label id="OrderId" style="color:red;"></label></div>
+    <div id="Table" style="height:auto;overflow-y:scroll;"></div>
+    <br />
+    <div style="text-align:right;"><input type="button"  id="OkMoney" value="合计" onclick="OkMoney()"/> 总数量：<label id="count"></label>&nbsp;&nbsp;&nbsp;总价格：￥<label id="money"></label>(RMB)</div>
+    <br />
+    --------------------------------------------------------------------------------------------------------------
+    <br />
+    <div style="margin-left:73%"><input type="button" id="GoOnOrder" value="继续下单" onclick="GoOnOrder()" />&nbsp;&nbsp;<input type="button" value="提交订单" onclick="OkOrder()"/>
+        &nbsp;&nbsp;<input type="button" id="ClearShopCar" value="清空购物车" onclick="ClearShopCar()"/></div>
+</div>
+
+
+
+
+<script type="text/javascript">
+
+    $.getDropDownList("#Brand");
+    function GetDropToBrand(e) {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Productstock/Brand",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+                var d1 = eval(data);
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].BrandAbridge + "'>" + d1[i].BrandName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }
+
+    $.getDropDownList("#Type");
+    function GetDropToType(e) {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Productstock/Type",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+
+                var d1 = eval(data);
+
+
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].TypeNo + "'>" + d1[i].TypeName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+
+</script>

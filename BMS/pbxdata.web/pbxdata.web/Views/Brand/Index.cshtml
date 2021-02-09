@@ -1,0 +1,380 @@
+﻿<script src="~/js/jquery-1.8.2.min.js" type="text/javascript"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<script src="~/js/divShow.js"></script>
+<link href="~/Css/Search.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<script src="~/js/pageIndex.js"></script>
+<style type="text/css">
+    a
+    {
+        text-decoration: none;
+    }
+
+        a:hover
+        {
+            text-decoration: underline;
+        }
+
+    #mytable
+    {
+        min-width: 550px;
+    }
+
+        #mytable tr th:first-child
+        {
+            width: 40px;
+        }
+
+        #mytable tr th:nth-child(2)
+        {
+            width: 150px;
+        }
+
+        #mytable tr th:nth-child(3)
+        {
+            width: 100px;
+        }
+
+        #mytable tr th:nth-child(3)
+        {
+            width: 100px;
+        }
+
+        #mytable tr th:nth-child(4)
+        {
+            width: 100px;
+        }
+
+    #PopEditContent
+    {
+        left: 10%;
+        top: 10%;
+        width: 300px;
+        height: 250px;
+        padding: 15px;
+    }
+
+    #PopAddContent
+    {
+        left: 10%;
+        top: 10%;
+        width: 250px;
+        height: 150px;
+        padding: 15px;
+    }
+
+    .divclose
+    {
+        position: absolute;
+        right: 8px;
+        top: 3px;
+        cursor: pointer;
+        font-size: 2em;
+        font-weight: bolder;
+        width: 30px;
+        height: 30px;
+    }
+
+        .divclose:hover
+        {
+            color: red;
+        }
+
+
+    .divtitle
+    {
+        color: red;
+        font-weight: bold;
+        font-size: 1.5em;
+    }
+
+    .divContent
+    {
+        background-color: white;
+        border: solid 1px lightblue;
+        height: 85%;
+    }
+
+        .divContent table tr td:nth-child(1)
+        {
+            text-align: right;
+        }
+
+    .divHeader
+    {
+        border: 1px solid #DDDDDD;
+        background-color: #F4F4F4;
+        height: 30px;
+        line-height: 30px;
+        padding-left: 15px;
+    }
+
+        /*.divHeader a
+        {
+            display: inline-block;
+            height: 25px;
+            width: 80px;
+            text-align: center;
+            line-height: 25px;
+            margin-top: 2px;
+            text-decoration: none;
+        }
+
+            .divHeader a:hover
+            {
+                border: 1px solid lightblue;
+                border-radius: 5px;
+            }*/
+</style>
+
+<div class="divHeader" style="width:100%;padding:10px 0 10px 0;">
+   <span class="spanProperty"><span class="spanPropertyName">品牌名称：</span><input class="spanPropertyValue" id="txtName" type="text"></span>
+    <span class="spanProperty"><span class="spanPropertyName">淘宝品牌：</span><select class="spanPropertyValue" id="noselectTBBrand"></select></span>
+
+   @*   品牌名称:<input type="text" id="txtName" />
+    淘宝品牌<span style="color: red">(没有被选择的品牌)</span>:<select id="noselectTBBrand"></select>*@
+    <input type="button" value=" 查   询 " onclick="OnSearch()"  class="spanPropertySearch"/><input type="button" value="添加品牌" onclick="Add()"  class="spanPropertySearch"/>
+</div>
+<div style="border: solid 1px lightblue; overflow: hidden">
+    <table id="mytable" class="mytable" border="0" cellpadding="0" cellspacing="0">
+    </table>
+    <div class="divJump">
+         <span id="spanPage" style="font-weight: 400;"></span>
+        共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span>条数据
+    </div>
+</div>
+<div class="PopBg"></div>
+<div id="PopEditContent" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="divtitle">品牌修改</div>
+    <div class="divContent">
+        <table>
+            <tr>
+                <td>品牌名：</td>
+                <td>
+                    <input type="text" id="txtBrandName" /></td>
+            </tr>
+            <tr>
+                <td>缩&nbsp;写：</td>
+                <td>
+                    <label id="labBrandAbridge"></label>
+                </td>
+            </tr>
+            <tr>
+                <td>品牌归属地：</td>
+                <td>
+                    <input type="text" id="txtDef2" />
+                </td>
+            </tr>
+            <tr>
+                <td>淘宝Vid：</td>
+                <td>
+                    <label id="labTBvid"></label>
+
+            </tr>
+            <tr>
+                <td>
+                    <input type="button" value=" 查   询 " onclick="SearchTBbrand()" />&nbsp;</td>
+                <td>
+                    <input id="txtTBBrand" type="text" placeholder="关联淘宝品牌" /></td>
+            </tr>
+            <tr>
+                <td>关联淘宝品牌：</td>
+                <td>
+                    <select id="selTBBrand" style="width: 150px"></select></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center">
+                    <input type="button" onclick="SaveBrand()" value=" 保   存 " /></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div id="PopAddContent" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="divtitle">添加品牌</div>
+    <div class="divContent">
+        <table>
+            <tr>
+                <td>品牌名：</td>
+                <td>
+                    <input type="text" id="txtAddBrandName" /></td>
+            </tr>
+            <tr>
+                <td>缩&nbsp;写：</td>
+                <td>
+                    <input type="text" id="txtAddBrandAbridge" />
+                </td>
+            </tr>
+            <tr>
+                <td>品牌归属地：</td>
+                <td>
+                    <input type="text" id="txtAddDef2" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center">
+                    <input type="button" onclick="AddBrand()" value=" 保   存 " /></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+    function OnSearch() {//---搜索
+        var Name = $("#txtName").val().trim();
+        //var TBBrand = $("#noselectTBBrand").find("option:selected").val();
+
+        var params = "{Name:'" + Name + "'}";
+        $.post("/Brand/SearchBrand", {
+            menuId: "@ViewData["myMenuId"]",
+            pageIndex: 1,
+            pageSize: 10,
+            params:params
+        }, function (data) {
+            var ss = data.split("-----");
+            $("#mytable").html("");
+            $("#mytable").append(ss[0]);
+            $("#PageCount").html(ss[1]);
+            $("#AllCounts").html(ss[2]);
+        });
+
+        var b = $.PageFunc("/Brand/SearchBrand", "@ViewData["myMenuId"]", params);
+        $("#spanPage").html(b);
+        $("#txtTiao").val(1);
+        $("#PageNum").html(1);
+
+    }
+    function selPage(url, menuid, obj) {
+        var params = JSON.stringify(obj).replace(/\"/g, "'");
+        $.post(url, {
+            menuId: menuid,
+            pageIndex: 1,
+            pageSize: $("#selPages").val(),
+            params: params
+        }, function (data) {
+            $("#mytable").html("");
+            var ss = data.split("-----");
+            $("#mytable").append(ss[0]);
+            $("#PageCount").html(ss[1]);
+            $("#AllCounts").html(ss[2]);
+        });
+    };
+
+    function Edit(BrandName, BrandAbridge, vid,Def2) {
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopEditContent").show();
+        $("#txtTBBrand").val("");
+        $("#txtBrandName").val(BrandName)
+        $("#txtDef2").val(Def2)
+        $("#labBrandAbridge").html(BrandAbridge)
+        $("#labTBvid").html(vid);
+        SearchTBbrand(vid);
+    }
+    function Close() {
+        $(".PopBg").hide();
+        $(".myPopdiv").hide();
+    }
+    $("#selTBBrand").change(function () {
+        $("#labTBvid").html($(this).find("option:selected").val())
+    })
+
+    function SearchTBbrand(vid) {
+        var TBBrandName = $("#txtTBBrand").val().trim();
+        $.ajax({
+            type: "GET",
+            url: "/Brand/GetTBbrandlist?TBBrandName=" + TBBrandName + "&vid=" + vid,
+            success: function (data) {
+                $("#selTBBrand").html(data)
+            },
+            error: function () {
+            },
+        })
+    }
+    function SaveBrand() {
+        var BrandName = $("#txtBrandName").val().trim();
+        var BrandAbridge = $("#labBrandAbridge").html();
+        var Vid = $("#labTBvid").html();
+        var Def2 = $("#txtDef2").val().trim();
+        $.ajax({
+            type: "GET",
+            url: "/Brand/UpdateBrand?BrandName=" + BrandName + "&BrandAbridge=" + BrandAbridge + "&Vid=" + Vid + "&Def2=" + Def2,
+            success: function (data) {
+                OnSearch();
+                //GetTable($("#selPages").val(), $("#txtTiao").val());
+                noselectTBBrand();
+                $.MsgBox.Alert("提示", data);
+            },
+            error: function () {
+
+            },
+        })
+    }
+    function noselectTBBrand() {
+        $.ajax({
+            type: "GET",
+            url: "/Brand/GetTBBrand",
+            success: function (data) {
+                if (data != "") {
+                    $("#noselectTBBrand").html(data);
+                    $("#noselectTBBrand").change(function () {
+                        $("#txtName").val($(this).find("option:selected").val());
+                    })
+                }
+            },
+            error: function () {
+                alert("error!")
+            },
+        })
+    }
+    noselectTBBrand();
+    function Add() {
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopAddContent").show();
+        $("#txtAddBrandName").val("");
+        $("#txtAddBrandAbridge").val("");
+        ("#txtAddDef2").val("");
+    }
+    function AddBrand() {
+        var BrandName = $("#txtAddBrandName").val().trim();
+        var BrandAbridge = $("#txtAddBrandAbridge").val().trim();
+        var Def2 = $("#txtAddDef2").val().trim();
+        $.ajax({
+            type: "GET",
+            url: "/Brand/AddBrand?BrandName=" + BrandName + "&BrandAbridge=" + BrandAbridge + "&Def2=" + Def2,
+            success: function (data) {
+                OnSearch();
+                //GetTable($("#selPages").val(), $("#txtTiao").val());
+                noselectTBBrand();
+                $.MsgBox.Alert("提示", data);
+            },
+            error: function () {
+
+            },
+        })
+    }
+    function Delete(BrandName, BrandAbridge) {
+        $.MsgBox.Confirm("提示", "确定要删除" + BrandName + "吗?", function () {
+            $.ajax({
+                type: "GET",
+                url: "/Brand/DeleteBrand?BrandName=" + BrandName + "&BrandAbridge=" + BrandAbridge,
+                success: function (data) {
+                    if (data == "") {
+                        OnSearch();
+                        //GetTable($("#selPages").val(), $("#txtTiao").val());
+                    }
+                    else {
+                        $.MsgBox.Alert("提示", data);
+                    }
+                },
+                error: function () {
+                    alert("error!")
+                },
+            })
+        })
+
+    }
+</script>

@@ -1,0 +1,5 @@
+F:\project\BMS1\BMS\pbxdata.dalfactory\bin\Debug\pbxdata.dalfactory.dll
+F:\project\BMS1\BMS\pbxdata.dalfactory\bin\Debug\pbxdata.dalfactory.pdb
+F:\project\BMS1\BMS\pbxdata.dalfactory\obj\Debug\pbxdata.dalfactory.dll
+F:\project\BMS1\BMS\pbxdata.dalfactory\obj\Debug\pbxdata.dalfactory.pdb
+F:\project\BMS1\BMS\pbxdata.dalfactory\obj\Debug\pbxdata.dalfactory.csprojResolveAssemblyReference.cache

@@ -1,0 +1,197 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<script type="text/javascript">
+    $(function ()
+    {
+        $("#Serach").click(function ()
+            {
+            var ShopTypeName = $("#ShopTypeName").val();
+            var params = "{params:'" + ShopTypeName + "'}";
+                $.post("/ShopManager/ShopTypePageIndex", {
+                    menuId: "@ViewData["myMenuId"]",
+                    pageIndex: 1,
+                    pageSize: 10,
+                    params: params,
+                }, function (data) { $("#ShopTypeTb").html(""); var ss = data.split("-----"); $("#ShopTypeTb").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+            var b = $.PageFunc("/ShopManager/ShopTypePageIndex", "@ViewData["myMenuId"]", params);
+            $("#spanPage").html(b);
+            $("#txtTiao").val(1);
+            $("#PageNum").html(1);
+        })
+
+
+    })
+
+
+
+    ///打开添加弹窗   --店铺类型
+    function AddShopType() {
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#Insert").show();
+
+    }
+    ///打开编辑弹窗  --店铺类型
+    function UpdateShopType(Id) {
+        $.ajax(
+           {
+               type: "POST",
+               url: "/ShopManager/UpdatePage",
+               datatype: "text",
+               data: {
+                   "Id": Id,
+                   "MenuId": "@ViewData["myMenuId"]"
+               },
+               success: function (data) {
+
+                   $("#Update").html(data);
+                   $(".PopBg").height($(document).height());
+                   $(".PopBg").show();
+                   $("#PopUpdate").show();
+               }
+           }
+        );
+    }
+    ///修改类型
+    function UpdateShopName() {
+        var Id = $("#UpdateCondition").attr('value');
+        var shopname = $("#ShoptypeName").val();
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/ShopManager/UpdateByShopName",
+                data: { "Id": Id, "shopname": shopname },
+                success: function (data) {
+                    alert(data);
+                    Close();
+                    //Refresh();
+                }
+            })
+    }
+    ///关闭添加弹窗
+    function Exits() {
+        $(".PopBg").hide();
+        $("#Insert").hide();
+
+    }
+    //关闭编辑弹窗
+    function Close() {
+        $(".PopBg").hide();
+        $("#PopUpdate").hide();
+    }
+    ///添加店铺类型
+    function InsertTypeName() {
+        var typename = $("#TypeName").val();
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/ShopManager/InsertTypeName",
+                data: { "typename": typename },
+                success: function (data) {
+                    Exits();
+                    alert(data);
+                    //Refresh();
+                }
+            })
+    }
+    ///删除店铺类型
+    function DeleteType(shopname) {
+        if (confirm("确认删除店铺？")) {
+            $.ajax(
+                {
+                    type: "post",
+                    datatype: "text",
+                    url: "/ShopManager/DeleteType",
+                    data: { "shopname": shopname },
+                    success: function (data) {
+                        alert(data);
+                    }
+                })
+        }
+    }
+    /*关闭按钮取消修改*/
+    function Close() {
+        $(".PopBg").hide();
+        $(".myPopdiv").hide();
+    }
+
+    function selPage(url, menuid, obj) {
+        var params = JSON.stringify(obj).replace(/\"/g, "'");
+        console.log(obj);
+        $.post(url, {
+            menuId: menuid,
+            pageIndex: 1,
+            pageSize: $("#selPages").val(),
+            params: params,
+        }, function (data) { $("#ShopTypeTb").html(""); var ss = data.split("-----"); $("#ShopTypeTb").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+    }
+</script>
+<style type="text/css">
+    .myPopdiv
+    {
+        top: 30%;
+        left: 30%;
+        width: 350px;
+        height: 150px;
+    }
+    a
+    {
+        text-decoration: none;
+    }
+    a:hover
+        {
+            text-decoration: underline;
+        }
+    .InputW
+    {
+        width: 50px;
+    }
+    .PopContent
+    {
+    }
+</style>
+<div>
+
+    <span class="spanProperty">
+        <span class="spanPropertyName">类型名称：</span>
+        <input type="text" id="ShopTypeName" class="spanPropertyValue" />
+    </span>
+<input type="button" id="Serach"  class="spanPropertySearch" value="查询" /><input class="spanPropertySearch" type="button"  onclick='AddShopType()' value="添加店铺类型"/>  <span id="InsertValue"><a href='#' ></a></span>
+</div>
+<div id="ShopTypeTb">
+</div>
+<div class="divJump" id="divJump">
+    <span id="spanPage" style="font-weight:400;"></span>
+共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+共 <span id='AllCounts' style='color: blue'></span>条数据
+</div>
+<div class="PopBg"></div>
+<div class="myPopdiv" id="Insert">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">添加店铺类型</div>
+    <div class="PopContent">
+        <br />
+        <br />
+        店铺类型名称：<input type="text" id="TypeName" /><br />
+        <br />
+        <br />
+        <input type="button" value="确认添加" id="Submit" onclick="InsertTypeName()" /><input type="button" value="退出添加" style="margin-left: 50px;" onclick="    Exits()" id="Exit" />
+        <br />
+        <br />
+        <br />
+    </div>
+</div>
+<div class="myPopdiv" id="PopUpdate" style="height: 200px; width: 451px;">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">修改店铺类型</div>
+    <div class="PopContent">
+        <div id="Update" style="width: 100%; height: 180px; text-align: center">
+        </div>
+    </div>
+</div>

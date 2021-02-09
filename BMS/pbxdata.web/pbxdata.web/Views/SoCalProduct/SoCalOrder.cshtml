@@ -1,0 +1,438 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<script type="text/javascript" src="~/js/My97DatePicker/WdatePicker.js"></script>
+
+<script src="~/js/DropDowndiv.js"></script>
+
+<script type="text/javascript">
+
+    
+    ///查询   --订单总
+    function Search()
+    {
+        SearchPage(2);
+    }
+    ///查询   --订单总  --分页
+    function SearchPage(Index)
+    {
+        var OrderId = $("#OrderId").val() == null ? "" : $("#OrderId").val();
+        var JsState = $("#JsState").val() == null ? "" : $("#JsState").val();
+        var Vencode = $("#Vencode").val() == null ? "" : $("#Vencode").val();
+        var Customer = $("#Customer").val() == null ? "" : $("#Customer").val();
+        var MinTime = $("#MinTime").val() == null ? "" : $("#MinTime").val();
+        var MaxTime = $("#MaxTime").val() == null ? "" : $("#MaxTime").val();
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/SoCalProduct/GetSoCalOrder",
+                data:
+                    {
+                        "OrderId": OrderId,
+                        "JsState": JsState,
+                        "Vencode": Vencode,
+                        "Customer": Customer,
+                        "MinTime": MinTime,
+                        "MaxTime": MaxTime,
+                        "Index": Index,
+                        "ReturnPage": $("#Pagetop").val() == "" ? 1 : $("#Pagetop").val(),
+                        "isPage": true,
+                        "page": $("#Page").val() == "" ? 10 : $("#Page").val()
+                    },
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#Context").empty;
+                    $("#AllCountstop").empty;
+                    $("#PageNumtop").empty;
+                    $("#PageCounttop").empty;
+                    $("#Context").html(da[0]);
+                    $("#AllCountstop").html(da[1]);
+                    $("#PageNumtop").html(da[3]);
+                    $("#PageCounttop").html(da[2]);
+                    $("#Pagetop").val(da[3]);
+                }
+            })
+    }
+    ///查询   --订单详细
+    function SearchDetailed()
+    {
+        SearchDetailedPage(2);
+    }
+    ///查询   --订单详细 --分页
+    function SearchDetailedPage(Index) {
+        var OrderId = $("#OrderIdX").val() == null ? "" : $("#OrderIdX").val();
+        var JsState = $("#JsStateX").val() == null ? "" : $("#JsStateX").val();
+        var Vencode = $("#VencodeX").val() == null ? "" : $("#VencodeX").val();
+        var Customer = $("#CustomerX").val() == null ? "" : $("#CustomerX").val();
+        var MinTime = $("#MinTimeX").val() == null ? "" : $("#MinTimeX").val();
+        var MaxTime = $("#MaxTimeX").val() == null ? "" : $("#MaxTimeX").val();
+        var OrderScode = $("#OrderScode").val() == null ? "" : $("#OrderScode").val();
+        var Cat = $("#Cat").val() == null ? "" : $("#Cat").val();
+        var Cat2 = $("#Cat2").val() == null ? "" : $("#Cat2").val();
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/SoCalProduct/GetSoCalOrderDetailed",
+                data:
+                    {
+                        "OrderId": OrderId,
+                        "JsState": JsState,
+                        "Vencode": Vencode,
+                        "Customer": Customer,
+                        "MinTime": MinTime,
+                        "MaxTime": MaxTime,
+                        "OrderScode": OrderScode,
+                        "Cat": Cat,
+                        "Cat2": Cat2,
+                        "Index": Index,
+                        "ReturnPage": $("#Pagetop").val() == "" ? 1 : $("#Pagetop").val(),
+                        "isPage": true,
+                        "page": $("#PageDown").val() == "" ? 10 : $("#PageDown").val()
+                    },
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#ContextX").empty;
+                    $("#AllCountstopX").empty;
+                    $("#PageNumtopX").empty;
+                    $("#PageCounttopX").empty;
+                    $("#ContextX").html(da[0]);
+                    $("#AllCountstopX").html(da[1]);
+                    $("#PageNumtopX").html(da[3]);
+                    $("#PageCounttopX").html(da[2]);
+                    $("#PagetopX").val(da[3]);
+                    CustomeUpdateSum();
+                    VencodeUpdateSum();
+                }
+            })
+    }
+    ///订单详情
+    function LookOrder(OrderId)
+    {
+        $("#OrderIdX").val(OrderId);
+        SearchDetailed();
+    }
+    ///页码  top
+    function ChangePageT()
+    {
+        Search();
+    }
+    //页码  buttom
+    function ChangePageB()
+    {
+        SearchDetailed();
+    }
+    //全选
+    function CheckAll() {
+        if ($("#CheckAll").attr("checked") == "checked") { // 全选 
+            $("input[class=Check]").each(function () {
+                $(this).attr("checked", true);
+            });
+        }
+        else { // 取消全选 
+            $("input[class=Check]").each(function () {
+                $(this).attr("checked", false);
+            });
+        }
+    }
+    //客户确认
+    function CustomerOk()
+    {
+        var OrderId="";
+        $("input[class=Check]").each(function () {
+            if ($(this).attr("checked") == "checked")
+            {
+                OrderId += $(this).attr("OrderId") + ","
+            }
+        });
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                data: { "OrderId": OrderId },
+                url: "/SoCalProduct/CustomerOk",
+                success: function (data)
+                {
+                    alert(data);
+                    Search()
+                }
+            })
+    }
+    //供应商确认
+    function VencodeOk()
+    {
+        var OrderId = "";
+        $("input[class=Check]").each(function () {
+            if ($(this).attr("checked") == "checked") {
+                OrderId += $(this).attr("OrderId") + ","
+            }
+        });
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                data: { "OrderId": OrderId },
+                url: "/SoCalProduct/Vencode",
+                success: function (data) {
+                    alert(data);
+                    Search()
+                }
+            })
+    }
+    //结算
+    function JsOk()
+    {
+        var OrderId = "";
+        $("input[class=Check]").each(function () {
+            if ($(this).attr("checked") == "checked") {
+                OrderId += $(this).attr("OrderId") + ","
+            }
+        });
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                data: { "OrderId": OrderId },
+                url: "/SoCalProduct/Js",
+                success: function (data) {
+                    alert(data);
+                    Search()
+                }
+            })
+    }
+    ///修改数量  客户修改
+    function CustomeUpdateSum()
+    {
+        $(".CustomeUpdateSum").each(function ()
+        {
+            $(this).click(function () {
+                var num = $(this).parent().parent().find(".ScodeSum").html();
+                $(this).parent().parent().find(".ScodeSum").html("<input type='text'  value='" + num + "'/>");
+                var OrderId = $(this).parent().parent().find(".ScodeSum").attr("OrderId");
+                var OrderScode = $(this).parent().parent().find(".ScodeSum").attr("OrderScode");
+                $(this).parent().parent().find(".ScodeSum").find("input[type=text]").blur(function () {
+                    $.ajax(
+                        {
+                            type: "post",
+                            datatype: "text",
+                            url: "/SoCalProduct/CustomeUpdateSumUpdateSum",
+                            data: {
+                                "OrderId": OrderId,
+                                "OrderScode": OrderScode,
+                                "Num": $(this).val()
+                            },
+                            success: function (data)
+                            {
+                                SearchDetailed()
+                            }
+                            });
+                })
+            })
+            
+            
+        })
+    }
+    ///修改数量  供应商修改
+    function VencodeUpdateSum() {
+        $(".VencodeUpdateSum").each(function () {
+            $(this).click(function () {
+                
+                var num = $(this).parent().parent().find(".ScodeSum").html();
+                console.log(num);
+                $(this).parent().parent().find(".ScodeSum").html("<input type='text'  value='" + num + "'/>");
+                var OrderId = $(this).parent().parent().find(".ScodeSum").attr("OrderId");
+                var OrderScode = $(this).parent().parent().find(".ScodeSum").attr("OrderScode");
+                $(this).parent().parent().find(".ScodeSum").find("input[type=text]").blur(function () {
+                    $.ajax(
+                        {
+                            type: "post",
+                            datatype: "text",
+                            url: "/SoCalProduct/VencodeUpdateSumUpdateSum",
+                            data: {
+                                "OrderId": OrderId,
+                                "OrderScode": OrderScode,
+                                "Num": $(this).val()
+                            },
+                            success: function (data) {
+                                SearchDetailed()
+                            }
+                        });
+                })
+            })
+
+
+        })
+    }
+</script>
+<div id="Search">
+    <span class="spanProperty">
+        <span class="spanPropertyName">订单编号：</span>
+        <input type="text" id="OrderId" class="spanPropertyValue"/>
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">结算状态：</span>
+        <select id="JsState" class="spanPropertyValue"><option value="">请选择</option><option value="0">未结算</option><option value="1">已结算</option></select>
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">供应商：</span>
+        <select id="Vencode" class="spanPropertyValue"><option value="">请选择</option><option value="0">未确认</option><option value="1">已确认</option></select>
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">客户：</span>
+        <select id="Customer" class="spanPropertyValue"><option value="">请选择</option><option value="0">未确认</option><option value="1">已确认</option></select>
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">起始时间：</span>
+        <input type="text" class="spanPropertyValue" id="MinTime" style="width: 86px;" onfocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">截至时间：</span>
+        <input type="text" class="spanPropertyValue" id="MaxTime" style="width: 86px;" onfocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" />
+    </span>
+    <br />
+    <input type="button" onclick="Search()" class="spanPropertySearch"  value="查询"/>@Html.Raw(@ViewBag.Ok)
+</div>
+<div id="Context"></div>
+<div class="divJump">
+    <select id="Page" onchange = "return ChangePageT()" >@Html.Raw(ViewData["PageSum"])</select>
+    <a href="#" onclick="SearchPage(0)">首页</a>
+    <a href="#" onclick="SearchPage(1)">上一页</a>
+    <input type="text" id="Pagetop" />
+    <a href="#" onclick="SearchPage(2)">跳页</a>
+    共<span id='PageCounttop'></span>页&nbsp;&nbsp;
+    当前第<span id='PageNumtop' >1</span>页&nbsp;&nbsp;
+    共<span id='AllCountstop'></span>条数据
+    <a href="#" onclick="SearchPage(3)">下一页</a>
+    <a href="#" onclick="SearchPage(4)">末页</a>
+</div>
+<div>
+
+    <span class="spanProperty">
+        <span class="spanPropertyName">订单编号：</span>
+        <input type="text" id="OrderIdX" class="spanPropertyValue"/>
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">货号：</span>
+        <input type="text" id="OrderScode" class="spanPropertyValue"/>
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">品牌：</span>
+        <input type="text" id="Cat" class="spanPropertyValue" onclick="GetDropToBrand(this.id)" />
+
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">类别：</span>
+        <input type="text"  id="Cat2" class="spanPropertyValue" onclick="GetDropToType(this.id)"/>
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">结算状态：</span>
+        <select id="JsStateX" class="spanPropertyValue"><option value="">请选择</option><option value="0">未结算</option><option value="1">已结算</option></select>
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">供应商：</span>
+        <select id="VencodeX" class="spanPropertyValue"><option value="">请选择</option><option value="0">未确认</option><option value="1">已确认</option></select>
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">客户：</span>
+        <select id="CustomerX" class="spanPropertyValue"><option value="">请选择</option><option value="0">未确认</option><option value="1">已确认</option></select>
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">开始时间：</span>
+        <input type="text" class="spanPropertyValue" id="MinTimeX"  onfocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" />
+    </span>
+    <span class="spanProperty">
+        <span class="spanPropertyName">结束时间：</span>
+        <input type="text" class="spanPropertyValue" id="MaxTimeX"  onfocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" />
+    </span>
+    <br />
+
+    <input type="button" onclick="SearchDetailed()" class="spanPropertySearch"  value="查询"/>
+</div>
+<div id="ContextX">
+
+</div>
+<div class="divJump">
+    <select id="PageDown" onchange = "return ChangePageB()">@Html.Raw(ViewData["PageSum"])</select>
+    <a href="#" onclick="SearchDetailedPage(0)">首页</a>
+    <a href="#" onclick="SearchDetailedPage(1)">上一页</a>
+    <input type="text"  id="PagetopX" />
+    <a href="#" onclick="SearchDetailedPage(2)">跳页</a>
+    共<span id='PageCounttopX' ></span>页&nbsp;&nbsp;
+    当前第<span id='PageNumtopX'>1</span>页&nbsp;&nbsp;
+    共<span id='AllCountstopX'></span>条数据
+    <a href="#" onclick="SearchDetailedPage(3)">下一页</a>
+    <a href="#" onclick="SearchDetailedPage(4)">末页</a>
+</div>
+
+
+
+
+
+<script type="text/javascript">
+
+
+    $.getDropDownList("#Cat");
+    function GetDropToBrand(e) {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Productstock/Brand",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+                var d1 = eval(data);
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].BrandAbridge + "'>" + d1[i].BrandName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }
+
+
+    $.getDropDownList("#Cat2");
+    function GetDropToType(e) {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Productstock/Type",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+
+                var d1 = eval(data);
+
+
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].TypeNo + "'>" + d1[i].TypeName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+
+</script>

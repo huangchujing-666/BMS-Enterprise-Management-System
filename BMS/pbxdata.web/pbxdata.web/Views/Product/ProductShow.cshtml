@@ -1,0 +1,2261 @@
+﻿@model System.Data.DataTable
+
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/js/kindeditor-4.1.7/themes/default/default.css" rel="stylesheet" />
+<link href="~/js/kindeditor-4.1.7/plugins/code/prettify.css" rel="stylesheet" />
+<link href="~/js/Content/uploadify.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<script src="~/js/DropDowndiv.js"></script>
+<script charset="utf-8" src="~/js/kindeditor-4.1.7/kindeditor.js"></script>
+<script charset="utf-8" src="~/js/kindeditor-4.1.7/lang/zh_CN.js"></script>
+<script charset="utf-8" src="~/js/kindeditor-4.1.7/plugins/code/prettify.js"></script>
+<script src="~/js/swfobject.js" type="text/javascript"></script>
+<script src="~/js/jquery.uploadify.v2.1.4.js" type="text/javascript"></script>
+<script src="~/js/jquery-ui.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<script src="~/js/DropDowndiv.js"></script>
+
+@*<script src="~/js/coverPageDiv.js"></script>*@
+<script type="text/javascript">
+    /*********************************************************************************两个查询按钮begin*********************************************************************************/
+    var flag = false;
+    var flag1 = false;
+    /*主款号表上表    查询按钮*/
+    function SearchbyStyle() {
+        flag1 = true;
+        GetTable1(1, $("#selPages1").val(),1);
+        $("#txtTiao1").val(1);
+        $("#PageNum1").html(1);
+    }
+
+
+    /*主款号表上表*/
+    function GetTable1(obj, selpages, isReset) {
+        selpages = selpages * 1
+        var lists = [];
+        lists.push($("#txtStyle1").val() == null ? "" : $("#txtStyle1").val().trim());
+        lists.push($("#txtCat11").val() == null ? "" : $("#txtCat11").val().trim());
+        lists.push($("#txtCat21").val() == null ? "" : $("#txtCat21").val().trim());
+        lists.push($("#txtBalance11").val() == null ? "" : $("#txtBalance11").val().trim());
+        lists.push($("#txtBalance21").val() == null ? "" : $("#txtBalance21").val().trim());
+        lists.push($("#txtPrice11").val() == null ? "" : $("#txtPrice11").val().trim());
+        lists.push($("#txtPrice21").val() == null ? "" : $("#txtPrice21").val().trim());
+        lists.push($("#selPicExist").val() == null ? "" : $("#selPicExist").val().trim());
+        lists.push($("#ShopName").val() == null ? "" : $("#ShopName").val().trim());
+        lists.push(isReset);  //本次操作查询还是翻页
+        $.ajax({
+            type: "get",
+            url: "/Product/OnSeach1",
+            data: { "menuId": "@ViewData["myMenuId"]", "lists": lists.join(","), "page": obj, "selpages": selpages },
+            success: function (data) {
+                var tabledata = [];
+                var tabledata = data.split("-*-");
+                $("#mytable1").html(tabledata[0]);
+
+                //如果是重新查询，重新加载总页码和总库存（翻页不执行）
+                if (isReset == "1") {
+                    $("#PageCount1").html(Math.ceil(tabledata[1] * 1 / selpages))//总页码
+                    $("#AllCounts1").html(tabledata[1]);         //总条数
+                    $("#BalanceCounts1").html(tabledata[2]);     //总库存量
+                }
+
+                showPic();
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+
+
+    /*翻页---款号表*/
+    function TurnPage1(obj) {
+        if ($("#txtTiao1").val() == "") {
+            return false;
+        }
+        var pages = $("#selPages1").val();
+        switch (obj) {
+            case 1: GetTable1(0, pages, 0);//----首页
+                $("#txtTiao1").val(1);
+                $("#PageNum1").html(1)
+                break;
+            case 2:;//----上一页
+                if ($("#txtTiao1").val() == "1") {
+                    return false;
+                }
+                else {
+                    GetTable1($("#txtTiao1").val() * 1 - 1, pages, 0);
+                    $("#txtTiao1").val($("#txtTiao1").val() * 1 - 1);
+                    $("#PageNum1").html($("#txtTiao1").val())
+                }
+                break;
+            case 3://----下一页
+                if ($("#txtTiao1").val() == $("#PageCount1").html()) {
+                    return false;
+                }
+                else {
+                    GetTable1($("#txtTiao1").val() * 1 + 1, pages, 0);
+                    $("#txtTiao1").val($("#txtTiao1").val() * 1 + 1);
+                    $("#PageNum1").html($("#txtTiao1").val())
+                }
+                break;
+            case 4: GetTable1($("#PageCount1").html(), pages, 0);//----尾页
+                $("#txtTiao1").val($("#PageCount1").html());
+                $("#PageNum1").html($("#PageCount1").html())
+                break;
+            case 5: GetTable1($("#txtTiao1").val(), pages, 0);//----跳转
+                $("#PageNum1").html($("#txtTiao1").val());
+                break;
+        }
+    }
+
+    /*选择显示数量---款号表*/
+    function selPage1() {
+        if (flag1) {
+            GetTable1(1, $("#selPages1").val(), 0)
+            $("#txtTiao1").val(1)
+            $("#PageNum1").html(1)
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*主货号表下表    查询按钮*/
+    function SearchbyScode() {
+        flag = true;
+        GetTable(1, $("#selPages").val(),1);
+        $("#txtTiao").val(1);
+        $("#PageNum").html(1)
+    }
+
+    /*主货号表下表*/
+    function GetTable(obj, selpages, isReset) {
+        var lists = [];
+        lists.push($("#txtStyle").val() == null ? "" : $("#txtStyle").val().trim());
+        lists.push($("#txtScode").val() == null ? "" : $("#txtScode").val().trim());
+        lists.push($("#txtName").val() == null ? "" : $("#txtName").val().trim());
+        lists.push($("#txtCat").val() == null ? "" : $("#txtCat").val().trim());
+        lists.push($("#txtCat1").val() == null ? "" : $("#txtCat1").val().trim());
+        lists.push($("#txtCat2").val() == null ? "" : $("#txtCat2").val().trim());
+        lists.push($("#txtBalance").val() == null ? "" : $("#txtBalance").val().trim());
+        lists.push($("#txtBalance2").val() == null ? "" : $("#txtBalance2").val().trim());
+        lists.push($("#txtPrice1").val() == null ? "" : $("#txtPrice1").val().trim());
+        lists.push($("#txtPrice2").val() == null ? "" : $("#txtPrice2").val().trim());
+        lists.push($("#txtLastgrnd1").val() == null ? "" : $("#txtLastgrnd1").val().trim());
+        lists.push($("#txtLastgrnd2").val() == null ? "" : $("#txtLastgrnd2").val().trim());
+        lists.push($("#selAttrExistScode").val() == null ? "" : $("#selAttrExistScode").val().trim());
+        lists.push($("#selPicExistScode").val() == null ? "" : $("#selPicExistScode").val().trim());
+        lists.push($("#txtPictime").val() == null ? "" : $("#txtPictime").val().trim());
+        lists.push($("#txtPictime2").val() == null ? "" : $("#txtPictime2").val().trim());
+        lists.push($("#txtUserName").val() == null ? "" : $("#txtUserName").val().trim());
+        lists.push($("#selPicCheck").find("option:selected").val() == null ? "" : $("#selPicCheck").find("option:selected").val());
+        lists.push($("#txtColor").val() == null ? "" : $("#txtColor").val().trim());
+        lists.push($("#selDef11").find("option:selected").val() == null ? "" : $("#selDef11").find("option:selected").val());
+        lists.push($("#selSciqProductId").find("option:selected").val() == null ? "" : $("#selSciqProductId").find("option:selected").val());
+        lists.push(isReset);
+        $.ajax({
+            type: "get",
+            url: "/Product/OnSeach",
+            data: { "menuId": "@ViewData["myMenuId"]", "lists": lists.join(","), "page": obj, "selpages": selpages },
+            success: function (data) {
+                selpages = selpages * 1
+                var tabledata = [];
+                var tabledata = data.split("-*-");
+                $("#mytable").html(tabledata[0]);
+
+                //如果是重新查询，重新加载总页码和总库存（翻页不执行）
+                if (isReset == "1") {
+                    $("#PageCount").html(Math.ceil(tabledata[1] * 1 / selpages))//总页码
+                    $("#AllCounts").html(tabledata[1]);         //总条数
+                    $("#BalanceCounts").html(tabledata[2]);     //总库存量
+                }
+                //$("#AllCounts").html(tabledata[1]);
+                //$("#PageCount").html(Math.ceil(tabledata[1] * 1 / selpages));
+                //$("#BalanceCounts").html(tabledata[2]);
+                
+
+                showPic();
+            },
+            error: function () {
+                alert("error");
+            },
+        })
+    }
+
+    /*主款号表上表*/
+    function GetTable1(obj, selpages, isReset) {
+        selpages = selpages * 1
+        var lists = [];
+        lists.push($("#txtStyle1").val() == null ? "" : $("#txtStyle1").val().trim());
+        lists.push($("#txtCat11").val() == null ? "" : $("#txtCat11").val().trim());
+        lists.push($("#txtCat21").val() == null ? "" : $("#txtCat21").val().trim());
+        lists.push($("#txtBalance11").val() == null ? "" : $("#txtBalance11").val().trim());
+        lists.push($("#txtBalance21").val() == null ? "" : $("#txtBalance21").val().trim());
+        lists.push($("#txtPrice11").val() == null ? "" : $("#txtPrice11").val().trim());
+        lists.push($("#txtPrice21").val() == null ? "" : $("#txtPrice21").val().trim());
+        lists.push($("#selPicExist").val() == null ? "" : $("#selPicExist").val().trim());
+        lists.push($("#ShopName").val() == null ? "" : $("#ShopName").val().trim());
+        lists.push(isReset);
+        $.ajax({
+            type: "get",
+            url: "/Product/OnSeach1",
+            data: { "menuId": "@ViewData["myMenuId"]", "lists": lists.join(","), "page": obj, "selpages": selpages },
+            success: function (data) {
+                var tabledata = [];
+                var tabledata = data.split("-*-");
+                $("#mytable1").html(tabledata[0]);
+                $("#AllCounts1").html(tabledata[1])
+                $("#PageCount1").html(Math.ceil(tabledata[1] * 1 / selpages))
+                $("#BalanceCounts1").html(tabledata[2])
+                showPic();
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+    /*********************************************************************************两个查询按钮end*********************************************************************************/
+
+
+    /*********************************************************************************款号----列表----查看begin*********************************************************************************/
+    /*主款号表上表通过货号查询下表信息*/
+    function GetTableStyle(obj, selpages) {
+        var lists = [];
+        lists.push(obj);
+        lists.push("");
+        lists.push("");
+        lists.push("");
+        lists.push("");
+        lists.push("");
+        lists.push("");
+        lists.push("");
+        lists.push("");
+        lists.push("");
+        lists.push("");
+        lists.push("");
+        lists.push("");
+        lists.push("");
+        lists.push("");
+        lists.push("");
+        lists.push("");
+        lists.push("");
+        lists.push("");
+        lists.push("");
+        lists.push("");
+        lists.push("1");
+        $.ajax({
+            type: "get",
+            url: "/Product/OnSeach",
+            data: { "menuId": "@ViewData["myMenuId"]", "lists": lists.join(","), "page": 1, "selpages": selpages },
+            success: function (data) {
+                selpages = selpages * 1;
+                var tabledata = [];
+                var tabledata = data.split("-*-");
+                $("#mytable").html(tabledata[0]);
+                $("#AllCounts").html(tabledata[1]);
+                $("#PageNum").html(1);
+                $("#PageCount").html(Math.ceil(tabledata[1] * 1 / selpages));
+                $("#BalanceCounts").html();  //总库存
+                $("#txtTiao").val(1);
+                showPic();
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+    /*********************************************************************************款号----列表----查看end*********************************************************************************/
+
+</script>
+<style type="text/css">
+    .divSearch
+    {
+        background-color: #F4F4F4;
+    }
+    #PopContent, #PopContentPic
+    {
+        left: 0;
+        top: 0;
+        right: 0;
+        margin: 0 auto;
+        width: 800px;
+        height: 805px;
+    }
+
+    #EditContainer, #EditPicContainer
+    {
+        margin-top: 5px;
+        border: 1px solid lightblue;
+        height: 765px;
+        width: 100%;
+        background-color: white;
+        padding-top: 15px;
+        overflow: auto;
+        float: left;
+    }
+
+    #tabProperty
+    {
+        width: 720px;
+    }
+
+    #PopContent #tabProperty td
+    {
+        border: none;
+        width: 34%;
+        text-align: right;
+    }
+
+    #TypeAttribute table td
+    {
+        border: none;
+        width: 33%;
+        text-align: right;
+    }
+
+    #PopStyledescript
+    {
+        left: 0;
+        top: 0;
+        right: 0;
+        margin: 0 auto;
+        width: 1000px;
+        min-height: 500px;
+    }
+
+    #info
+    {
+        margin-top: 5px;
+        border: 1px solid lightblue;
+        min-height: 475px;
+        width: 100%;
+        background-color: white;
+        padding-top: 15px;
+        text-align: center;
+    }
+
+
+    #divMaginFile
+    {
+        margin-left: 10px;
+    }
+
+   #divMaginFile div
+        {
+            margin-top: 3px;
+        }
+
+    #divShowPic
+    {
+        position: absolute;
+    }
+
+    /*------------*/
+    #divImageFile, #divImageFileStyle
+    {
+        margin: auto;
+        width: 90%;
+        min-height: 200px;
+        border: 1px solid gray;
+        padding: 10px;
+        text-align: center;
+        overflow: auto;
+    }
+
+    #divImageSpace
+    {
+        margin: auto;
+        width: 90%;
+        height: 300px;
+        border: 1px solid gray;
+        padding: 10px;
+        margin-top: 10px;
+    }
+
+    .uploadifyQueueItem
+    {
+        float: left;
+    }
+
+    .selected
+    {
+        border: 4px solid orange;
+    }
+    /*#divScodePic
+    {
+        float:left;
+    }*/
+    #div_img1, #div_imgStyle
+    {
+        float: left;
+        padding-bottom: 10px;
+        min-width: 100%;
+    }
+
+   #div_img1 img, #div_imgStyle img
+        {
+            margin-left: 10px;
+            margin-top: 10px;
+            float: left;
+            box-sizing: border-box;
+            width: 75px;
+            height: 75px;
+        }
+
+    #divMainPicContent, #divMainPicContentStyle, .divStyleContainer
+    {
+        margin: auto;
+        width: 90%;
+        min-height: 100px;
+        border: 1px solid gray;
+        padding: 10px;
+        margin-top: 10px;
+        text-align: center;
+        overflow: auto;
+    }
+
+    #divMainPicContent img, #divShowMianPicStyle img
+        {
+            width: 75px;
+            height: 75px;
+        }
+
+    #divUploadMainPicStyle img, .divStyleContainer img, #divUploadMainPic img
+        {
+            width: 75px;
+            height: 75px;
+            margin-left: 10px;
+        }
+
+    #divUploadMainPic, #divShowMianPic, #divUploadMainPicStyle, #divShowMianPicStyle
+    {
+        float: left;
+    }
+
+    .divMainMaxPic
+    {
+        position: absolute;
+    }
+
+    #divMinPic
+    {
+        position: absolute;
+        left: 15px;
+        top: 35px;
+        width: 97%;
+        height: 94%;
+        background-color: white;
+        display: none;
+    }
+
+    .ke-container
+    {
+        margin: auto;
+    }
+
+    .Loading
+    {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 105%;
+        line-height: 500px;
+        background-color: white;
+        text-align: center;
+        font-size: 50px;
+        display: none;
+        z-index: 999;
+    }
+
+    #divProductInfo
+    {
+        margin-top: 5px;
+        margin: auto;
+        border: 1px solid lightblue;
+        width: 90%;
+        overflow: auto;
+    }
+
+    .tabPriceInfo
+    {
+        font-size: 12px;
+        border: solid 1px #808080;
+        width: 100%;
+        border-collapse: collapse;
+        text-align: center;
+    }
+
+    .tabPriceInfo td, th
+        {
+            border-width: 0 1px 1px 0;
+            border-style: dotted;
+        }
+
+    .divPicouter
+    {
+        position: relative;
+        margin-left: 10px;
+        float: left;
+        overflow: hidden;
+        height: 75px;
+        width: 75px;
+        padding: 5px;
+        border: 1px solid black;
+    }
+
+    .divPicouter:hover .divPicinner
+        {
+            top: 60px;
+        }
+
+    .divPicinner
+    {
+        position: absolute;
+        width: 85px;
+        height: 25px;
+        top: 85px;
+        left: 0px;
+        background-color: black;
+        opacity: 0.5;
+        line-height: 25px;
+        text-align: center;
+    }
+
+    .divPicouter img
+    {
+        margin-left: 0px;
+    }
+
+    .divPicouter a
+    {
+        margin-left: 5px;
+        display: block;
+        width: 15px;
+        float: left;
+        color: white;
+        text-decoration: none;
+    }
+
+    .divPicouter a:hover
+        {
+            color: red;
+        }
+
+    #divSelectShop
+    {
+        width: 250px;
+        height: 150px;
+        left: 10%;
+        top: 10%;
+    }
+
+    .divclose
+    {
+        position: absolute;
+        right: 8px;
+        top: 3px;
+        cursor: pointer;
+        font-size: 2em;
+        font-weight: bolder;
+        width: 30px;
+        height: 30px;
+    }
+
+    .divclose:hover
+        {
+            color: red;
+        }
+
+        .spanContainer
+    {
+        position: relative;
+        width:20%;
+        margin-bottom:10px;
+        display:inline-block;
+    }
+
+    .spanContainer select
+        {
+            width: 136px;
+            height: 24px;
+            margin-left:-5px;
+            padding:0 5px;
+        }
+
+    .spanContainer input[type='text']
+        {
+            /*margin:0 auto;*/
+            border:none;
+            position: absolute;
+            width: 114px;
+            /* left:2px;*/
+            right: 131px;
+            top: 1px;
+            height: 22px;
+            padding:0 5px;
+        }
+
+    #divThumbnail
+    {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        font-weight: bolder;
+    }
+
+    #divThumbnail:hover
+        {
+            cursor: pointer;
+            color: red;
+        }
+
+    #txtciqAssemCountry
+    {
+        position: absolute;
+        top: 0px;
+        width: 130px;
+    }
+
+    select
+    {
+        height: 20px;
+    }
+
+    /*图片移动CSS*/
+    .ulPic
+    {
+        margin: 0px;
+        padding: 0px;
+    }
+
+   .ulPic li
+        {
+            float: left;
+            width: 75px;
+            height: 75px;
+            padding: 6px;
+            background: #fff;
+            border: 1px solid #c3c3c3;
+            display: inline;
+            margin: 15px 0 0 15px;
+            list-style: none;
+            list-style-type: none;
+            position: relative;
+        }
+
+   .ulPic li img
+            {
+                margin-left: 0px;
+            }
+
+   .ulPic li a
+            {
+                position: absolute;
+                top: 0px;
+                right: 5px;
+                cursor: pointer;
+            }
+
+    .mytable a
+    {
+        margin-left: 5px;
+    }
+</style>
+
+<div id="divSearch1" class="divSearch" style="width:100%; min-height:50px; border-color:red; ">
+    <div id="divSearchlist" style="padding-top:10px;">
+    @Html.Raw(ViewBag.ShowSearch1)
+      @*  <span class='spanProperty'><span class='spanPropertyName'>款号：</span><input class='spanPropertyValue' id='txtStyle1' type='text'></span>
+        <span class='spanProperty'><span class='spanPropertyName'>品牌：</span><input id='txtCat11' onclick="GetDropToBrand(this.id)" class="spanPropertyValue" type='text'></span>
+        <span class='spanProperty'><span class='spanPropertyName'>类别：</span><input type='text'  onclick="GetDropToType(this.id)" id='txtCat21' class="spanPropertyValue"  /></span>
+        <span class='spanProperty'><span class='spanPropertyName'>库存：</span><input type='text' id='txtBalance11'  class='spanPropertyValue'  style='width: 50px' />-<input type='text' id='txtBalance21'  class='spanPropertyValue'  style='width: 50px' /></span>
+        <span class='spanProperty'><span class='spanPropertyName'>图片：</span><select id='selPicExist' class='spanPropertyValue'><option value=''>请选择</option><option value='1'>有</option><option value='0'>无</option></select></span>
+       
+        <input type='button' value=' 查  询 ' class='spanPropertySearch' onclick='SearchbyStyle()' />*@
+    </div>
+</div>
+<div style="border: solid 1px lightblue; overflow: hidden;">
+    <div style="width: 100%; font-size: 12px; color: #808080; overflow: auto;">
+        <table id="mytable1" class="mytable" style="font-size: 12px; border: solid 1px #808080;border-collapse: collapse;">
+        </table>
+    </div>
+    <div class="divJump" id="divJump1">
+        <select id="selPages1" onchange="selPage1()">
+            <option>5</option>
+            <option selected="selected">10</option>
+            <option>20</option>
+            <option>50</option>
+            <option>100</option>
+        </select>
+        <a href="#" onclick="TurnPage1(1)">首页</a>
+        <a href="#" onclick="TurnPage1(2)">上一页</a>
+        <input type="text" id="txtTiao1" name="txtTiao" value="" class="onlyNum" />
+        <a href="#" onclick="TurnPage1(3)">下一页</a>
+        <a href="#" onclick="TurnPage1(4)">尾页</a>
+        <a href="#" onclick="TurnPage1(5)">跳转</a>
+        共<span id="PageCount1"></span>页&nbsp;&nbsp;当前第<span id="PageNum1"></span>页&nbsp;&nbsp;共<span id="AllCounts1"></span>条数据&nbsp;&nbsp;库存共<span id="BalanceCounts1"></span>件
+    </div>
+</div>
+<div id="divSearch" class="divSearch" style="width:100%; min-height:50px; border-color:red;">
+    <div id="divSearchlist" style="padding-top:10px;">
+    @Html.Raw(ViewBag.ShowSearch)
+    </div>
+<script type="text/javascript">
+    function OutPutExcel()
+    {
+        $.coverPageDivShow();
+
+        var lists = [];
+        lists.push($("#txtStyle").val() == null ? "" : $("#txtStyle").val().trim());
+        lists.push($("#txtScode").val() == null ? "" : $("#txtScode").val().trim());
+        lists.push($("#txtName").val() == null ? "" : $("#txtName").val().trim());
+        lists.push($("#txtCat").val() == null ? "" : $("#txtCat").val().trim());
+        lists.push($("#txtCat1").val() == null ? "" : $("#txtCat1").val().trim());
+        lists.push($("#txtCat2").val() == null ? "" : $("#txtCat2").val().trim());
+        lists.push($("#txtBalance").val() == null ? "" : $("#txtBalance").val().trim());
+        lists.push($("#txtBalance2").val() == null ? "" : $("#txtBalance2").val().trim());
+        lists.push($("#txtPrice1").val() == null ? "" : $("#txtPrice1").val().trim());
+        lists.push($("#txtPrice2").val() == null ? "" : $("#txtPrice2").val().trim());
+        lists.push($("#txtLastgrnd1").val() == null ? "" : $("#txtLastgrnd1").val().trim());
+        lists.push($("#txtLastgrnd2").val() == null ? "" : $("#txtLastgrnd2").val().trim());
+        lists.push($("#selAttrExistScode").val() == null ? "" : $("#selAttrExistScode").val().trim());
+        lists.push($("#selPicExistScode").val() == null ? "" : $("#selPicExistScode").val().trim());
+        lists.push($("#txtPictime").val() == null ? "" : $("#txtPictime").val().trim());
+        lists.push($("#txtPictime2").val() == null ? "" : $("#txtPictime2").val().trim());
+        lists.push($("#txtUserName").val() == null ? "" : $("#txtUserName").val().trim());
+        lists.push($("#selPicCheck").find("option:selected").val() == null ? "" : $("#selPicCheck").find("option:selected").val());
+        lists.push($("#txtColor").val() == null ? "" : $("#txtColor").val().trim());
+        lists.push($("#selDef11").find("option:selected").val() == null ? "" : $("#selDef11").find("option:selected").val());
+        lists.push($("#selSciqProductId").find("option:selected").val() == null ? "" : $("#selSciqProductId").find("option:selected").val());
+        $.ajax(
+            {
+                type: "post",
+                datatype: "txt",
+                url: "/Product/OutPutExcel",
+                data:
+                    {
+                        "list": lists.join(","),
+                        "MenuId":"@ViewData["myMenuId"]"
+                    },
+                success: function (data)
+                {
+                    location.href = data;
+                    setTimeout($.coverPageDivHidden("1"), 2000);          //1为下载成功，2为下载失败，其他为查询的遮盖层
+                },
+                error: function (data)
+                {
+                    $.coverPageDivHidden("2");             //1为下载成功，2为下载失败，其他为查询的遮盖层
+                }
+            })
+
+    }
+</script>
+
+@*<div id="popDiv" class="mydiv" style="display: none; width: 400px; height: 300px; left: 45%; top: 40%;">
+    请稍等，正在加载... ...
+</div>
+<div id="bg" class="bg" style="display: none;"></div>*@
+
+
+
+
+<div style="border: solid 1px lightblue; overflow: auto;">
+    <div style="width: 100%; font-size: 12px; color: #808080; overflow: auto;">
+        <table id="mytable" class="mytable" style="font-size: 12px; border: solid 1px #808080; width: 100%; border-collapse: collapse;">
+        </table>
+    </div>
+    <div class="divJump" id="divJump">
+        <select id="selPages" onchange="selPage()">
+            <option>5</option>
+            <option selected="selected">10</option>
+            <option>20</option>
+            <option>50</option>
+            <option>100</option>
+        </select>
+        <a href="#" onclick="TurnPage(1)">首页</a>
+        <a href="#" onclick="TurnPage(2)">上一页</a>
+        <input type="text" id="txtTiao" name="txtTiao" value="" class="onlyNum" />
+        <a href="#" onclick="TurnPage(3)">下一页</a>
+        <a href="#" onclick="TurnPage(4)">尾页</a>
+        <a href="#" onclick="TurnPage(5)">跳转</a>
+        共<span id="PageCount"></span>页&nbsp;&nbsp;当前第<span id="PageNum"></span>页&nbsp;&nbsp;共<span id="AllCounts"></span>条数据&nbsp;&nbsp;库存共<span id="BalanceCounts"></span>件
+    </div>
+</div>
+<div class="PopBg"></div>
+@******************************货号--编辑--编辑商品属性begin*******************************@
+<div id="PopContent" class="myPopdiv">
+    <div class="Loading">图片上传中<span style="color: red; font-size: 50px;">(请勿关闭窗口!)</span>......</div>
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: left;">编辑商品属性</div>
+    <div id="EditContainer">
+        <div id="EditContent" style="width: 760px">
+        </div>
+        <div id="TypeAttribute">
+        </div>
+        <div id="divProductInfo"></div>
+        <div style="width: 100%; text-align: center; margin-top: 20px;">
+            <input type="button" value=" 保 存 " onclick="UpdateProduct()" />
+            <input id="BtnGo" type="button" value="跳到编辑图片" style="margin-left: 20px;" />
+            <input type="button" value=" 关 闭 " onclick="Close()" style="margin-left: 20px;" />
+
+        </div>
+    </div>
+</div>
+@******************************货号--编辑--编辑商品属性end*******************************@
+
+
+
+@******************************货号--编辑图片--编辑商品图片begin*******************************@
+<div id="PopContentPic" class="myPopdiv" style="width: 1000px">
+    <div class="Loading">图片上传中<span style="color: red; font-size: 50px;">(请勿关闭窗口!)</span>......</div>
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: left;">图片操作</div>
+    <div id="EditPicContainer" style="padding-top: 0px">
+        <h2>货号:<label id="Labscode"></label>&nbsp;&nbsp;类别:<label id="Labtypename"></label></h2>
+        <div id="divMainPicContent">
+            <div>主图</div>
+            <div id="divUploadMainPic"></div>
+            <div id="divShowMianPic"></div>
+            <div class="clearfix"></div>
+            <button style="margin-top: 15px;" onclick="SaveZhutu1()">保存顺序</button>
+        </div>
+
+        <div id="divImageFile">
+            <div>本地上传<span style="color: red">(设置主图-单击图片并点击保存!)</span></div>
+            <div id="div_img1">
+                <div id="divScodePic"></div>
+                <div id="divUploadImg"></div>
+            </div>
+            <div>
+                <div id="fileQueue1" style="text-align: center">
+                </div>
+                <input type="file" name="uploadify1" id="uploadify1" />
+                <p>
+                    <a href="javascript:$('#uploadify1').uploadifyUpload()">点击上传</a>&nbsp;&nbsp;@*<input type="button" value=" 确定上传 " onclick="SavePic()" />*@
+                </p>
+
+                @*<input type="button" value="复制该款图片" onclick="CopystylepicToscode()" />*@
+                <input type="button" value="复制图片" onclick="CopysocdepicTostyle()" />
+                <input type="button" value="下载图片" onclick="UploadPicStyle('scode')" />
+                <input type="button" value="删除图片" onclick="DeleteAllPicByScode()" />
+                <label style="margin-left: 10px">全选<input type="checkbox" id="checkboxscode" onclick="selectAllBox('scode')" /></label>
+            </div>
+        </div>
+        <div style="width: 100%; text-align: center; margin-top: 20px;">
+            <input type="button" value=" 保 存 " onclick="SelectMainPic()" />
+            <input id="BtnGo1" type="button" value="跳到编辑" style="margin-left: 20px;" />
+            <input type="button" value=" 关 闭 " onclick="Close()" style="margin-left: 20px;" />
+        </div>
+    </div>
+</div>
+@******************************货号--编辑图片--编辑商品图片end*******************************@
+
+@******************************款号--编辑--编辑款号属性begin*******************************@
+<div id="PopStyledescript" class="myPopdiv">
+    <div class="Loading">图片上传中<span style="color: red; font-size: 50px;">(请勿关闭窗口!)</span>......</div>
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: left;">编辑款号属性</div>
+    <div id="info">
+        <input type="hidden" id="Hidstyledescript" />
+        <table style="width: 95%">
+            <tr>
+                <td style="width: 30px;"><span style="width: 20px; display: block">商品描述</span></td>
+                <td>
+                    @*<input id="txtproductDescript" type="text" />*@
+                    <textarea id="txtproductDescript" style="width: 92%; height: 100px; margin: auto"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td><span style="width: 20px; display: block">商品缩略图</span></td>
+                <td>
+                    <div id="divPicContainerStyle">
+                        <div class="divStyleContainer">
+                            <div>品牌配图</div>
+                            <div id="divBrandPeiPic" style="float: left;"></div>
+                            <div class="clearfix"></div>
+                            <button style="margin-top: 15px;" onclick="SavePeitu()">保存顺序</button>
+                        </div>
+
+                        <div id="divMainPicContentStyle">
+                            <div>主图</div>
+                            <div id="divUploadMainPicStyle"></div>
+                            <div id="divShowMianPicStyle"></div>
+                            @* <div style="width: 100%; text-align: center; margin-top: 120px;">
+                                <input type="button" value=" 保存主图 " onclick="SelectMainPicStyle()" /><input type="button" value=" 关 闭 " onclick="    Close()" style="margin-left: 20px;" />
+                            </div>*@
+                            <div class="clearfix"></div>
+                            <button style="margin-top: 15px;" onclick="SaveZhutu()">保存顺序</button>
+                        </div>
+                        <div class="divStyleContainer">
+                            <div>商品细节</div>
+                            <div id="divProductDetail" style="float: left;"></div>
+                            <div class="clearfix"></div>
+                            <button style="margin-top: 15px;" onclick="SaveXiJietu()">保存顺序</button>
+                        </div>
+                        <div id="divImageFileStyle">
+                            <div>本地上传<span style="color: red">(设置主图-单击图片并点击保存!!)</span></div>
+
+                            <div id="div_imgStyle">
+                                <div id="divScodePicStyle"></div>
+                                <div id="divUploadImgStyle"></div>
+                            </div>
+
+                            <div>
+                                <div id="fileQueueStyle" style="text-align: center">
+                                </div>
+                                <input type="file" name="uploadifyStyle" id="uploadifyStyle" />
+                                <p>
+                                    <a href="javascript:$('#uploadifyStyle').uploadifyUpload()">点击上传</a>&nbsp;&nbsp;@*<input type="button" value=" 确定上传 " onclick="SavePicStyle()" />*@
+                                </p>
+                                <input type="button" value="选择详情" onclick="SelectPic()" />
+                                <input type="button" value="品牌配图" onclick="SelectPeiPic()" />
+                                <input type="button" value="商品细节" onclick="SelectDetailPic()" />
+                                <input type="button" value="下载图片" onclick="UploadPicStyle('style')" />
+                                <input type="button" value="删除图片" onclick="DeleteAllPicByStyle()" /><label style="margin-left: 10px">全选<input type="checkbox" id="checkboxstyle" onclick="    selectAllBox('style')" /></label>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <div id="divbtn" style="text-align: center">
+            <input type="button" name="Update" value=" 保 存 " onclick="Updatestyledescript()" /><input type="button" name="Close" value=" 关 闭 " onclick="    Close()" style="margin-left: 50px" />
+        </div>
+    </div>
+
+</div>
+<div id="divShowPic" class="divShowPic"></div>@*--鼠标移上去显示缩略图--*@
+@******************************款号--编辑--编辑款号属性end*******************************@
+@******************************款号--上货--/Category/TBAddGoods在指定店铺上货*******************************@
+<div id="divSelectShop" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="margin-top: 10px;">
+        <label id="LabShopStyle"></label>
+    </div>
+    <div style="margin-top: 10px;">
+        选择店铺:
+        <select id="selShop">
+            <option value="">请选择</option>
+            <option value="1">攀比轩旗舰店</option>
+            <option value="2">佛罗伦斯海外专营店</option>
+        </select>
+    </div>
+    <div style="margin-top: 10px;">
+        <input type="button" value=" 确   定 " onclick="AddProduct()" />
+    </div>
+</div>
+@******************************款号--上货--/Category/TBAddGoods在指定店铺上货*******************************@
+<script type="text/javascript">
+    //导航查询列表
+    $.getDropDownList("#txtCat11");
+    $.getDropDownList("#txtCat");
+    function GetDropToBrand(e) {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Product/Brand",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+                var d1 = eval(data);
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].BrandAbridge + "'>" + d1[i].BrandName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }
+    $.getDropDownList("#txtCat2");
+    $.getDropDownList("#txtCat21");
+    function GetDropToType(e) {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Product/Type",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+
+                var d1 = eval(data);
+
+
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].TypeNo + "'>" + d1[i].TypeName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+    /*------Start-----翻页----------*/
+    /*翻页---货号表*/
+    function TurnPage(obj) {
+        if ($("#txtTiao").val() == "") {
+            return false;
+        }
+        var pages = $("#selPages").val();
+        switch (obj) {
+            case 1: GetTable(0, pages,0);//----首页
+                $("#txtTiao").val(1);
+                $("#PageNum").html(1)
+                break;
+            case 2:;//----上一页
+                if ($("#txtTiao").val() == "1") {
+                    return false;
+                }
+                else {
+                    GetTable($("#txtTiao").val() * 1 - 1, pages,0)
+                    $("#txtTiao").val($("#txtTiao").val() * 1 - 1);
+                    $("#PageNum").html($("#txtTiao").val())
+                }
+                break;
+            case 3://----下一页
+                if ($("#txtTiao").val() == $("#PageCount").html()) {
+                    return false;
+                }
+                else {
+                    GetTable($("#txtTiao").val() * 1 + 1, pages,0);
+                    $("#txtTiao").val($("#txtTiao").val() * 1 + 1);
+                    $("#PageNum").html($("#txtTiao").val())
+                }
+
+                break;
+            case 4: GetTable($("#PageCount").html(), pages,0);//----尾页
+                $("#txtTiao").val($("#PageCount").html());
+                $("#PageNum").html($("#PageCount").html())
+                break;
+            case 5: GetTable($("#txtTiao").val(), pages,0);//----跳转
+                $("#PageNum").html($("#txtTiao").val());
+
+                break;
+
+        }
+    }
+
+    /*选择显示数量---货号表*/
+    function selPage() {
+        if (flag) {
+            GetTable(1, $("#selPages").val(),0)
+            $("#txtTiao").val(1)
+            $("#PageNum").html(1)
+        }
+    }
+
+
+    /*------End-----翻页--------------*/
+    /*编辑器控件*/
+    var editor;
+    KindEditor.ready(function (K) {
+        editor = K.create('textarea[id="txtproductDescript"]', {
+            resizeType: 1,
+            allowPreviewEmoticons: false,
+            allowImageUpload: true,
+            allowFlashUpload: false,
+            allowMediaUpload: false,
+            items: ['source', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold', 'italic', 'underline', 'removeformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist', 'insertunorderedlist', '|', 'emoticons', 'image', 'flash', 'media', 'insertfile', 'link', 'plainpaste', 'wordpaste'],
+        });
+    });
+@******************************款号--编辑--编辑款号属性begin*******************************@
+    //--获款号属性      编辑
+    function styledescript(style, type) {
+        $(".PopBg").height($(document).height());
+        $("#checkboxstyle").removeAttr("checked");
+        $('#divShowMianPicStyle').html("");
+        $(".PopBg").show();
+        $("#PopStyledescript").show();
+        $("#txtproductDescript").val("");
+        $("#txtstylePicSrc").val("");
+        $("#Hidstyledescript").val(style);
+        if (type == "edit") {
+            ShowDetailPic(style);//商品细节
+            ShowPeiPic(style);//品牌配图
+            editor.html("");
+            $("#divScodePicStyle").html("");
+            $.ajax({
+                type: "get",
+                url: "/Product/Getstyledescript",
+                data: { "style": style },
+                success: function (data) {
+                    if (data != "") {
+                        editor.html(data);
+                    }
+                    ShowMainPicStyle(style);
+                    ShowAllpicStyle(style);
+                },
+                error: function () {
+                    alert("error")
+                },
+            })
+        }
+        else {
+            $("#divBrandPeiPic").html("");
+            $("#divShowMianPicStyle").html("");
+            $("#divProductDetail").html("");
+            $("#divImageFileStyle").remove();
+            $("#divbtn").remove();
+            $.ajax({
+                type: "get",
+                url: "/Product/Checkstyledescript",
+                data: { "style": style },
+                success: function (data) {
+                    if (data.split('-*-')[0] != "") {
+                        editor.html(data.split('-*-')[0]);
+                    }
+                    if (data.split('-*-')[1] != "") {
+                        $("#divBrandPeiPic").html(data.split('-*-')[1]);
+                    }
+                    if (data.split('-*-')[2] != "") {
+                        $("#divShowMianPicStyle").html(data.split('-*-')[2]);
+                    }
+                    if (data.split('-*-')[3] != "") {
+                        $("#divProductDetail").html(data.split('-*-')[3]);
+                    }
+                    MaxPic('divPicContainerStyle');
+                },
+                error: function () {
+                    alert("error")
+                },
+            })
+        }
+    }
+   //存储编辑信息--款号表  保存按钮
+    function Updatestyledescript() {
+        var productDescript = editor.html();
+        var style = $("#Hidstyledescript").val();
+        $.ajax({
+            type: "get",
+            url: "/Product/Updatestyledescript",
+            data: { "style": style, "productDescript": productDescript },
+            success: function (data) {
+                if (data == "-1") {
+                    alert("修改失败！");
+                }
+                SelectMainPicStyle();
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+@******************************款号--编辑--编辑款号属性end*******************************@
+    /*上传图片--款号表*/
+    $(document).ready(function () {
+        var style = $("#Hidstyledescript").val();
+        $("#uploadifyStyle").uploadify({
+            'uploader': '/js/Content/uploadify.swf',//uploadify.swf 文件的相对路径，该swf文件是一个带有文字BROWSE的按钮，点击后淡出打开文件对话框，默认值：uploadify.swf
+            'script': '/OperaPic/UploadminImg',//后台处理程序的相对路径 。默认值：uploadify.php 
+            'cancelImg': '/js/Content/cancel.png',//选择文件到文件队列中后的每一个文件上的关闭按钮图标
+            'folder': 'UploadFile',//上传文件存放的目录
+            'queueID': 'fileQueueStyle',//文件队列的ID，该ID与存放文件队列的div的ID一致
+            'fileExt': '*.jpg;*.gif;*.png;*.bmp;',//设置可以选择的文件的类型，格式如：'*.doc;*.pdf;*.rar' 
+            'fileDesc': '请选择jpg,jpeg,gif,png,bmp格式',//这个属性值必须设置fileExt属性后才有效，用来设置选择文件对话框中的提示文本，如设置fileDesc为“请选择rar doc pdf文件”
+            'auto': false,//设置为true当选择文件后就直接上传了，为false需要点击上传按钮才上传
+            'multi': true,//设置为true时可以上传多个文件
+            'onComplete': function (event, ID, fileObj, response, data) {//文件上传完成后触发。该函数有四个参数event、queueId、fileObj、response、data五个参数
+                if (response == "False") {
+                    alert("上传的不是图片!请重新选择!");
+                }
+                else {
+                    $('#divUploadImgStyle').append("<img src=\"" + response + "\" alt='' height='100' width='100' />")
+                }
+                selectStyle();
+                SavePicStyle();
+            }
+        });
+    });
+    /*上传图片-货号表*/
+    $(document).ready(function () {
+        $("#uploadify1").uploadify({
+            'uploader': '/js/content/uploadify.swf',
+            'script': '/OperaPic/UploadminImg',
+            'cancelImg': '/js/content/cancel.png',
+            'folder': 'UploadFile',
+            'fileExt': '*.jpg;*.gif;*.png;*.bmp;',
+            'fileDesc': '请选择jpg,jpeg,gif,png,bmp格式',
+            'queueID': 'fileQueue1',
+            'auto': false,
+            'multi': true,
+            'onComplete': function (event, ID, fileObj, response, data) {
+                $('#divUploadImg').append("<img src=\"" + response + "\" alt='' height='100' width='100' />");
+                select();
+                SavePic();
+            }
+        });
+    });
+
+@******************************货号--编辑--编辑商品属性begin*******************************@
+    /*通过货号显示product表价格*/
+    function productInfo(scode) {
+        $("#divProductInfo").html("");
+        var menuId =@ViewData["myMenuId"]
+        $.ajax({
+            type: "GET",
+            url: "/Product/ProductInfoByScode?scode=" + scode + "&menuId=" + menuId,
+            success: function (data) {
+                $("#divProductInfo").html(data)
+            },
+            error: function () {
+                alert("error!")
+            }
+        })
+    }
+
+    /*点击编辑按钮*/
+    function EditProduct(scode, type) {
+        $(".divShowPic").html("");
+        $("#checkboxscode").removeAttr("checked");
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopContent").show();
+        $("#PopContentPic").hide();
+        $.ajax({
+            type: "GET",
+            url: "/Product/EditProduct?scode=" + scode + "&type=" + type + "&MenuId=" + "@ViewData["myMenuId"]",
+            success: function (data) {
+                if (type == "edit") {
+                    $("#EditContent").html(data);
+                    ddl($("#ddlType").select().val());
+                    productInfo(scode);
+                    $("#BtnGo").attr("onclick", "EditPicture(\"" + scode + "\",\"" + $("#ddlType").find("option:selected").text() + "\")")
+                }
+                else {
+                    $("#EditContainer").html(data)
+                    productInfo(scode);
+                }
+            },
+            error: function () {
+                alert("编辑失败！")
+            }
+        });
+    }
+
+    /*点击保存按钮*/
+    function UpdateProduct() {
+        var Cdescript = $("#txtCdescriptE").val().trim();
+        var Scode = $("#txtScodeE").val().trim();
+        var Rolevel = $("#txtRolevelE").val().trim();
+        //var Id = $("#hidId").val();
+        var Updatetype = $("#hidUpdateType").val();
+        var Cat1 = $("#txtCat1E").val().trim();
+        var Cat2 = $("#ddlType").val().trim();
+        var ciqProductId = $("#txtciqProductId").find("option:selected").val();
+        var ciqSpec = $("#txtciqSpec").val().trim();
+        var ciqHSNo = $("#txtciqHSNo").val().trim();
+        var ciqAssemCountry = $("#txtciqAssemCountry").val();
+        var Def9 = $("#PicChecklist").find("option:selected").val();
+        var Def10 = $("#txtDef10").val().trim();
+        var imagefile = $("#divThumbnail").parent().find("img").attr("src");
+        var QtyUnit = $("#selapiUnit").find("option:selected").val();
+        var Def15 = $("#txtDef15").val().trim();
+        var Def16 = $("#txtDef16").val().trim();
+        var ComAttrvalues = [], AttrId = [], PropertyId = [], ComAttrName = [];
+        $("#TypeAttribute").find("input[type=text]").each(function () {
+            if ($(this).val() == "" || $(this).attr("title") == "") {
+            }
+            else {
+                AttrId.push($(this).attr("title"))
+                ComAttrvalues.push($(this).val());
+                PropertyId.push($(this).attr("name"))
+            }
+        })
+        $.ajax({
+            type: "GET",
+            url: "/Product/UpdateProduct?Scode=" + Scode + "&Cdescript=" + Cdescript + "&Cat1=" + Cat1 + "&Cat2=" + Cat2 + "&Rolevel=" + Rolevel + "&AttrId=" + AttrId
+                + "&ComAttrvalues=" + ComAttrvalues + "&PropertyId=" + PropertyId + "&ciqProductId=" + ciqProductId + "&ciqSpec=" + ciqSpec + "&ciqHSNo=" + ciqHSNo
+                + "&ciqAssemCountry=" + ciqAssemCountry + "&Def9=" + Def9 + "&Def10=" + Def10 + "&imagefile=" + imagefile + "&QtyUnit=" + QtyUnit + "&Def15=" + Def15 + "&Def16=" + Def16,
+            success: function (data) {
+                if (data) {
+                    GetTable($("#txtTiao").val(), $("#selPages").val())
+                    alert("保存成功！")
+                }
+                else {
+                    alert("保存失败！")
+                }
+            },
+            error: function () {
+                alert("保存失败！")
+            }
+        });
+    }
+
+    /*删除缩略图*/
+    function DeleteThumbnail() {
+        $("#divThumbnail").parent().find("img").attr("src", "");
+    }
+
+
+    /*获取拉列表商品类别显示相应属性*/
+    function ddl(TypeNo) {
+        $("#TypeAttribute").html("")
+        var Scode = $("#txtScodeE").val();
+        $.ajax({
+            type: "GET",
+            url: "/Product/GetTypeNo?TypeNo=" + TypeNo + "&Scode=" + Scode,
+            success: function (data) {
+                $("#TypeAttribute").html(data);
+            },
+            error: function () {
+                alert("error")
+            }
+        });
+    }
+    /*将品牌下拉框选择项对应的品牌缩写设置到input*/
+    function ddl1(value, id) {
+        $("#txtCat" + id).val(value)
+    }
+    /*关闭弹窗*/
+    function Close() {
+        $(".PopBg").hide();
+        $(".myPopdiv").hide();
+    }
+@******************************货号--编辑--编辑商品属性end*******************************@
+
+
+@******************************款号--（操作）查看begin*******************************@
+    /*通过款号查看货号商品信息*/
+    function ScodeInfo(obj) {
+        flag = true;
+        GetTableStyle(obj, $("#selPages").val())
+        $("#txtStyle").val(obj);
+    }
+    @******************************款号--（操作）查看end*******************************@
+
+    @******************************货号--编辑图片--下载图片按钮begin*******************************@
+    /*下载图片--*/
+    var UploadArry = [];
+    var upLoad;
+    function UploadPicStyle(obj) {
+        var s = "";
+        if (obj == "style") {
+            $("#divScodePicStyle").find("input[type='checkbox']:checked").each(function () {
+                UploadArry.push($(this).parent().parent().find("img").attr("src").split("@@")[0]);
+                //s += "<a href=\"" + $(this).parent().parent().find("img").attr("src").split("@@")[0] + "\" target='_blank'>" + $(this).parent().parent().find("img").attr("title") + "</a><br />";
+            })
+        }
+        else if (obj = "scode") {
+            $("#divScodePic").find("input[type='checkbox']:checked").each(function () {
+                UploadArry.push($(this).parent().parent().find("img").attr("src").split("@@")[0]);
+                //s += "<a href=\"" + $(this).parent().parent().find("img").attr("src").split("@@")[0] + "\" target='_blank'>" + $(this).parent().parent().find("img").attr("title") + "</a><br />";
+            })
+        }
+        upLoad = setInterval("UploadImg()", 1000);
+        //$.MsgBox.Alert("点击下载", s);
+    }
+    function UploadImg() {
+        if (UploadArry.length != 0) {
+            window.open(UploadArry.shift(), "_blank");
+        }
+        else {
+            clearInterval(upLoad);
+            UploadArry = [];
+        }
+    }
+    @******************************货号--编辑图片--下载图片按钮end*******************************@
+
+
+    @******************************款号--上货begin*******************************@
+    /*上货*/
+    function ShowShop(style) {
+        $("#LabShopStyle").html(style);
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#divSelectShop").show();
+        $("#selShop").val("");
+    }
+
+    /*请选择店铺*/
+    function AddProduct(style) {
+        var ShopId = $("#selShop").find("option:selected").val();
+        if (ShopId == "") {
+            alert("请选择店铺!"); return false;
+        }
+        var style = $("#LabShopStyle").html();
+        window.open("/Category/TBAddGoods?style=" + style + "&ShopId=" + ShopId, 'newwindow', 'height=700, width=900, top=100,left=250, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no, status=no')
+    }
+    @******************************款号--上货end*******************************@
+
+     @******************************选择图片到编辑器里面begin*******************************@
+    /*选择图片到编辑器里面*/
+    function SelectPic() {
+        var arrsrc = [];
+        var src;
+        var s = "";
+        $("#divScodePicStyle").find("input[type='checkbox']:checked").each(function () {
+            arrsrc.push($(this).parent().parent().find("img").attr("src"))
+        })
+
+        if (arrsrc != "") {
+            for (var i = 0; i < arrsrc.length; i++) {
+                editor.appendHtml("<img src='" + arrsrc[i].split("@@")[0] + "' />")
+            }
+        }
+    }
+    @******************************选择图片到编辑器里面end*******************************@
+
+     @******************************没用到*******************************@
+    function GetCountry() {
+        $.post("/Product/GetCountrylist", { "countryName": $("#txtciqAssemCountry").val().trim(), "Country": "" }, function (data) { $("#selciqAssemCountry").html(data) })
+    }
+
+    function GetCountryddl() {
+        $("#txtciqAssemCountry").val($("#selciqAssemCountry").find("option:selected").text())
+    }
+    @******************************没用到*******************************@
+
+    /*----Satrt-----------------------图片编辑------------------------*/
+
+    /*图片编辑*/
+    function EditPicture(scode, typename) {
+        $("#Labscode").html(scode);
+        $("#Labtypename").html(typename);
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopContentPic").show();
+        $("#BtnGo1").attr("onclick", "EditProduct(\"" + scode + "\",\"edit\")")
+        ShowMainPic(scode);
+        ShowAllpic(scode);
+        MaxPic('EditContainer');
+    }
+
+    //--显示缩略图
+    function showPic() {
+        var m = $("#mytable1,#mytable").find("img").length - 1;
+        $("#mytable1,#mytable").find("img").each(function (i, j) {
+            if (i == m && m != 0) {
+                $(this).hover(function () {
+                    var y = $(this).offset().top;
+                    var x = $(this).offset().left;
+                    $("#divShowPic").css("top", y - 140);
+                    $("#divShowPic").css("left", x + 60);
+                    var src = $(this).attr("src");
+                    var Type = src.split(".")[4];
+                    src = src.split("@@")[0];
+                    $("#divShowPic").html("<img src='" + src + "' style='height:200px;width:200px' />")
+                    ScrollPic("divShowPic");
+
+                }, function () {
+                    $("#divShowPic").html("");
+                    CloseScroll();
+                })
+            } else {
+                $(this).hover(function () {
+                    var y = $(this).offset().top;
+                    var x = $(this).offset().left;
+                    $("#divShowPic").css("top", y);
+                    $("#divShowPic").css("left", x + 60);
+                    var src = $(this).attr("src");
+                    var Type = src.split(".")[4];
+                    src = src.split("@@")[0];
+                    $("#divShowPic").html("<img src='" + src + "' style='height:200px;width:200px' />")
+                    ScrollPic("divShowPic");
+                }, function () {
+                    $("#divShowPic").html("")
+                    CloseScroll();
+                })
+            }
+
+        })
+    }
+                                                                                                                                function ScrollPic(obj) {
+                                                                                                                                    var scrollFunc = function (e) {
+                                                                                                                                        var direct = 0;
+                                                                                                                                        ee = e || window.event;
+                                                                                                                                        if (e.wheelDelta > 0) {
+                                                                                                                                            var add = $("." + obj).find("img").css("width");
+                                                                                                                                            add = parseInt(add)
+                                                                                                                                            if (add < 500) {
+                                                                                                                                                $("." + obj).find("img").css("width", add + 25)
+                                                                                                                                                $("." + obj).find("img").css("height", add + 25)
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                        else {
+                                                                                                                                            var add = $("." + obj).find("img").css("width");
+                                                                                                                                            add = parseInt(add)
+                                                                                                                                            if (add > 300) {
+                                                                                                                                                $("." + obj).find("img").css("width", add - 25)
+                                                                                                                                                $("." + obj).find("img").css("height", add - 25)
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                        $("body").css("overflow", "hidden");
+                                                                                                                                        $("#EditContainer").css("overflow", "hidden");
+                                                                                                                                    }
+                                                                                                                                    window.onmousewheel = document.onmousewheel = scrollFunc; //IE/Opera/Chrome/Safari 
+                                                                                                                                }
+                                                                                                                                function CloseScroll() {
+                                                                                                                                    $("body").css("overflow", "auto");
+                                                                                                                                    $("#EditContainer").css("overflow", "auto"); CheckMainPic
+                                                                                                                                    window.onmousewheel = document.onmousewheel = 0; //IE/Opera/Chrome/Safari
+                                                                                                                                }
+    //-------------
+    //--判断选择主图数量-货号表
+    function select() {
+        var i = 0;
+        $("#divScodePic").find("img").each(function () {
+            $(this).unbind("click");
+            $(this).bind("click", function () {
+                i = $("#divMainPicContent").find("img").length;
+                //if ($(this).attr("class") != "selected") {
+                if (parseInt(i) < 10) {
+                    var check = $(this);
+                    var flag = false;
+                    $("#divMainPicContent").find("img").each(function () {
+                        if ($(this).attr("src") == check.attr("src")) {
+                            flag = true
+                        }
+                    })
+                    if (!flag) {
+                        check.attr("class", "selected");
+                        $("#divUploadMainPic").prepend("<img src='" + check.attr("src") + "' />")
+                        i = parseInt(i) + 1;
+                    }
+                }
+                CancleMainPic();
+            })
+        })
+        CancleMainPic();
+    }
+    //--判断选择主图数量-款号表
+    function selectStyle() {
+        var i = 0;
+        $("#divScodePicStyle").find("img").each(function () {
+            $(this).unbind("click");
+            $(this).bind("click", function () {
+                i = $("#divMainPicContentStyle").find("img").length;
+                //if ($(this).attr("class") != "selected") {
+                if (parseInt(i) < 10) {
+                    var check = $(this);
+                    var flag = false;
+                    $("#divMainPicContentStyle").find("img").each(function () {
+                        if ($(this).attr("src") == check.attr("src")) {
+                            flag = true
+                        }
+                    })
+                    if (!flag) {
+                        check.attr("class", "selected");
+                        $("#divUploadMainPicStyle").prepend("<img src='" + check.attr("src") + "' />")
+                        i = parseInt(i) + 1;
+                    }
+                }
+                CancleMainPicStyle();
+            })
+        })
+        CancleMainPicStyle();
+    }
+
+    //--取消主图-货号表
+    function CancleMainPic() {
+        $("#divUploadMainPic").find("img").each(function () {
+            var cancel = $(this);
+            $(this).unbind("click");
+            $(this).bind("click", function () {
+                var flags = false;
+                $("#divScodePic").find("img").each(function () {
+                    if (cancel.attr("src") == $(this).attr("src")) {
+                        $(this).removeClass("selected");
+                        cancel.remove();
+                        $(".divShowPic").html("");
+                    }
+                })
+            })
+        })
+    }
+
+    //--取消主图-款号表
+    function CancleMainPicStyle() {
+        $("#divUploadMainPicStyle").find("img").each(function () {
+            var cancel = $(this);
+            $(this).unbind("click");
+            $(this).bind("click", function () {
+                var flags = false;
+                $("#divScodePicStyle").find("img").each(function () {
+                    if (cancel.attr("src") == $(this).attr("src")) {
+                        $(this).removeClass("selected");
+                        cancel.remove();
+                        $(".divShowPic").html("");
+                    }
+                })
+            })
+        })
+    }
+    //--保存上传图片-货号表
+    function SavePic() {
+        $(".Loading").height($(document).height() - 70);
+        $(".Loading").show();
+        var Arrysrc = [];
+        var scode = $("#Labscode").html();
+        $("#divUploadImg").find("img").each(function () {
+            Arrysrc.push($(this).attr("src"))
+        })
+
+        if (Arrysrc.length == 0) {
+            alert("没有可上传的图片!")
+            return false;
+        }
+        $.ajax({
+            type: "get",
+            url: "/OperaPic/UploadScodePic?Arrysrc=" + Arrysrc + "&scode=" + scode,
+            success: function (data) {
+                if (data) {
+                    ShowAllpic(scode);
+                    $(".Loading").hide();
+                }
+                else {
+                    alert("保存失败!")
+                }
+
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+
+    //--保存上传图片-款号表
+    function SavePicStyle() {
+        $(".Loading").height($(document).height() - 70);
+        $(".Loading").show();
+        var Arrysrc = [];
+        var Style = $("#Hidstyledescript").val();
+        $("#divUploadImgStyle").find("img").each(function () {
+            Arrysrc.push($(this).attr("src"))
+        })
+        if (Arrysrc.length == 0) {
+            alert("没有可上传的图片!")
+            return false;
+        }
+        $.ajax({
+            type: "get",
+            url: "/OperaPic/UploadScodePicStyle?Arrysrc=" + Arrysrc + "&Style=" + Style,
+            success: function (data) {
+                if (data) {
+                    ShowAllpicStyle(Style);
+                }
+                else {
+                    alert("保存失败!")
+                }
+                $(".Loading").hide();
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }
+
+    //--显示所有上传图片-货号表
+    function ShowAllpic(scode) {
+
+        $("#divScodePic").html("");
+        $("#divUploadImg").html("");
+        //var scode = $("#txtScodeE").val();
+        var srcs = [];
+        $.ajax({
+            type: "get",
+            url: "/OperaPic/retAllpicByScode?scode=" + scode,
+            success: function (data) {
+                if (data != "") {
+                    $("#divScodePic").html(data);
+                }
+                MaxPic('div_img1');
+                select();
+                CheckMainPic();
+            },
+            error: function () {
+            },
+        })
+    }
+
+    //--显示所有上传图片-款号表
+    function ShowAllpicStyle(Style) {
+        $("#divScodePicStyle").html("");
+        $("#divUploadImgStyle").html("");
+        //var scode = $("#txtScodeE").val();
+        var srcs = [];
+        $.ajax({
+            type: "get",
+            url: "/OperaPic/retAllpicByScodeStyle?Style=" + Style,
+            success: function (data) {
+                if (data != "") {
+                    $("#divScodePicStyle").html(data);
+                }
+                MaxPic('div_imgStyle');
+                selectStyle();
+                CheckMainPicStyle();
+            },
+            error: function () {
+            },
+        })
+    }
+
+    //--保存选择的主图-货号表
+    function SelectMainPic() {
+        var Arrysrc = [];
+        var scode = $("#Labscode").html();
+        $("#div_img1").find("img").each(function () {
+            if ($(this).attr("class") == "selected")
+                Arrysrc.push($(this).attr("src"))
+        })
+        $.ajax({
+            type: "get",
+            url: "/OperaPic/SelectMainPic?Arrysrc=" + Arrysrc + "&scode=" + scode,
+            success: function (data) {
+                if (!data) {
+                    alert("保存失败!")
+                }
+                ShowMainPic(scode);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+
+    //--保存选择的主图-款号表
+    function SelectMainPicStyle() {
+        var Arrysrc = [];
+        var Style = $("#Hidstyledescript").val();
+        $("#div_imgStyle").find("img").each(function () {
+            if ($(this).attr("class") == "selected")
+                Arrysrc.push($(this).attr("src"))
+        })
+        $.ajax({
+            type: "get",
+            url: "/OperaPic/SelectMainPicStyle?Arrysrc=" + Arrysrc + "&Style=" + Style,
+            success: function (data) {
+                if (!data) {
+                    alert("保存失败!")
+                }
+                ShowMainPicStyle(Style);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }
+    //--显示主图通过货号
+    function ShowMainPic(scode) {
+        $("#divShowMianPic").html("");
+        $("#divUploadMainPic").html("");
+        $.ajax({
+            type: "POST",
+            url: "/OperaPic/GetZhutuPic1",
+            data: { "scode": scode },
+            success: function (data) {
+                var ss = "";
+                if (data != "") {
+                    srcs = data.split("-*-");
+                    ss += "<ul class='ulPic'>";
+                    for (var i = 0; i < srcs.length; i++) {
+                        if (srcs[i] != "")
+                            ss += "<li class='ui-state-default'><img src=\"" + srcs[i].split("***")[0] + "\" title='" + srcs[i].split("***")[1] + "' /><a>×<a/></li>"
+                    }
+                    ss += "</ul>";
+                }
+                $("#divShowMianPic").html(ss);
+                ControlPic();
+                DeleteZhutu1();
+                CheckMainPic();
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+
+    /*保存主图顺序--货号*/
+    function SaveZhutu1() {
+        var Ids = [];
+        $("#divShowMianPic").find("ul").find("li").find("img").each(function () {
+            Ids.push($(this).attr("title"))
+        })
+        $.post("/OperaPic/SaveZhutu1", { "Ids": Ids }, function (data) { })
+    }
+
+    /*删除主图--货号*/
+    function DeleteZhutu1() {
+        var scode = $("#Labscode").html();
+
+        $("#divShowMianPic").find("li").find("a").each(function () {
+            $(this).click(function () {
+                var Id = $(this).parent().find("img").attr("title");
+                $.post("/OperaPic/DeleteZhutuPic1", { "Id": Id }, function () { ShowMainPic(scode); })
+            })
+        })
+    }
+
+    //--检测上传的图片中是否被选择为主图-货号表
+    function CheckMainPic() {
+        $("#divScodePic").find("img").removeAttr("class");
+        $("#divScodePic").find("img").each(function () {
+            var src = $(this);
+            $("#divShowMianPic").find("img").each(function () {
+                if ($(this).attr("src") == src.attr("src")) {
+                    src.attr("class", "selected");
+                }
+            })
+        })
+    }
+
+                                                    //--检测上传的图片中是否被选择为主图-款号表
+                                                    function CheckMainPicStyle() {
+                                                        $("#divScodePicStyle").find("img").removeAttr("class");
+                                                        $("#divScodePicStyle").find("img").each(function () {
+                                                            var src = $(this);
+                                                            $("#divShowMianPicStyle").find("img").each(function () {
+                                                                //console.log(src.attr("src"));
+                                                                if ($(this).attr("src") == src.attr("src")) {
+                                                                    src.attr("class", "selected");
+                                                                }
+                                                            })
+                                                        })
+                                                    }
+
+                                                    //编辑页面显示主图的大图通用
+                                                    function MaxPic(obj) {
+                                                        $("#" + obj).find("img").each(function () {
+                                                            $(this).hover(function () {
+                                                                var y = $(this).offset().top;
+                                                                var x = $(this).offset().left;
+                                                                $(".divShowPic").css("top", y - 230);
+                                                                $(".divShowPic").css("left", x + 80);
+                                                                $(".divShowPic").css("z-index", "9999")
+                                                                var src = $(this).attr("src");
+                                                                var Type = src.split(".")[4];
+                                                                if (src != "") {
+                                                                    src = src.split("@@")[0];
+                                                                    $(".divShowPic").html("<img src='" + src + "' style='height:300px;width:300px' />");
+                                                                }
+                                                                ScrollPic("divShowPic");
+                                                            }, function () {
+                                                                $(".divShowPic").html("");
+                                                                CloseScroll();
+                                                            })
+                                                        })
+                                                    }
+
+    //选择为缩略图 -货号表
+    function UploadMinPic(src) {
+        var scode = $("#Labscode").html();
+        //var id = $("#hidId").val();
+        $.ajax({
+            type: "get",
+            url: "/OperaPic/UploadMinPic?scode=" + scode + "&Imagefile=" + src,
+            success: function (data) {
+                if (data) {
+                    $("#divThumbnail").parent().find("img").attr("src", src);
+                    ShowAllpic(scode);
+                    GetTable($("#txtTiao").val(), $("#selPages").val());
+                }
+                else {
+                    alert("操作失败!");
+                }
+            },
+            error: function () {
+                alert("error");
+            },
+        })
+    }
+                                                                                        //选择为缩略图-款号表
+                                                                                        function UploadMinPicStyle(src) {
+                                                                                            var Style = $("#Hidstyledescript").val();
+                                                                                            //var id = $("#hidId").val();
+                                                                                            $.ajax({
+                                                                                                type: "get",
+                                                                                                url: "/OperaPic/UploadMinPicStyle?Style=" + Style + "&Imagefile=" + src,
+                                                                                                success: function (data) {
+                                                                                                    if (data) {
+                                                                                                        GetTable1($("#txtTiao1").val(), $("#selPages1").val(),0);
+                                                                                                        ShowAllpicStyle(Style);
+                                                                                                    }
+                                                                                                    else {
+                                                                                                        alert("操作失败!");
+                                                                                                    }
+                                                                                                    //EditProduct(id, scode)
+                                                                                                },
+                                                                                                error: function () {
+                                                                                                    alert("error");
+                                                                                                },
+                                                                                            })
+                                                                                        }
+    //删除所有图片--款号表
+    function DeleteAllPicByStyle() {
+        if (confirm("确定要删除这些图片吗!")) {
+            var Style = $("#Hidstyledescript").val();
+            var arryId = [];
+            var src;
+            $("#divScodePicStyle").find("input[type='checkbox']:checked").each(function () {
+                arryId.push($(this).val())
+            })
+            if (arryId != "") {
+                //alert(arrsrc)
+                $.ajax({
+                    type: "GET",
+                    url: "/OperaPic/DeleteAllPicByStyle?style=" + Style + "&arryId=" + arryId,
+                    success: function (data) {
+                        if (!data) {
+                            alert("删除失败!")
+                        }
+                        ShowMainPicStyle(Style);
+                        ShowAllpicStyle(Style);
+                        ShowDetailPic(Style);
+                        ShowPeiPic(Style);
+                    },
+                    error: function () {
+                        alert("error!")
+                    }
+                })
+            }
+        }
+    }
+    //删除所有图片--货号表
+    function DeleteAllPicByScode() {
+        if (confirm("确定要删除这些图片吗!")) {
+            var scode = $("#Labscode").html();
+            //var id = $("#hidId").val();
+            var arryId = [];
+            var src;
+            $("#divScodePic").find("input[type='checkbox']:checked").each(function () {
+                arryId.push($(this).val())
+            })
+            if (arryId != "") {
+                //alert(arrsrc)
+                $.ajax({
+                    type: "GET",
+                    url: "/OperaPic/DeleteAllPicByScode?scode=" + scode + "&arryId=" + arryId,
+                    success: function (data) {
+                        if (!data) {
+                            alert("删除失败!")
+                        }
+                        ShowAllpic(scode);
+                    },
+                    error: function () {
+                        alert("error!")
+                    }
+                })
+            }
+        }
+    }
+    //-----全选删除的checkbox
+    function selectAllBox(obj) {
+        if (obj == "style") {
+            if ($("#checkboxstyle").attr("checked") == "checked") {
+                $("#divScodePicStyle").find("input[type='checkbox']").attr("checked", "checked");
+            }
+            else {
+                $("#divScodePicStyle").find("input[type='checkbox']").removeAttr("checked");
+            }
+        }
+        else {
+            if ($("#checkboxscode").attr("checked") == "checked") {
+                $("#divScodePic").find("input[type='checkbox']").attr("checked", "checked");
+            }
+            else {
+                $("#divScodePic").find("input[type='checkbox']").removeAttr("checked");
+            }
+
+        }
+    }
+    ///--把该款号图片全复制给货号表
+    //function CopystylepicToscode() {
+    //    var scode = $("#txtScodeE").val();
+    //    var id = $("#hidId").val();
+    //    $.ajax({
+    //        type: "GET",
+    //        url: "/Product/CopystylepicToscode?scode=" + scode,
+    //        success: function (data) {
+    //            if (!data) {
+    //                alert("复制失败!")
+    //            }
+    //            EditProduct(id, scode, "edit")
+    //        },
+    //        error: function () {
+    //            alert("error!")
+    //        }
+
+    //    })
+    //}
+    //--把该款号图片全复制给货号表
+    function CopysocdepicTostyle() {
+        var scode = $("#Labscode").html();
+        var arryId = [];
+        $("#divScodePic").find("input[type='checkbox']:checked").each(function () {
+            arryId.push($(this).val())
+        })
+
+        if (arryId != "") {
+            //alert(arrsrc)
+            $.ajax({
+                type: "GET",
+                url: "/OperaPic/CopysocdepicTostyle?scode=" + scode + "&arryId=" + arryId,
+                success: function (data) {
+                    if (!data) {
+                        alert("选择失败!")
+                    }
+                },
+                error: function () {
+                    alert("error!")
+                }
+
+            })
+        }
+    }
+                                                        //图片移动
+                                                        function ControlPic() {
+                                                            $(".ulPic").sortable({
+                                                                revert: true
+                                                            });
+                                                            $("ul, li").disableSelection();
+                                                        }
+
+    //--------------------操作主款号表
+    //--选择细节图
+    function SelectDetailPic() {
+        var style = $("#Hidstyledescript").val();
+        var arryId = [];
+        var src;
+        $("#divScodePicStyle").find("input[type='checkbox']:checked").each(function () {
+            arryId.push($(this).val())
+        })
+        if (arryId != "") {
+            //alert(arrsrc)
+            $.ajax({
+                type: "GET",
+                url: "/OperaPic/SelectDetailPic?style=" + style + "&arryId=" + arryId,
+                success: function (data) {
+                    if (!data) {
+                        alert("选择失败!")
+                    }
+                    ShowDetailPic(style);
+
+                },
+                error: function () {
+                    alert("error!")
+                }
+
+            })
+        }
+    }
+                                                        //--显示配图
+                                                        function ShowPeiPic(style) {
+                                                            var srcs = [];
+                                                            $("#divBrandPeiPic").html("");
+                                                            $.ajax({
+                                                                type: "POST",
+                                                                url: "/OperaPic/GetPeituPic",
+                                                                data: { "style": style },
+                                                                success: function (data) {
+                                                                    var ss = "";
+                                                                    if (data != "") {
+                                                                        srcs = data.split("-*-");
+                                                                        ss += "<ul class='ulPic'>";
+                                                                        for (var i = 0; i < srcs.length; i++) {
+                                                                            if (srcs[i] != "")
+                                                                                ss += "<li class='ui-state-default'><img src=\"" + srcs[i].split("***")[0] + "\" title='" + srcs[i].split("***")[1] + "' /><a>×<a/></li>"
+                                                                        }
+                                                                        ss += "</ul>";
+                                                                    }
+                                                                    $("#divBrandPeiPic").html(ss);
+                                                                    ControlPic();
+                                                                    DeletePeituPic();
+                                                                },
+                                                                error: function () {
+                                                                    alert("error!")
+                                                                }
+                                                            })
+                                                        }
+
+    /*保存配图顺序*/
+    function SavePeitu() {
+        var Ids = [];
+        $("#divBrandPeiPic").find("ul").find("li").find("img").each(function () {
+            Ids.push($(this).attr("title"))
+        })
+        $.post("/OperaPic/SavePeitu", { "Ids": Ids }, function (data) { })
+    }
+
+                                                        /*删除配图*/
+                                                        function DeletePeituPic() {
+                                                            var style = $("#Hidstyledescript").val();
+                                                            $("#divBrandPeiPic").find("li").find("a").each(function () {
+                                                                $(this).click(function () {
+                                                                    var Id = $(this).parent().find("img").attr("title");
+                                                                    $.post("/OperaPic/DeletePeituPic", { "Id": Id }, function () { ShowPeiPic(style); })
+                                                                })
+                                                            })
+                                                        }
+
+                                                          //--显示主图通过货号-款号表
+                                                         function ShowMainPicStyle(style) {
+        $("#divShowMianPicStyle").html("");
+        $("#divUploadMainPicStyle").html("");
+        $.ajax({
+            type: "POST",
+            url: "/OperaPic/GetZhutuPic",
+            data: { "style": style },
+            success: function (data) {
+                var ss = "";
+                if (data != "") {
+                    srcs = data.split("-*-");
+                    ss += "<ul class='ulPic'>";
+                    for (var i = 0; i < srcs.length; i++) {
+                        if (srcs[i] != "")
+                            ss += "<li class='ui-state-default'><img src=\"" + srcs[i].split("***")[0] + "\" title='" + srcs[i].split("***")[1] + "' /><a>×<a/></li>"
+                    }
+                    ss += "</ul>";
+                }
+                $("#divShowMianPicStyle").html(ss);
+                ControlPic();
+                DeleteZhutu();
+                CheckMainPicStyle();
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+    /*保存主图顺序--款号*/
+    function SaveZhutu() {
+        var Ids = [];
+        $("#divShowMianPicStyle").find("ul").find("li").find("img").each(function () {
+            Ids.push($(this).attr("title"))
+        })
+        $.post("/OperaPic/SaveZhutu", { "Ids": Ids }, function (data) { CheckMainPicStyle(); })
+    }
+
+                                                    /*删除主图--款号*/
+                                                    function DeleteZhutu() {
+                                                        var style = $("#Hidstyledescript").val();
+                                                        $("#divShowMianPicStyle").find("li").find("a").each(function () {
+                                                            $(this).click(function () {
+                                                                var Id = $(this).parent().find("img").attr("title");
+                                                                $.post("/OperaPic/DeleteZhutuPic", { "Id": Id }, function () { ShowMainPicStyle(style); })
+                                                            })
+                                                        })
+                                                    }
+                                                    //--显示细节图
+                                                    function ShowDetailPic(style) {
+                                                        var srcs = [];
+                                                        $("#divProductDetail").html("");
+                                                        $.ajax({
+                                                            type: "POST",
+                                                            url: "/OperaPic/GetXiJiePic",
+                                                            data: { "style": style },
+                                                            success: function (data) {
+                                                                var ss = "";
+                                                                if (data != "") {
+                                                                    srcs = data.split("-*-");
+                                                                    ss += "<ul class='ulPic'>";
+                                                                    for (var i = 0; i < srcs.length; i++) {
+                                                                        if (srcs[i] != "")
+                                                                            ss += "<li class='ui-state-default'><img src=\"" + srcs[i].split("***")[0] + "\" title='" + srcs[i].split("***")[1] + "' /><a>×<a/></li>"
+                                                                    }
+                                                                    ss += "</ul>";
+                                                                }
+                                                                $("#divProductDetail").html(ss);
+                                                                ControlPic();
+                                                                DeleteXiJietu();
+                                                                //$("#divProductDetail").html("<iframe src='/OperaPic/XiJieExchange?style=" + style + "' style='height:245px;width:825px'></iframe>")
+                                                            },
+                                                            error: function () {
+                                                                alert("error!")
+                                                            }
+
+                                                        })
+                                                    }
+
+    /*保存细节图顺序*/
+    function SaveXiJietu() {
+        var Ids = [];
+        $("#divProductDetail").find("ul").find("li").find("img").each(function () {
+            Ids.push($(this).attr("title"))
+        })
+        $.post("/OperaPic/SaveXiJietu", { "Ids": Ids }, function (data) { })
+    }
+
+                                                    /*删除细节图*/
+                                                    function DeleteXiJietu() {
+                                                        var style = $("#Hidstyledescript").val();
+                                                        $("#divProductDetail").find("li").find("a").each(function () {
+                                                            $(this).click(function () {
+                                                                var Id = $(this).parent().find("img").attr("title");
+                                                                $.post("/OperaPic/DeleteXiJiePic", { "Id": Id }, function () { ShowDetailPic(style); })
+                                                            })
+                                                        })
+                                                    }
+    //--选择配图
+    function SelectPeiPic() {
+        var style = $("#Hidstyledescript").val();
+        var arryId = [];
+        var src;
+        $("#divScodePicStyle").find("input[type='checkbox']:checked").each(function () {
+            arryId.push($(this).val())
+        })
+        if (arryId != "") {
+            //alert(arrsrc)
+            $.ajax({
+                type: "GET",
+                url: "/OperaPic/SelectPeiPic?style=" + style + "&arryId=" + arryId,
+                success: function (data) {
+                    if (!data) {
+                        alert("选择失败!")
+                    }
+                    ShowPeiPic(style);
+                },
+                error: function () {
+                    alert("error!")
+                }
+            })
+        }
+    }
+
+    /*图片错误处理*/
+    function errorImg(obj) {
+        var src = $(obj).attr("src");
+        $(obj).parent().attr("title", src);
+        $(obj).parent().html("Img error");
+    }
+    /*-----End------------------------图片编辑------------------------*/
+</script>

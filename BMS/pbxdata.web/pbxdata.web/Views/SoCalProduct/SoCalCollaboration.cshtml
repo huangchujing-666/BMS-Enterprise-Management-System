@@ -1,0 +1,29 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<script type="text/javascript" src="~/js/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript">
+    var MenuId ="@ViewData["myMenuId"]"
+    $(function ()
+    {
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/SoCalProduct/CollaborationShopShow",
+                success: function (data)
+                {
+                    $("#CollaborationTable").html(data);
+                }
+            })
+    })
+    function Instruction(shopid,shopname)
+    {
+        location.href = "/SoCalProduct/SoCalWareHouse?shopname=" + shopname + "&shopid=" + shopid+"&MenuId="+MenuId;
+    }
+</script>
+<div id="CollaborationTable">
+
+</div>

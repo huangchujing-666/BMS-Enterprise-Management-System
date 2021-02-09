@@ -1,0 +1,361 @@
+﻿@{
+    ViewBag.Title = "店铺订单";
+}
+
+<style>
+    .div
+    {
+        float: left;
+    }
+
+    .span
+    {
+        float: left;
+        margin-left: 30px;
+        display: -moz-inline-box;
+        display: inline-block;
+        width: 100px;
+        text-align: right;
+    }
+
+    .iptCss
+    {
+        width: 170px;
+        float: right;
+    }
+
+    #divtabContainer select
+    {
+        width: 170px;
+    }
+
+    .mytable tr:nth-child(2) td
+    {
+        background-color: #dadada;
+    }
+
+    .divclose
+    {
+        position: absolute;
+        right: 8px;
+        top: 3px;
+        cursor: pointer;
+        font-size: 2em;
+        font-weight: bolder;
+        width: 30px;
+        height: 30px;
+    }
+
+        .divclose:hover
+        {
+            color: red;
+        }
+
+    .spanContainer
+    {
+        position: relative;
+    }
+
+        .spanContainer select
+        {
+            width: 125px;
+            height: 20px;
+        }
+
+        .spanContainer input[type='text']
+        {
+            position: absolute;
+            width: 105px;
+            right: 20px;
+            top: -4px;
+            height: 20px;
+        }
+</style>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<script src="~/js/imgZoomIn.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<script type="text/javascript" src="~/js/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript">
+
+    $().ready(function () {
+
+        //$.CustomShowDiv("", "");
+        //$.CustomHiddenDiv("", "");
+
+
+        $.post("/ShopOrder/getData", { menuId: "@ViewData["myMenuId"]", pageIndex: 1, pageSize: 10 }, function (data) { var ss = data.split("-----"); $(".mytable").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+
+
+        ///获取订单备注
+        $("#btnRemarkMsg").click(function () {
+            var statu = confirm("确定要获取订单备注吗?");
+            if (!statu) {
+                return false;
+            }
+
+            showDiv();
+            $.post("/ShopOrder/getRemarkMsg", function (data) { alert(data); closeDiv(); console.log(data + "!!!") }).error(function (e) { alert(e); closeDiv(); console.log(data) })
+        })
+
+
+
+        ///获取物流信息
+        $("#btnLogistic").click(function () {
+            var statu = confirm("确定要获取物流订单吗?");
+            if (!statu) {
+                return false;
+            }
+
+            showDiv();
+            $.post("/ShopOrder/getLogisticsMsg", function (data) { alert(data); closeDiv(); console.log(data + "!!!") }).error(function (e) { alert(e); closeDiv(); console.log(data) })
+        })
+
+
+        ///获取物流运单号
+        $("#btnLogisticNo").click(function () {
+            var statu = confirm("确定要获取物流运单号吗?");
+            if (!statu) {
+                return false;
+            }
+
+            showDiv();
+            $.post("/ShopOrder/getLogisticsNo", function (data) { alert(data); closeDiv(); console.log(data + "!!!") }).error(function (e) { alert(e); closeDiv(); console.log(data) })
+        })
+
+
+
+        /////添加主订单(暂时先去掉)
+        //$("#btnAdd").click(function () {
+        //    var statu = confirm("确定要添加主订单吗?");
+        //    if (!statu) {
+        //        return false;
+        //    }
+
+        //    showDiv();
+        //    $.post("/ShopOrder/getTmallOrder", function (data) { alert(data); closeDiv(); console.log(data + "!!!") }).error(function (e) { alert(e); closeDiv(); console.log(data) })
+        //})
+
+
+
+        ///更新订单
+        $("#btnUpdate").click(function () {
+            var statu = confirm("确定要更新订单吗?");
+            if (!statu) {
+                return false;
+            }
+
+            showDiv();
+            $.post("/ShopOrder/updateTmallOrder", function (data) { alert(data); closeDiv(); }).error(function (e) { alert(e); closeDiv(); })
+        })
+
+        ///查询
+        $("#search").click(function () {
+            $(".pageSpan").html("");
+            var b = $.PageFunc("/ShopOrder/getData?orderId="
+                + $("#orderId").val() + "&scode=" + $("#scode").val() + "&brand=" + $("#brand").val() + "&type=" + $("#type").val()
+                + "&status=" + $("#status").val() + "&shopname=" + $("#shopname").val() + "&servicecustom=" + $("#servicecustom").val()
+                + "&buynick=" + $("#buynick").val()
+                + "&price1=" + $("#price1").val() + "&price2=" + $("#price2").val()
+                + "&pprice1=" + $("#pprice1").val() + "&pprice2=" + $("#pprice2").val()
+                + "&ordertime1=" + $("#ordertime1").val() + "&ordertime2=" + $("#ordertime2").val()
+                + "&paytime1=" + $("#paytime1").val() + "&paytime2=" + $("#paytime2").val()
+                + "&sendtime1=" + $("#sendtime1").val() + "&sendtime2=" + $("#sendtime2").val()
+                + "&sucesstime1=" + $("#sucesstime1").val() + "&sucesstime2=" + $("#sucesstime2").val(), "@ViewData["myMenuId"]");
+            $("#PageNum").html("1");
+            $(".pageSpan").prepend(b);
+
+
+            $.post("/ShopOrder/getData?orderId="
+                + $("#orderId").val() + "&scode=" + $("#scode").val() + "&brand=" + $("#brand").val() + "&type=" + $("#type").val()
+                + "&status=" + $("#status").val() + "&shopname=" + $("#shopname").val() + "&servicecustom=" + $("#servicecustom").val()
+                + "&buynick=" + $("#buynick").val()
+                + "&price1=" + $("#price1").val() + "&price2=" + $("#price2").val()
+                + "&pprice1=" + $("#pprice1").val() + "&pprice2=" + $("#pprice2").val()
+                + "&ordertime1=" + $("#ordertime1").val() + "&ordertime2=" + $("#ordertime2").val()
+                + "&paytime1=" + $("#paytime1").val() + "&paytime2=" + $("#paytime2").val()
+                + "&sendtime1=" + $("#sendtime1").val() + "&sendtime2=" + $("#sendtime2").val()
+                + "&sucesstime1=" + $("#sucesstime1").val() + "&sucesstime2=" + $("#sucesstime2").val(), { menuId: "@ViewData["myMenuId"]", pageIndex: 1, pageSize: 10 }, function (data) { $(".mytable").html(""); var ss = data.split("-----"); $(".mytable").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+        })
+
+
+    })
+
+
+    ///订单编辑
+    function orderEdit(obj) {
+        $("#hidchildOrder").val(obj);
+        $(".bg").height($(document).height());
+        $.post('/shoporder/orderEdit', { orderchildenid: obj, MenuId: "@ViewData["myMenuId"]" }, function (data) {
+            $("#divtabContainer").html(data);
+        })
+    }
+    function orderUpdate() {
+        var orderchildenid = $("#hidchildOrder").val();
+        var orderid1 = $("#orderId1").val();
+        var orderXSFS1 = $("#orderXSFS1").find("option:selected").val();
+        var orderSSKF1 = $("#orderSSKF1").val();
+        var CourierCompanies1 = $("#CourierCompanies1").val().trim();
+        var CourierNo1 = $("#CourierNo1").val().trim();
+        var orderPostage1 = $("#orderPostage1").val().trim() == "" ? "0" : $("#orderPostage1").val().trim();
+        var orderOtherMoney1 = $("#orderOtherMoney1").val().trim() == "" ? "0" : $("#orderOtherMoney1").val().trim();
+        var orderRemark = $("#orderRemark").val().trim();
+        var orderScode1 = $("#orderScode1").val().trim();
+        var orderCHCK1 = $("#orderCHCK1").find("option:selected").val();
+        $.ajax({
+            type: "POST",
+            url: "/ShopOrder/orderUpdate",
+            data: { "orderchildenid": orderchildenid, "orderid1": orderid1, "orderXSFS1": orderXSFS1, "orderSSKF1": orderSSKF1, "CourierCompanies1": CourierCompanies1, "CourierNo1": CourierNo1, "orderPostage1": orderPostage1, "orderOtherMoney1": orderOtherMoney1, "orderRemark": orderRemark, "orderScode1": orderScode1, "orderCHCK1": orderCHCK1 },
+            success: function (data) {
+                if (data != "") {
+                    alert(data)
+                }
+                else {
+                    orderEdit(orderchildenid);
+                }
+            },
+            error: function () {
+                alert("error");
+            }
+
+
+        })
+    }
+
+</script>
+
+
+
+
+<div style="color:#FF5F3E;font-weight:bolder;line-height:20px;">店铺订单</div>
+
+<div id="popDivEdit" class="mydiv" style="display: none; width: 800px; height: 500px; left: 22%; top: 18%; padding-top: 30px">
+    <div class="divclose" onclick="closeDivEdit()">×</div>
+    <div id="update" style="width: 100%; height: 97%; border: 1px solid lightblue; background-color: white; border-radius: 5px;">
+        <div id="divEditContainer">
+            <input type="hidden" id="hidchildOrder" />
+            <div id="divtabContainer">
+            </div>
+        </div>
+        <div class="div" style="margin-top: 20px; text-align: center; width: 760px;">
+            <input type="button" value="修改" id="editBtnOrder" onclick="orderUpdate()" />
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<div id="popDiv" class="mydiv" style="display: none; width: 400px; height: 300px; left: 32%; top: 28%;">
+    请等待...
+</div>
+<div id="bg" class="bg" style="display: none;"></div>
+
+    <div id="divSearchlist">
+        <span class ="spanProperty"><span class="spanPropertyName">订单号：</span><input class="spanPropertyValue" type="text" id="orderId" name="orderId"  /></span>
+        <span class ="spanProperty"><span class="spanPropertyName">货号：</span><input class="spanPropertyValue" type="text" id="scode" name="scode"  /></span>
+        <span class ="spanProperty"><span class="spanPropertyName">品牌：</span><input class="spanPropertyValue" type='text' id="brand" name="brand" />
+            @*<select onchange='ddl1(this[selectedIndex].value,"brand")'></select>*@
+        </span>
+        <span class ="spanProperty"><span class="spanPropertyName">类别：</span><input class="spanPropertyValue" type='text' id="type" name="type"  />
+            @*<select onchange='ddl1(this[selectedIndex].value,"type")'></select>*@
+        </span>
+        <span class ="spanProperty"><span class="spanPropertyName">订单状态：</span><select class="spanPropertyValue" id="status" name="status" >
+            <option value="">请选择</option>
+            <option value="1">等待付款</option>
+            <option value="2">等待发货</option>
+            <option value="3">部分发货</option>
+            <option value="4">等待收货</option>
+            <option value="6">交易成功</option>
+            <option value="7">交易关闭</option>
+            <option value="8">交易被淘宝关闭</option>
+        </select></span>
+        <span class ="spanProperty"><span class="spanPropertyName">店铺名称：</span><input class="spanPropertyValue" type="text" id="shopname" name="shopname"  /></span>
+        <span class ="spanProperty"><span class="spanPropertyName">所属客服：</span><input class="spanPropertyValue" type="text" id="servicecustom" name="servicecustom"  /></span>
+        <span class ="spanProperty"><span class="spanPropertyName">买家昵称：</span><input class="spanPropertyValue" type="text" id="buynick" name="buynick" /></span>
+        <span class ="spanProperty"><span class="spanPropertyName">成交金额：</span><input class="spanPropertyValue" type="text" id="price1" name="price1" style="width: 65px;" />-<input class="spanPropertyValue" type="text" id="price2" name="price2" style="width: 65px;" /></span>
+        <span class ="spanProperty"><span class="spanPropertyName">成本价：</span><input class="spanPropertyValue" type="text" id="pprice1" name="pprice1" style="width: 65px;" />-<input class="spanPropertyValue"  type="text" id="pprice2" name="pprice2" style="width: 65px;" /></span>
+        <span class ="spanProperty"><span class="spanPropertyName">下单时间：</span><input class="spanPropertyValue" type="text" id="ordertime1" name="ordertime1" onfocus="WdatePicker({isShowClear:true,readOnly:true})" style="width: 65px;" />-<input class="spanPropertyValue"  type="text" id="ordertime2" name="ordertime2" style="width: 65px;" onfocus="WdatePicker({isShowClear:true,readOnly:true})" /></span>
+        <span class ="spanProperty"><span class="spanPropertyName">付款时间：</span><input class="spanPropertyValue" type="text" id="paytime1" name="paytime1" style="width: 65px;" onfocus="WdatePicker({isShowClear:true,readOnly:true})" />-<input class="spanPropertyValue"  type="text" id="paytime2" name="paytime2" style="width: 65px;" onfocus="WdatePicker({isShowClear:true,readOnly:true})" /></span>
+        <span class ="spanProperty"><span class="spanPropertyName">发货时间：</span><input class="spanPropertyValue" type="text" id="sendtime1" name="sendtime1" style="width: 65px;" onfocus="WdatePicker({isShowClear:true,readOnly:true})" />-<input class="spanPropertyValue"  type="text" id="sendtime2" name="sendtime2" style="width: 65px;" onfocus="WdatePicker({isShowClear:true,readOnly:true})" /></span>
+        <span class ="spanProperty"><span class="spanPropertyName">成交时间：</span><input class="spanPropertyValue" type="text" id="sucesstime1" name="sucesstime1" style="width: 65px;" onfocus="WdatePicker({isShowClear:true,readOnly:true})" />-<input class="spanPropertyValue"  type="text" id="sucesstime2" name="sucesstime2" style="width: 65px;" onfocus="WdatePicker({isShowClear:true,readOnly:true})"></span>
+    </div>
+<button class="spanPropertySearch" id="btnUpdate">更新订单</button>
+<button class="spanPropertySearch" id="btnLogistic">获取物流信息</button>
+<button class="spanPropertySearch" id="btnLogisticNo">获取运单号</button>
+<button class="spanPropertySearch" id="btnRemarkMsg">获取订单备注</button>
+<button class="spanPropertySearch" id="search">查询</button>
+
+@*<button id="btnAdd">添加订单</button>*@@*暂时先去掉*@
+
+
+<table class="mytable" rules="all">
+</table>
+
+
+
+
+@*分页*@
+<div class="divJump">
+    <span class="pageSpan"></span>
+    共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span>条数据
+</div>
+
+<div id="mydiv1" style='width: 200px; height: 200px; position: absolute; display: none; border: 1px solid silver; background: silver; z-index: 100;'>
+    <img id='productImg' style='width: 200px; height: 200px; position: absolute; display: none; border: 1px solid silver; background: silver;' src='' />
+</div>
+
+<script>
+    var b = $.PageFunc("/ShopOrder/getData?orderId="
+                + $("#orderId").val() + "&scode=" + $("#scode").val() + "&brand=" + $("#brand").val() + "&type=" + $("#type").val()
+                + "&status=" + $("#status").val() + "&shopname=" + $("#shopname").val() + "&servicecustom=" + $("#servicecustom").val()
+                + "&buynick=" + $("#buynick").val()
+                + "&price1=" + $("#price1").val() + "&price2=" + $("#price2").val()
+                + "&pprice1=" + $("#pprice1").val() + "&pprice2=" + $("#pprice2").val()
+                + "&ordertime1=" + $("#ordertime1").val() + "&ordertime2=" + $("#ordertime2").val()
+                + "&paytime1=" + $("#paytime1").val() + "&paytime2=" + $("#paytime2").val()
+                + "&sendtime1=" + $("#sendtime1").val() + "&sendtime2=" + $("#sendtime2").val()
+                + "&sucesstime1=" + $("#sucesstime1").val() + "&sucesstime2=" + $("#sucesstime2").val(), "@ViewData["myMenuId"]");
+
+    $(".pageSpan").prepend(b);
+    $("#PageNum").html("1");
+
+    $(function () {
+        $.ajax({
+            type: "GET",
+            url: "/Product/ProductStyleDDlist",
+            success: function (data) {
+                //$("#brand").parent().find("select").html(data);
+            },
+            error: function () {
+                console.log("cat error!")
+            },
+        });
+        $.ajax({
+            type: "GET",
+            url: "/Product/ProductTypeDDlist",
+            success: function (data) {
+                //$("#type").parent().find("select").html(data);
+            },
+            error: function () {
+                console.log("cat2 error!")
+            },
+        });
+
+    })
+    function ddl1(value, id) {
+        $("#" + id).val(value)
+    }
+</script>
+@*分页*@

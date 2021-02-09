@@ -1,0 +1,512 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<script src="~/js/jquery.uploadify.v2.1.4.min.js"></script>
+<script src="~/js/swfobject.js" type="text/javascript"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/js/Content/uploadify.css" rel="stylesheet" />
+<style type="text/css">
+    *
+    {
+        margin: 0px;
+        padding: 0px;
+    }
+
+    header
+    {
+        border: 1px solid #DDDDDD;
+        background-color: #F4F4F4;
+        padding: 5px;
+    }
+
+        header input
+        {
+            height: 20px;
+        }
+
+        header li
+        {
+            float: left;
+            margin-left: 5px;
+            margin-top: 7px;
+        }
+
+        header a
+        {
+            display: inline-block;
+            height: 22px;
+            width: 70px;
+            text-align: center;
+            line-height: 20px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+            header a:hover
+            {
+                border: 1px solid lightblue;
+                height: 20px;
+                border-radius: 5px;
+                color: red;
+            }
+
+    .divContainer
+    {
+        border: solid 1px lightblue;
+        overflow: hidden;
+    }
+
+    .divclose
+    {
+        position: absolute;
+        right: 8px;
+        top: 3px;
+        cursor: pointer;
+        font-size: 2em;
+        font-weight: bolder;
+        width: 30px;
+        height: 30px;
+    }
+
+        .divclose:hover
+        {
+            color: red;
+        }
+
+    #PopEditContent, #PopAddContent, #PopUploadContent
+    {
+        left: 30%;
+        top: 25%;
+        min-height: 200px;
+    }
+
+    .PopContent
+    {
+        min-height: 100px;
+        width: 710px;
+    }
+
+    .btnClose
+    {
+        margin-left: 15px;
+    }
+
+    .PopContent li
+    {
+        margin-top: 5px;
+        text-align: right;
+        width: 220px;
+        float: left;
+    }
+
+        .PopContent li input
+        {
+            width: 150px;
+            height: 20px;
+        }
+
+    .PopContent select
+    {
+        width: 150px;
+    }
+
+    #divShowPic
+    {
+        position: absolute;
+    }
+
+    .mytable td:last-child a
+    {
+        margin-left: 10px;
+    }
+
+        .mytable td:last-child a:last-child
+        {
+            margin-right: 10px;
+        }
+
+    .mytable a
+    {
+        text-decoration: none;
+    }
+
+        .mytable a:hover
+        {
+            color: red;
+        }
+
+    .mytable img
+    {
+        width: 60px;
+        height: 60px;
+    }
+
+    .liRemark
+    {
+        clear: both;
+        text-align: left!important;
+    }
+
+        .liRemark textarea
+        {
+            width: 300%;
+            height: 50px;
+        }
+</style>
+
+<header id="SearchHeader">
+    @* <input type="text" id="txtSearchOrderId" />
+    <input type="button" onclick="OnSearch()" value=" 查  询 " /><a href="#" onclick="AddClick()" style="margin-left: 10px">添    加</a>*@
+</header>
+<div id="divContainer">
+    <table id="mytable" class="mytable" border="0" cellpadding="0" cellspacing="0">
+    </table>
+    <div class="divJump" style="">
+        <select id="selPages" onchange="selPage()">
+            <option>1</option>
+            <option>5</option>
+            <option selected="selected">10</option>
+            <option>20</option>
+            <option>50</option>
+            <option>100</option>
+        </select>
+        <a href="#" onclick="TurnPage(1)">首页</a>
+        <a href="#" onclick="TurnPage(2)">上一页</a>
+        <input type="text" id="txtTiao" name="txtTiao" value="1" style="width: 35px;" onkeyup="OnTiaoChange();" />
+        <a href="#" onclick="TurnPage(3)">下一页</a>
+        <a href="#" onclick="TurnPage(4)">尾页</a>
+        @*@Html.TextBox("txtTiao","", new { style = "width:20px;", onkeyup = "OnTiaoChange();" })*@
+        <a href="#" onclick="TurnPage(5)">跳转</a>
+        共<span id="PageCount"></span>页&nbsp;&nbsp;当前第<span id="PageNum"></span>页&nbsp;&nbsp;共<span id="AllCounts"></span>条数据
+    </div>
+</div>
+<div id="PopAddContent" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">添加出货记录</div>
+    <div class="PopContent">
+        <ul>
+            <li>订单编号:<input type="text" id="txtAddOrderId" /></li>
+            <li>货品编号:<input type="text" id="txtAddScode" /></li>
+            <li>交易价:<input type="text" id="txtAddPrice" /></li>
+            <li>数量:<input type="text" id="txtAddNumber" /></li>
+            <li>质量等级:<input type="text" id="txtAddQuaLevel" /></li>
+            <li>收货时间:<input type="date" id="txtAddRetTime" /></li>
+            <li>货品描述:<input type="text" id="txtAddProDetails" /></li>
+            <li>商品链接:<input type="text" id="txtAddProLink" /></li>
+            <li>退货次序:<input type="text" id="txtAddRetNum" /></li>
+            <li>上次订单号:<input type="text" id="txtAddLastOrderId" /></li>
+            <li>成交金额:<input type="text" id="txtAddSellPrice" /></li>
+            <li>核对:<input type="text" id="txtAddHeidui" /></li>
+            <li>核对转库:<input type="text" id="txtAddExBalance" /></li>
+        </ul>
+        <div class="clearfix"></div>
+        <div style="margin-top: 10px;">
+            <input type="button" value=" 保   存 " onclick="SaveAdd()" /><input type="button" class="btnClose" value=" 关   闭 " onclick="    Close()" />
+        </div>
+    </div>
+</div>
+<div id="PopEditContent" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle" >修改退货库存</div>
+    <div class="PopContent">
+
+        <div style="margin-top: 10px;">
+            <input type="button" value=" 保   存 " onclick="SaveEdit()" /><input type="button" class="btnClose" value=" 关   闭 " onclick="    Close()" />
+        </div>
+    </div>
+</div>
+<div id="PopUploadContent" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">上传图片</div>
+    <div class="PopContent">
+        <div class="divShowUploadPic"></div>
+        <input type="hidden" id="hidId" />
+        <div id="fileQueueStyle" style="text-align: center">
+        </div>
+        <input type="file" name="uploadifyStyle" id="uploadifyStyle" />
+        <p>
+            <a href="javascript:$('#uploadifyStyle').uploadifyUpload()">点击上传</a>&nbsp;&nbsp;@*<input type="button" value=" 确定上传 " onclick="SavePicStyle()" />*@
+        </p>
+    </div>
+</div>
+<div class="PopBg"></div>
+<div id="divShowPic" class="divShowPic"></div>
+<script type="text/javascript">
+    /*搜索权限*/
+    $.post("/RetProduct/GetSearchlistRetBalance", { "menuId": "@ViewData["myMenuId"]" }, function (data) { $("#SearchHeader").html(data); });
+
+    /*搜索*/
+    function OnSearch() {
+        GetTable(1, $("#selPages").val().trim());
+        $("#txtTiao").val(1);
+        $("#PageNum").html(1);
+    }
+
+    /*获得table*/
+    function GetTable(obj, selpages) {
+        var lists = [];
+        lists.push($("#txtSearchOrderId").val() == null ? "" : $("#txtSearchOrderId").val().trim())
+        lists.push($("#txtSearchScode").val() == null ? "" : $("#txtSearchScode").val().trim())
+        lists.push($("#selSearchBrand").find("option:selected").val() == null ? "" : $("#selSearchBrand").find("option:selected").val())
+        lists.push($("#txtSearchColor").val() == null ? "" : $("#txtSearchColor").val().trim())
+        lists.push($("#selSearchTypeNo").find("option:selected").val() == null ? "" : $("#selSearchTypeNo").find("option:selected").val())
+        lists.push($("#txtSearchSize").val() == null ? "" : $("#txtSearchSize").val().trim())
+        lists.push($("#txtSearchLastOrderId").val() == null ? "" : $("#txtSearchLastOrderId").val().trim())
+        lists.push($("#txtSearchRetTime").val() == null ? "" : $("#txtSearchRetTime").val().trim())
+        lists.push($("#txtSearchRetTime1").val() == null ? "" : $("#txtSearchRetTime1").val().trim())
+        $.ajax({
+            type: "get",
+            url: "/RetProduct/SearchRetBalance",
+            data: { "menuId": "@ViewData["myMenuId"]", "lists": lists.join(","), "page": obj, "selpages": selpages },
+            success: function (data) {
+                selpages = selpages * 1;
+                var tabledata = [];
+                var tabledata = data.split("-*-");
+                $("#mytable").html(tabledata[0]);
+                $("#AllCounts").html(tabledata[1])
+                $("#PageCount").html(Math.ceil(tabledata[1] * 1 / selpages))
+                showPic();
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }
+    function selPage() {//---------设置显示数目
+        $("#txtTiao").val(1);
+        $("#PageNum").html(1);
+        GetTable(1, $("#selPages").val().trim())
+    }
+    /*跳转*/
+    function TurnPage(obj) {//-----翻页---
+        var pages = $("#selPages").val().trim();
+        switch (obj) {
+            case 1: GetTable(1, pages);//----首页
+                $("#txtTiao").val(1);
+                $("#PageNum").html(1)
+                break;
+            case 2:;//----上一页
+                if ($("#txtTiao").val().trim() == "1") {
+                    return false;
+                }
+                else {
+                    GetTable($("#txtTiao").val().trim() * 1 - 1, pages)
+                    $("#txtTiao").val($("#txtTiao").val().trim() * 1 - 1);
+                    $("#PageNum").html($("#txtTiao").val().trim())
+                }
+                break;
+            case 3://----下一页
+                if ($("#txtTiao").val().trim() == $("#PageCount").html()) {
+                    return false;
+                }
+                else {
+                    GetTable($("#txtTiao").val().trim() * 1 + 1, pages);
+                    $("#txtTiao").val($("#txtTiao").val().trim() * 1 + 1);
+                    $("#PageNum").html($("#txtTiao").val().trim())
+                }
+
+                break;
+            case 4: GetTable($("#PageCount").html(), pages);//----尾页
+
+                $("#txtTiao").val($("#PageCount").html());
+                $("#PageNum").html($("#PageCount").html())
+                break;
+            case 5: GetTable($("#txtTiao").val().trim(), pages);//----跳转
+                $("#PageNum").html($("#txtTiao").val().trim());
+
+                break;
+
+        }
+    }
+
+    /*关闭按钮取消修改*/
+    function Close() {
+        $(".PopBg").hide();
+        $(".myPopdiv").hide();
+    }
+
+    /*添加按钮*/
+    function AddClick() {
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopAddContent").show();
+        $(".PopContent").find("input[type=text]").val("");
+    }
+
+    /*确定添加*/
+    function SaveAdd() {
+        var list = [];
+        list.push($("#txtAddOrderId").val().trim());
+        list.push($("#txtAddScode").val().trim());
+        list.push($("#txtAddPrice").val().trim());
+        list.push($("#txtAddNumber").val().trim());
+        list.push($("#txtAddQuaLevel").val().trim());
+        list.push($("#txtAddRetTime").val().trim());
+        list.push($("#txtAddProDetails").val().trim());
+        list.push($("#txtAddProLink").val().trim());
+        list.push($("#txtAddRetNum").val().trim());
+        list.push($("#txtAddLastOrderId").val().trim());
+        list.push($("#txtAddSellPrice").val().trim());
+        list.push($("#txtAddHeidui").val().trim());
+        list.push($("#txtAddExBalance").val().trim());
+
+        $.post("/RetProduct/AddRetBalance", { "list": list }, function (data) { $.MsgBox.Alert("提示", data); GetTable($("#txtTiao").val().trim(), $("#selPages").val().trim()); })
+    }
+
+    /*编辑按钮*/
+    function EditRetBalance(Id) {
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopEditContent").show();
+        $.post("/RetProduct/EditRetBalance", { "Id": Id }, function (data) { $("#PopEditContent").find(".PopContent").html(data) })
+    }
+
+    /*确定修改*/
+    function SaveEdit() {
+        var list = [];
+        list.push($("#txtEditOrderId").attr("title"));
+        list.push($("#txtEditOrderId").val().trim());
+        list.push($("#txtEditScode").val().trim());
+        list.push($("#txtEditPrice").val().trim());
+        list.push($("#txtEditNumber").val().trim());
+        list.push($("#txtEditQuaLevel").val().trim());
+        list.push($("#txtEditRetTime").val().trim());
+        list.push($("#txtEditProDetails").val().trim());
+        list.push($("#txtEditProLink").val().trim());
+        list.push($("#txtEditRetNum").val().trim());
+        list.push($("#txtEditLastOrderId").val().trim());
+        list.push($("#txtEditSellPrice").val().trim());
+        list.push($("#txtEditHeidui").val().trim());
+        list.push($("#txtEditExBalance").val().trim());
+        $.post("/RetProduct/SaveEditRetBalance", { "list": list }, function (data) { $.MsgBox.Alert("提示", data); GetTable($("#txtTiao").val().trim(), $("#selPages").val().trim()); })
+    }
+
+    /*删除按钮*/
+    function DeleteRetBalance(Id) {
+        $.MsgBox.Confirm("提示", "确定要删除吗?", function () {
+            $.post("/RetProduct/DeleteRetBalance", { "Id": Id }, function (data) { if (data != "") { $.MsgBox.Alert("提示", data); } GetTable($("#txtTiao").val().trim(), $("#selPages").val().trim()); })
+        })
+    }
+
+    /*图片错误处理*/
+    function errorImg(obj) {
+        var src = $(obj).attr("src");
+        if (src == "") {
+            $(obj).parent().html("");
+        }
+        else {
+            $(obj).parent().attr("title", src);
+            $(obj).parent().html("Img error");
+        }
+    }
+    //--显示大图
+    function showPic() {
+        var m = $("#mytable1,#mytable").find("img").length - 1;
+        $("#mytable1,#mytable").find("img").each(function (i, j) {
+            if (i == m && m != 0) {
+                $(this).hover(function () {
+                    var y = $(this).offset().top;
+                    var x = $(this).offset().left;
+                    $("#divShowPic").css("top", y - 140);
+                    $("#divShowPic").css("left", x + 60);
+                    var src = $(this).attr("src");
+                    var Type = src.split(".")[4];
+                    src = src.split("@@")[0];
+                    $("#divShowPic").html("<img src='" + src + "' style='height:200px;width:200px' />")
+                    ScrollPic("divShowPic");
+
+                }, function () {
+                    $("#divShowPic").html("");
+                    CloseScroll();
+                })
+            } else {
+                $(this).hover(function () {
+                    var y = $(this).offset().top;
+                    var x = $(this).offset().left;
+                    $("#divShowPic").css("top", y);
+                    $("#divShowPic").css("left", x + 60);
+                    var src = $(this).attr("src");
+                    var Type = src.split(".")[4];
+                    src = src.split("@@")[0];
+                    $("#divShowPic").html("<img src='" + src + "' style='height:200px;width:200px' />")
+                    ScrollPic("divShowPic");
+                }, function () {
+                    $("#divShowPic").html("")
+                    CloseScroll();
+                })
+            }
+
+        })
+    }
+
+    /*鼠标滚轮放大*/
+    function ScrollPic(obj) {
+        var scrollFunc = function (e) {
+            var direct = 0;
+            ee = e || window.event;
+            if (e.wheelDelta > 0) {
+                var add = $("." + obj).find("img").css("width");
+                add = parseInt(add)
+                if (add < 500) {
+                    $("." + obj).find("img").css("width", add + 25)
+                    $("." + obj).find("img").css("height", add + 25)
+                }
+
+            }
+            else {
+                var add = $("." + obj).find("img").css("width");
+                add = parseInt(add)
+                if (add > 300) {
+                    $("." + obj).find("img").css("width", add - 25)
+                    $("." + obj).find("img").css("height", add - 25)
+                }
+            }
+
+            $("body").css("overflow", "hidden");
+
+
+        }
+        //if (document.addEventListener) {
+        //    document.addEventListener('DOMMouseScroll', scrollFunc, false);
+        //}//W3C  
+        window.onmousewheel = document.onmousewheel = scrollFunc; //IE/Opera/Chrome/Safari 
+    }
+    function CloseScroll() {
+        $("body").css("overflow", "auto");
+        window.onmousewheel = document.onmousewheel = 0; //IE/Opera/Chrome/Safari
+    }
+
+
+    function UploadPic(Id) {
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopUploadContent").show();
+        $("#hidId").val(Id);
+    }
+    $(document).ready(function () {
+        $("#uploadifyStyle").uploadify({
+            'uploader': '/js/Content/uploadify.swf',
+            'script': '/RetProduct/UploadPic',
+            'cancelImg': '/js/Content/cancel.png',
+            'folder': 'UploadFile',
+            'queueID': 'fileQueueStyle',
+            'fileExt': '*.jpg;*.gif;*.png;*.bmp;',
+            'fileDesc': '请选择jpg,jpeg,gif,png,bmp格式',
+            'auto': false,
+            'multi': false,
+            'onComplete': function (event, ID, fileObj, response, data) {
+                if (response == "False") {
+                    alert("上传的不是图片!请重新选择!");
+                }
+                else {
+                    $('.divShowUploadPic').append("<img src=\"" + response + "\" alt='' height='100' width='100' />")
+                }
+                SavePic(response);
+            }
+        });
+    });
+    function SavePic(url) {
+        var Id = $("#hidId").val();
+        $.post("/RetProduct/SavePic", { Id: Id, url: url }, function (data) { GetTable($("#txtTiao").val().trim(), $("#selPages").val().trim()); });
+    }
+</script>

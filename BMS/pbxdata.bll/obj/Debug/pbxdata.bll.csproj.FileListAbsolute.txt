@@ -1,0 +1,15 @@
+F:\project\BMS1\BMS\pbxdata.bll\bin\Debug\pbxdata.bll.dll
+F:\project\BMS1\BMS\pbxdata.bll\bin\Debug\pbxdata.bll.pdb
+F:\project\BMS1\BMS\pbxdata.bll\bin\Debug\pbxdata.dal.dll
+F:\project\BMS1\BMS\pbxdata.bll\bin\Debug\pbxdata.dalfactory.dll
+F:\project\BMS1\BMS\pbxdata.bll\bin\Debug\pbxdata.idal.dll
+F:\project\BMS1\BMS\pbxdata.bll\bin\Debug\pbxdata.model.dll
+F:\project\BMS1\BMS\pbxdata.bll\bin\Debug\pbxstock.dbutility.dll
+F:\project\BMS1\BMS\pbxdata.bll\bin\Debug\pbxdata.dalfactory.pdb
+F:\project\BMS1\BMS\pbxdata.bll\bin\Debug\pbxdata.dal.pdb
+F:\project\BMS1\BMS\pbxdata.bll\bin\Debug\pbxdata.idal.pdb
+F:\project\BMS1\BMS\pbxdata.bll\bin\Debug\pbxdata.model.pdb
+F:\project\BMS1\BMS\pbxdata.bll\bin\Debug\pbxstock.dbutility.pdb
+F:\project\BMS1\BMS\pbxdata.bll\obj\Debug\pbxdata.bll.csprojResolveAssemblyReference.cache
+F:\project\BMS1\BMS\pbxdata.bll\obj\Debug\pbxdata.bll.dll
+F:\project\BMS1\BMS\pbxdata.bll\obj\Debug\pbxdata.bll.pdb

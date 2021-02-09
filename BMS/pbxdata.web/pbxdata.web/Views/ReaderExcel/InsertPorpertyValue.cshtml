@@ -1,0 +1,245 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/jquery.form.js"></script>
+<script type="text/javascript">
+    function UploadCallback(msg) {
+        //    document.getElementById("form_upload").outerHTML = document.getElementById    $("form_upload").outerHTML;
+        if (msg == "false") {
+            alert("文件上传失败！");
+            return;
+        }
+        else if (msg.indexOf("true")!=-1) {
+            var tep=msg.split('|');
+            //保存成功下拉列表绑定值
+            $.post("", {filaPath:tep[0]}, function (data) {
+                alert("文件上传失败！");
+            });
+        }
+        //$("#form1").val("");
+        //$('#divFileUpload').dialog('close');
+       // ReloadGridData();
+    }
+
+    function TestSubmit() { 
+        var ajax_option = {
+            success: function (data) {
+                alert("aaa"+data);
+            },
+            error: function (a, b, c) {
+                alert(b);
+            },
+            complete: function (XMLHttpRequest, textStatus) {
+                alert(textStatus);
+            }
+        }
+        $("#form1").ajaxSubmit();
+        var userId='@ViewData["userId"]';
+        $.ajax(
+            {
+                type:"GET",
+                url: "/ReaderExcel/GetFilePath/" + userId,
+                success: function (data) {
+                    var op = "";
+                    if (data.indexOf("false") >=0) {
+                        alert(data);
+                    }
+                    if (data != null && data!="") {
+                        var temp = data.split('!');
+                        for (var i = 0; i < temp.length; i++) {
+                            op += "<option>" + temp[i] + "</option>";
+                        }
+                        $("#gzbm").html(op);
+                    }
+                    else {
+                        alert("请先选择文件上传！");
+                    }
+                }
+            });
+        //.first()
+        //.submit();
+    }
+    function btnOpen_Click() {
+        var tableName = $("#gzbm").find("option:selected").text();
+        //alert(tableName);
+        //var TypeNo = $(parent.document.body).find("#hidTypeNo").val();
+        //alert(TypeNo);
+        $.ajax(
+            {
+                type: "get",
+                url: "/ReaderExcel/btnOpen_Click/" + tableName,
+                success: function (data) {
+                    
+                    //alert(data.split("</tr>").length);
+                    if (data.indexOf("false")>=0) {
+                        alert(data);
+                    }
+                    if (data != null && data != "") {
+                        $("#cont").html(data);
+                    }
+                }
+            });
+    }
+    function btnYes_Click() {
+        var tableName = "属性值导入操作";
+        if (!confirm("上传"+tableName))
+            return false;
+        var tableName = $("#gzbm").find("option:selected").text();
+        //var caozuo = $("#caozuo").val();
+        var caozuo = "2";
+        //var TypeNo = $(parent.document.body).find("#hidTypeNo").val();
+        $("#scode").html();
+        //alert(tableName);
+        $.ajax(
+            {
+                type: "GET",
+                url: "/ReaderExcel/btnYes_Click/" + caozuo + "!" + tableName,
+                success: function (data) {
+                    //alert(data); return false;
+                    //alert(data);
+                    //alert(data.split("</tr>").length);
+                    if (data.indexOf("false") > 0) {
+                        alert(data);
+                    }
+                    if (data != null && data != "") {
+                        if (data == "true") {
+                            $("#cont").html("导入成功！");
+                        }
+                        else if (data.indexOf("true") >= 0) {
+                            $("#cont").html("导入成功！");
+                            $("#scode").html(data.replace("true|",""));
+                        }
+                    }
+                },
+                error: function (a,b,c) {
+                    alert(b)
+                },
+
+            });
+    }
+    //$(document).ready(function () {
+
+    //    $("#btnAjaxSubmit").click(function () {
+
+    //        var options = {
+
+    //            url: 'async_submit_test1.aspx?action=SaveUserInfo',
+    //            type: 'post',
+    //            dataType: 'text',
+    //            data: $("#form1").serialize(),
+    //            success: function (data) {
+    //                if (data.length > 0)
+    //                    $("#responseText").text(data);
+    //            }
+    //        };
+    //        $.ajax(options);
+    //        return false;
+    //    });
+    //});
+    function testbtn(){
+        $.ajax({
+            type: "GET",
+            url: "/ReaderExcel/rtntest",
+            success: function (data) {
+                $("#divshow").html(data);
+            },
+            error: function () {
+            },
+        })
+    }
+</script>
+<style type="text/css">
+    #mytable {
+        border: solid #999; /* 设置边框属性；样式(solid=实线)、颜色(#999=灰) */
+        border-width: 1px 0 0 1px; /* 设置边框状粗细：上 右 下 左 = 对应：1px 0 0 1px */
+        font-size: 12px;
+        border: solid 1px #808080;
+        width: 100% auto;
+        border-collapse: collapse;
+    }
+    #content {
+        border: solid #999; /* 设置边框属性；样式(solid=实线)、颜色(#999=灰) */
+        border-width: 1px 0 0 1px; /* 设置边框状粗细：上 右 下 左 = 对应：1px 0 0 1px */
+        font-size: 12px;
+        border: solid 1px #808080;
+        width: auto;
+        border-collapse: collapse;
+    }
+        #mytable caption,#content caption{
+            font-size: 12px;
+            font-weight: bolder;
+        }
+
+        #mytable th,#content th, table td {
+            border: solid #999;
+            height: 25px;
+            border-width: 0 1px 1px 0;
+            padding: 2px;
+        }
+
+        #mytable td,#content td{
+            height: 25px;
+            width:auto;
+            text-align:left;
+        }
+    .sty {
+        border:1px solid #3b3434;
+        width:150px;
+    }
+</style>
+<div id="top">
+</div>
+<div>
+    <table id="mytable" style="width:100%;height:95%">
+        <caption>导入excel</caption>
+        <tbody>
+            <tr>
+                <td style="text-align:right;">
+                    <span>操作类型： </span>
+                </td>
+                <td colspan="10">属性值导入操作
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">
+                    <span>本地Excel文件： </span>
+                </td>
+                <td colspan="10">
+                    @using (Ajax.BeginForm("UploadExcel", "ReaderExcel", new AjaxOptions() { HttpMethod = "post" }, new { id = "form1", enctype = "multipart/form-data", style = "height: 10px;" }))
+                    {
+                         <input type="file" id="fileName" name="fileName" value="选择文件" class="sty"  accept=".xls" /><input type="button" value="上传" onclick="TestSubmit()" />
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">
+                    <span>工作表名称:</span>
+                </td>
+                <td>
+                    <select id="gzbm" class="sty"></select><input type="button" value="打开单个工作表" onclick="btnOpen_Click()" style="margin-left:20px" />
+                    <input type="button" value="确定导入" onclick="    btnYes_Click()" style="margin-left:20px" />
+                </td>
+                @*<td>
+                    </td>*@
+              @*  <td>
+                    <input type="button" value="一键导入" onclick="" /></td>*@
+            </tr>
+            <tr>
+                <td colspan="11"  style="height:55%;">
+                    <div style="overflow-y:scroll;height:95%;width:98%;border:1px solid #808080;">
+                        <span>工作表内容信息：</span>
+                        <br />
+                        <div id="cont" style="overflow:auto;">
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="11" style="height:200px;">
+                    <div style="height:100%;width:100%;border:1px solid #808080;">
+                        <span>导入失败编号:</span><br />
+                        <textarea id="scode" style="width:98%;height:92%;"></textarea>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

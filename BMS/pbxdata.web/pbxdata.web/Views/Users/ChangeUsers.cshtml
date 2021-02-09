@@ -1,0 +1,122 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<link href="~/Css/admin_login.css" rel="stylesheet" />
+<link href="~/Css/common.css" rel="stylesheet" />
+<link href="~/Css/main.css" rel="stylesheet" />
+
+
+<style type="text/css">
+    .insert-tab tr td:first-child
+    {
+        text-align: right;
+        width: 15%;
+    }
+</style>
+<div class="result-wrap">
+    <div class="result-content">
+        <table class="insert-tab" style="width: 100%">
+            <tr>
+                <td>帐号:&nbsp;&nbsp;&nbsp;</td>
+                <td>
+                    <input id="txtUserName" type="text" class="common-text required" disabled="disabled" /><input type="hidden" id="hidUserName" value="" /></td>
+            </tr>
+            <tr>
+                <td>密码:&nbsp;&nbsp;&nbsp;</td>
+                <td>
+                    <input id="txtoldPwd" type="password" class="common-text required"  /></td>
+            </tr>
+            <tr>
+                <td>新密码:&nbsp;&nbsp;&nbsp;</td>
+                <td>
+                    <input id="txtPwd" type="password" class="common-text required" /></td>
+            </tr>
+            <tr>
+                <td>重复新密码:&nbsp;&nbsp;&nbsp;</td>
+                <td>
+                    <input id="txtConfirmPwd" type="password" class="common-text required" /></td>
+            </tr>
+            <tr>
+                <td>真实姓名:&nbsp;&nbsp;&nbsp;</td>
+                <td>
+                    <input id="txtRealName" type="text" class="common-text required" /></td>
+            </tr>
+            <tr>
+                <td>性别:&nbsp;&nbsp;&nbsp;</td>
+                <td>
+                    <label>男&nbsp;&nbsp;&nbsp;<input type="radio" name="sex" value="1" /></label>
+                    <label style="margin-left: 100px">女&nbsp;&nbsp;&nbsp;<input type="radio" name="sex" value="0" /></label></td>
+            </tr>
+            <tr>
+                <td>电话:&nbsp;&nbsp;&nbsp;</td>
+                <td>
+                    <input id="txtPhone" type="text" class="common-text required" /></td>
+            </tr>
+            <tr>
+                <td>邮箱:&nbsp;&nbsp;&nbsp;</td>
+                <td>
+                    <input id="txtEmail" type="text" class="common-text required" /></td>
+            </tr>
+            <tr>
+                <td>地址:&nbsp;&nbsp;&nbsp;</td>
+                <td>
+                    <input id="txtAddress" type="text" class="common-text required" /></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="padding: 10px;">
+                    <input type="button" value=" 确   定 " class="btn btn-primary btn6 mr10" id="btnUpdate" /></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $.ajax({
+        type: "GET",
+        url: "/Users/GetUserInfo",
+        success: function (data) {
+            var UserInfo = [];
+            UserInfo = data.split("*"); 
+            $("#txtUserName").val(UserInfo[0]);
+            $("#hidUserName").val(UserInfo[0]);
+            $("#txtRealName").val(UserInfo[2]);
+            $("input[type=radio]").each(function () {
+                if ($(this).val() == "" + UserInfo[3] + "") {
+                    $(this).attr("checked", "checked")
+                }
+            });
+            $("#txtPhone").val(UserInfo[4]);
+            $("#txtEmail").val(UserInfo[5]);
+            $("#txtAddress").val(UserInfo[6]);
+        },
+        error: function () {
+        },
+
+    })
+
+    $("#btnUpdate").click(function () {
+        var UserName = $("#hidUserName").val().trim();
+        var oldPwd = $("#txtoldPwd").val().trim();
+        var Pwd = $("#txtPwd").val().trim();
+        var ConfirmPwd = $("#txtConfirmPwd").val().trim();
+        var RealName = $("#txtRealName").val().trim();
+        var sex = $("input[name='sex']:checked").val();
+        var Phone = $("#txtPhone").val().trim();
+        var Email = $("#txtEmail").val().trim();
+        var Address = $("#txtAddress").val().trim();
+        if (Pwd != ConfirmPwd) {
+            alert("两次密码不一样!");
+            return false;
+        }
+        $.ajax({
+            type: "POST",
+            url: "/Users/UpdateUserInfo",
+            data: { "UserName": UserName,"oldPwd":oldPwd, "Pwd": Pwd, "RealName": RealName, "sex": sex, "Phone": Phone, "Email": Email, "Address": Address },
+            success: function (data) {
+                alert(data);
+            },
+            error: function () {
+            },
+
+        })
+    })
+</script>

@@ -1,0 +1,300 @@
+﻿@*<link href="~/js/easyui/themes/icon.css" rel="stylesheet" />
+<link href="~/js/easyui/themes/default/easyui.css" rel="stylesheet" />*@
+<link href="~/js/Content/uploadify.css" rel="stylesheet" />
+<script src="~/js/easyui/jquery.min.js"></script>
+@*<script src="~/js/easyui/jquery.easyui.min.js"></script>*@
+<script src="~/js/swfobject.js" type="text/javascript"></script>
+<script src="~/js/jquery.uploadify.v2.1.4.js" type="text/javascript"></script>
+
+
+<style type="text/css">
+    #divImageFile
+    {
+        margin: auto;
+        width: 90%;
+        height: 400px;
+        border: 1px solid gray;
+        padding: 10px;
+        text-align: center;
+        overflow: auto;
+    }
+
+    #divImageSpace
+    {
+        margin: auto;
+        width: 90%;
+        height: 300px;
+        border: 1px solid gray;
+        padding: 10px;
+        margin-top: 10px;
+    }
+
+    .uploadifyQueueItem
+    {
+        float: left;
+    }
+
+    .selected
+    {
+        border: 4px solid orange;
+    }
+    /*#divScodePic
+    {
+        float:left;
+    }*/
+    #div_img1
+    {
+        float: left;
+        padding-bottom: 10px;
+        min-width: 100%;
+    }
+
+        #div_img1 img
+        {
+            margin-left: 10px;
+            margin-top: 10px;
+            float: left;
+            box-sizing: border-box;
+            width: 100px;
+            height: 100px;
+        }
+
+    #divMainPicContent
+    {
+        margin: auto;
+        width: 90%;
+        height: 150px;
+        border: 1px solid gray;
+        padding: 10px;
+        margin-top: 10px;
+        text-align: center;
+    }
+
+        #divMainPicContent img
+        {
+            margin-left: 10px;
+            width: 100px;
+            height: 100px;
+        }
+
+    #divUploadMainPic, #divShowMianPic
+    {
+        float: left;
+    }
+</style>
+@*<form action="/Product/Test" method="post" enctype="multipart/form-data">
+    </form>*@
+<ul></ul>
+<div id="divMainPicContent">
+    <div>主图</div>
+    <div id="divUploadMainPic"></div>
+    <div id="divShowMianPic"></div>
+</div>
+<div id="divImageFile">
+    <div>本地上传<input type="hidden" id="hidScode" value="@ViewBag.scode" /></div>
+
+    <div id="div_img1">
+        <div id="divScodePic"></div>
+        <div id="divUploadImg"></div>
+    </div>
+    <div>
+        <div id="fileQueue1" style="text-align: center">
+        </div>
+        <input type="file" name="uploadify1" id="uploadify1" />
+        <p>
+            <a href="javascript:$('#uploadify1').uploadifyUpload()">上传</a>
+        </p>
+    </div>
+    <input type="button" value=" 确定上传 " onclick="SavePic()" />
+</div>
+<div style="width: 100%; text-align: center; margin-top: 20px;">
+    <input type="button" value=" 保 存 " onclick="SelectMainPic()" /><input type="button" value=" 取 消 " onclick="window.close()" style="margin-left: 20px;" />
+</div>
+<script type="text/javascript">
+    function select() {
+        var i = 0;
+        $("#divScodePic").find("img").each(function () {
+            $(this).unbind("click");
+            $(this).bind("click", function () {
+                i = $("#divMainPicContent").find("img").length;
+                //if ($(this).attr("class") != "selected") {
+                if (parseInt(i) < 5) {
+                    var check = $(this);
+                    var flag = false;
+                    $("#divMainPicContent").find("img").each(function () {
+                        if ($(this).attr("src") == check.attr("src")) {
+                            flag = true
+                        }
+                    })
+                    if (!flag) {
+                        check.attr("class", "selected");
+                        $("#divUploadMainPic").append("<img src='" + check.attr("src") + "' />")
+                        i = parseInt(i) + 1;
+                    }
+                }
+                CancleMainPic();
+
+            })
+        })
+        CancleMainPic();
+    }
+
+    function CancleMainPic() {
+        $("#divMainPicContent").find("img").each(function () {
+            var cancel = $(this);
+            $(this).unbind("click");
+            $(this).bind("click", function () {
+                var flags = false;
+                $("#divScodePic").find("img").each(function () {
+                    if (cancel.attr("src") == $(this).attr("src")) {
+                        $(this).removeClass("selected");
+                        cancel.remove();
+                    }
+                })
+            })
+        })
+    }
+    $(document).ready(function () {
+        $("#uploadify1").uploadify({
+            'uploader': '/js/content/uploadify.swf',
+            'script': '/Product/UploadminImg',
+            'cancelImg': '/js/content/cancel.png',
+            'folder': 'UploadFile',
+            'fileExt': '*.jpg;*.gif;*.png;*.bmp;',
+            'fileDesc': '请选择jpg,jpeg,gif,png,bmp格式',
+            'queueID': 'fileQueue1',
+            'auto': false,
+            'multi': true,
+            'onComplete': function (event, ID, fileObj, response, data) {
+                $('#divUploadImg').append("<img src=" + response + " alt='' height='100' width='100' />")
+                select();
+            }
+        });
+    });
+    function SavePic() {
+        if (confirm("确定保存上传图片!")) {
+            var Arrysrc = [];
+            var scode = $("#hidScode").val();
+            $("#divUploadImg").find("img").each(function () {
+                Arrysrc.push($(this).attr("src"))
+            })
+            if (Arrysrc.length == 0) {
+                alert("没有可上传的图片!")
+                return false;
+            }
+            $.ajax({
+                type: "get",
+                url: "/Product/UploadScodePic?Arrysrc=" + Arrysrc + "&scode=" + scode,
+                success: function (data) {
+                    if (data) {
+                        alert("保存成功!")
+                        ShowAllpic();
+                    }
+                    else {
+                        alert("保存失败!")
+                    }
+                },
+                error: function () {
+                    alert("error")
+                },
+            })
+        }
+        else {
+            return false;
+        }
+
+    }
+    function ShowAllpic() {
+        $("#divScodePic").html("");
+        $("#divUploadImg").html("");
+        var scode = $("#hidScode").val();
+        var srcs = [];
+        $.ajax({
+            type: "get",
+            url: "/Product/retAllpicByScode?scode=" + scode,
+            success: function (data) {
+                if (data != "") {
+                    $("#divScodePic").html("");
+                    srcs = data.split("-*-");
+                    for (var i = 0; i < srcs.length; i++) {
+                        if (srcs[i] != "")
+                            $("#divScodePic").append("<img src=http://best-bms.oss-cn-shenzhen.aliyuncs.com/" + srcs[i] + " style='height:100px;width:100px' />")
+                    }
+                }
+                select();
+                CheckMainPic();
+            },
+            error: function () {
+            },
+        })
+    }
+    function SelectMainPic() {
+        if (confirm("确定保存选择的主图!")) {
+            var Arrysrc = [];
+            var scode = $("#hidScode").val();
+            $("#div_img1").find("img").each(function () {
+                if ($(this).attr("class") == "selected")
+                    Arrysrc.push($(this).attr("src"))
+            })
+            $.ajax({
+                type: "get",
+                url: "/Product/SelectMainPic?Arrysrc=" + Arrysrc + "&scode=" + scode,
+                success: function (data) {
+                    if (data) {
+                        alert("添加成功!")
+                    }
+                    else {
+                        alert("添加失败!")
+                    }
+                    ShowMainPic();
+                },
+                error: function () {
+                    alert("error")
+                },
+            })
+        }
+        else {
+            return false;
+        }
+    }
+    ShowMainPic();
+    function ShowMainPic() {
+
+        var scode = $("#hidScode").val();
+        $("#divShowMianPic").html("");
+        $("#divUploadMainPic").html("");
+        $.ajax({
+            type: "get",
+            url: "/Product/ShowMainPic?scode=" + scode,
+            success: function (data) {
+                if (data != "") {
+                    $("#divShowMianPic").html("");
+                    srcs = data.split("-*-");
+                    for (var i = 0; i < srcs.length; i++) {
+                        if (srcs[i] != "")
+                            $("#divShowMianPic").append("<img src=" + srcs[i] + " style='height:100px;width:100px' />")
+                    }
+                }
+                ShowAllpic();
+
+
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }
+
+    function CheckMainPic() {
+        $("#divScodePic").find("img").each(function () {
+            var src = $(this);
+            $("#divShowMianPic").find("img").each(function () {
+                if ($(this).attr("src") == src.attr("src")) {
+                    src.attr("class", "selected");
+                }
+            })
+
+        })
+    }
+</script>

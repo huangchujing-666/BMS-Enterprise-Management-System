@@ -1,0 +1,953 @@
+﻿@model System.Data.DataTable
+
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/Search.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<script src="~/js/DropDowndiv.js"></script>
+
+<script type="text/javascript">
+   
+    var flag = false;
+    var flag1 = false;
+
+    function SearchbyScode() {//----主货号表下表
+        flag = true;
+        var Style = $("#txtStyle").val().trim();
+        var Scode = $("#txtScode").val().trim();
+        var Cat = $("#txtCat").val().trim();
+        var Cat1 = $("#txtCat1").val().trim();
+        var Cat2 = $("#txtCat2").val().trim();
+        var Balance = $("#txtBalance").val().trim();
+        var Balance2 = $("#txtBalance2").val().trim();
+        var Color = $("#txtColor").val().trim();
+        var SJstatus = $("#selSJstatus").find("option:selected").val();
+        var RegStatus = $("#selRegStatus").find("option:selected").val();
+        var BBCask = $("#selBBCask").find("option:selected").val();
+        var ZLStatus = $("#selZLStatus").find("option:selected").val();
+        var Imagefile = $("#selImagefile").find("option:selected").val();
+        var SciqHSNo = $("#selSciqHSNo").find("option:selected").val();
+        var SciqAssemCountry = $("#selSciqAssemCountry").find("option:selected").val();
+        var SQtyUnit = $("#selSQtyUnit").find("option:selected").val();
+        var SDef15 = $("#selSDef15").find("option:selected").val();
+        var SDef16 = $("#selSDef16").find("option:selected").val();
+        var SciqProductId = $("#selSciqProductId").find("option:selected").val();
+
+        var params = "{Style:'" + Style + "',Scode:'" + Scode + "',Cat:'" + Cat + "',Cat1:'" + Cat1 + "',Cat2:'" + Cat2 + "',Balance:'" + Balance + "',Balance2:'" + Balance2 + "',Color:'" + Color + "',SJstatus:'" + SJstatus + "',RegStatus:'" + RegStatus + "',BBCask:'" + BBCask + "',ZLStatus:'" + ZLStatus + "',Imagefile:'" + Imagefile + "',SciqHSNo:'" + SciqHSNo + "',SciqAssemCountry:'" + SciqAssemCountry + "',SQtyUnit:'" + SQtyUnit + "',SDef15:'" + SDef15 + "',SDef16:'" + SDef16 + "',SciqProductId:'" + SciqProductId + "'}";
+        $.post("/CheckProduct/OnSeach", {
+            menuId: "@ViewData["myMenuId"]",
+            pageIndex: 1,
+            pageSize: 10,
+            params:params
+        }, function (data) {
+            var ss = data.split("-----");
+            $("#mytable").html("");
+            $("#mytable").append(ss[0]);
+            $("#PageCount").html(ss[1]);
+            $("#AllCounts").html(ss[2]);
+        });
+
+        var b = $.PageFunc("/CheckProduct/OnSeach", "@ViewData["myMenuId"]", params);
+        $("#spanPage").html(b);
+        $("#txtTiao").val(1);
+        $("#PageNum").html(1);
+        //flag = true;
+        //GetTable(1, $("#selPages").val());
+        //$("#txtTiao").val(1);
+        //$("#PageNum").html(1)
+    }
+    function selPage(url, menuid, obj) {
+        var params = JSON.stringify(obj).replace(/\"/g, "'");
+        $.post(url, {
+            menuId: menuid,
+            pageIndex: 1,
+            pageSize: $("#selPages").val(),
+            params: params
+        }, function (data) {
+            $("#mytable").html("");
+            var ss = data.split("-----");
+            $("#mytable").append(ss[0]);
+            $("#PageCount").html(ss[1]);
+            $("#AllCounts").html(ss[2]);
+        });
+    };
+   @* function GetTable(obj, selpages) {//----主货号表下表
+        var lists = [];
+        lists.push($("#txtStyle").val() == null ? "" : $("#txtStyle").val().trim())
+        lists.push($("#txtScode").val() == null ? "" : $("#txtScode").val().trim())
+        lists.push($("#txtCat").val() == null ? "" : $("#txtCat").val().trim())
+        lists.push($("#txtCat1").val() == null ? "" : $("#txtCat1").val().trim())
+        lists.push($("#txtCat2").val() == null ? "" : $("#txtCat2").val().trim())
+        lists.push($("#txtBalance").val() == null ? "" : $("#txtBalance").val().trim())
+        lists.push($("#txtBalance2").val() == null ? "" : $("#txtBalance2").val().trim())
+        lists.push($("#txtColor").val() == null ? "" : $("#txtColor").val().trim());
+        lists.push($("#selSJstatus").find("option:selected").val() == null ? "" : $("#selSJstatus").find("option:selected").val());
+        lists.push($("#selRegStatus").find("option:selected").val() == null ? "" : $("#selRegStatus").find("option:selected").val());
+        lists.push($("#selBBCask").find("option:selected").val() == null ? "" : $("#selBBCask").find("option:selected").val());
+        lists.push($("#selZLStatus").find("option:selected").val() == null ? "" : $("#selZLStatus").find("option:selected").val());
+        lists.push($("#selImagefile").find("option:selected").val() == null ? "" : $("#selImagefile").find("option:selected").val());
+        lists.push($("#selSciqHSNo").find("option:selected").val() == null ? "" : $("#selSciqHSNo").find("option:selected").val());
+        lists.push($("#selSciqAssemCountry").find("option:selected").val() == null ? "" : $("#selSciqAssemCountry").find("option:selected").val());
+        lists.push($("#selSQtyUnit").find("option:selected").val() == null ? "" : $("#selSQtyUnit").find("option:selected").val());
+        lists.push($("#selSDef15").find("option:selected").val() == null ? "" : $("#selSDef15").find("option:selected").val());
+        lists.push($("#selSDef16").find("option:selected").val() == null ? "" : $("#selSDef16").find("option:selected").val());
+        lists.push($("#selSciqProductId").find("option:selected").val() == null ? "" : $("#selSciqProductId").find("option:selected").val());
+
+        $.ajax({
+            type: "get",
+            url: "/CheckProduct/OnSeach",
+            data: { "menuId": "@ViewData["myMenuId"]", "lists": lists.join(","), "page": obj, "selpages": selpages },
+            success: function (data) {
+                selpages = selpages * 1
+                var tabledata = [];
+                var tabledata = data.split("-*-");
+                $("#mytable").html(tabledata[0]);
+                $("#AllCounts").html(tabledata[1])
+                $("#PageCount").html(Math.ceil(tabledata[1] * 1 / selpages))
+                showPic();
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }*@
+
+   
+</script>
+
+<style type="text/css">
+    /*#divSearch ul
+    {
+        margin: 0px;
+        padding: 0px;
+    }
+
+        #divSearch ul li
+        {
+            float: left;
+            margin-left: 5px;
+            margin-top: 2px;
+            list-style-type: none;
+        }
+
+            #divSearch ul li input
+            {
+                height: 20px;
+            }*/
+    #divSearch 
+    {
+        padding:10px 0;
+    }
+    #PopContent
+    {
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        margin: 0 auto;
+        width: 745px;
+        height: 805px;
+    }
+
+    #EditContainer
+    {
+        margin-top: 5px;
+        border: 1px solid lightblue;
+        height: 765px;
+        width: 100%;
+        background-color: white;
+        padding-top: 15px;
+        overflow: auto;
+        float: left;
+    }
+
+    #tabProperty
+    {
+        width: 720px;
+    }
+
+    #PopContent #tabProperty td
+    {
+        border: none;
+        width: 34%;
+        text-align: right;
+    }
+
+    #TypeAttribute table td
+    {
+        border: none;
+        width: 33%;
+        text-align: right;
+    }
+
+    #divMaginFile
+    {
+        margin-left: 10px;
+    }
+
+        #divMaginFile div
+        {
+            margin-top: 3px;
+        }
+
+    #divShowPic
+    {
+        position: absolute;
+    }
+
+
+    /*------------*/
+    #divImageFile, #divImageFileStyle
+    {
+        margin: auto;
+        width: 90%;
+        min-height: 200px;
+        border: 1px solid gray;
+        padding: 10px;
+        text-align: center;
+        overflow: auto;
+    }
+
+
+    .selected
+    {
+        border: 4px solid orange;
+    }
+
+    #div_img1, #div_imgStyle
+    {
+        float: left;
+        padding-bottom: 10px;
+        min-width: 100%;
+    }
+
+        #div_img1 img, #div_imgStyle img
+        {
+            margin-left: 10px;
+            margin-top: 10px;
+            float: left;
+            box-sizing: border-box;
+            width: 75px;
+            height: 75px;
+        }
+
+    #divMainPicContent, #divMainPicContentStyle, .divStyleContainer
+    {
+        margin: auto;
+        width: 90%;
+        min-height: 100px;
+        border: 1px solid gray;
+        padding: 10px;
+        margin-top: 10px;
+        text-align: center;
+        overflow: auto;
+    }
+
+        #divMainPicContent img, #divShowMianPicStyle img
+        {
+            width: 75px;
+            height: 75px;
+        }
+
+        #divUploadMainPicStyle img, .divStyleContainer img, #divUploadMainPic img
+        {
+            width: 75px;
+            height: 75px;
+            margin-left: 10px;
+        }
+
+    #divUploadMainPic, #divShowMianPic, #divUploadMainPicStyle, #divShowMianPicStyle
+    {
+        float: left;
+    }
+
+    .divMainMaxPic
+    {
+        position: absolute;
+    }
+
+    #divMinPic
+    {
+        position: absolute;
+        left: 15px;
+        top: 35px;
+        width: 97%;
+        height: 94%;
+        background-color: white;
+        display: none;
+    }
+
+    .ke-container
+    {
+        margin: auto;
+    }
+
+    .divclose
+    {
+        position: absolute;
+        right: 8px;
+        top: 3px;
+        cursor: pointer;
+        font-size: 2em;
+        font-weight: bolder;
+        width: 30px;
+        height: 30px;
+    }
+
+        .divclose:hover
+        {
+            color: red;
+        }
+
+       .spanContainer
+        {
+            position: relative;
+            width:20%;
+            margin-bottom:10px;
+            display:inline-block;
+        }
+
+        .spanContainer select
+            {
+                width: 136px;
+                height: 24px;
+                margin-left:-5px;
+                padding:0 5px;
+            }
+
+        .spanContainer input[type='text']
+            {
+                /*margin:0 auto;*/
+                border:none;
+                position: absolute;
+                width: 114px;
+                /* left:2px;*/
+                right: 135px;
+                top: 1px;
+                height: 22px;
+                padding:0 5px;
+            }
+
+
+    #divThumbnail
+    {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        font-weight: bolder;
+    }
+
+        #divThumbnail:hover
+        {
+            cursor: pointer;
+            color: red;
+        }
+
+    #txtciqAssemCountry
+    {
+        position: absolute;
+        top: 0px;
+        width: 130px;
+    }
+
+    select
+    {
+        height: 20px;
+    }
+</style>
+
+
+
+<header id="divSearch">
+    @Html.Raw(ViewBag.ShowSearch)
+</header>
+
+<div style="border: solid 1px lightblue; overflow: auto;">
+    <div style="width: 100%; font-size: 12px; color: #808080; overflow: auto;">
+        <table id="mytable" class="mytable" style="font-size: 12px; border: solid 1px #808080; width: 100%; border-collapse: collapse;">
+        </table>
+    </div>
+    <div class="divJump">
+         <span id="spanPage" style="font-weight: 400;"></span>
+        共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span>条数据
+            @* <select id="selPages" onchange="selPage()">
+                <option>5</option>
+                <option selected="selected">10</option>
+                <option>20</option>
+                <option>50</option>
+                <option>100</option>
+            </select>
+            <a href="#" onclick="TurnPage(1)">首页</a>
+            <a href="#" onclick="TurnPage(2)">上一页</a>
+            <input type="text" id="txtTiao" name="txtTiao" value="" />
+            <a href="#" onclick="TurnPage(3)">下一页</a>
+            <a href="#" onclick="TurnPage(4)">尾页</a>
+           @Html.TextBox("txtTiao","", new { style = "width:20px;", onkeyup = "OnTiaoChange();" })
+            <a href="#" onclick="TurnPage(5)">跳转</a>
+            共<span id="PageCount" ></span>页&nbsp;&nbsp;当前第<span id="PageNum" ></span>页&nbsp;&nbsp;共<span id="AllCounts" ></span>条数据*@
+    </div>
+</div>
+<div class="PopBg"></div>
+<div id="PopContent" class="myPopdiv" style="width: 100%">
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: left;">编辑商品属性</div>
+    <div id="EditContainer">
+        <div id="EditContent">
+        </div>
+        <div style="width: 100%; text-align: center;">
+            <input type="button" value=" 保 存 " onclick="Save()" />
+            <input type="button" value=" 关 闭 " onclick="Close()" style="margin-left: 20px;" />
+        </div>
+        <div id="TypeAttribute">
+        </div>
+        <div id="divImageFile">
+            <div>本地上传图片</div>
+
+            <div id="div_img1">
+                <div id="divScodePic"></div>
+                <div id="divUploadImg"></div>
+            </div>
+        </div>
+        <div style="width: 100%; text-align: center; margin-top: 20px;">
+            <input type="button" value=" 保 存 " onclick="Save()" />
+            <input type="button" value=" 关 闭 " onclick="Close()" style="margin-left: 20px;" />
+        </div>
+    </div>
+</div>
+<div id="divShowPic" class="divShowPic"></div>@*--鼠标移上去显示缩略图--*@
+<script type="text/javascript">
+    $.getDropDownList("#txtCat");
+    function GetDropToBrand(e) {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/CheckProduct/Brand",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+                var d1 = eval(data);
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].BrandAbridge + "'>" + d1[i].BrandName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }
+    $.getDropDownList("#txtCat2");
+
+    function GetDropToType(e) {
+
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/CheckProduct/Type",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+
+                var d1 = eval(data);
+
+
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].TypeNo + "'>" + d1[i].TypeName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+    /*点击编辑按钮*/
+    function EditProduct(scode, type) {
+        $(".divShowPic").html("");
+        $("#checkboxscode").removeAttr("checked");
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#PopContent").show();
+        $.ajax({
+            type: "GET",
+            url: "/CheckProduct/EditProduct?scode=" + scode + "&type=" + type + "&MenuId=" + "@ViewData["myMenuId"]",
+            success: function (data) {
+                if (type == "edit") {
+                    $("#EditContent").html(data);
+                    ddl($("#ddlType").select().val());
+                    ShowAllpic(scode);
+                }
+                else {
+                    $("#EditContainer").html(data)
+                    productInfo(scode);
+                    MaxPic('EditContainer');
+                }
+
+            },
+            error: function () {
+                alert("编辑失败！")
+            }
+        });
+    }
+    /*点击修改按钮*/
+    function Save() {
+        var Cdescript = $("#txtCdescriptE").val().trim();
+        var Scode = $("#txtScodeE").val().trim();
+        var Rolevel = $("#txtRolevelE").val().trim();
+        //var Id = $("#hidId").val();
+        var Updatetype = $("#hidUpdateType").val(); 
+        var Cat1 = $("#txtCat1E").val().trim();
+        var Cat2 = $("#ddlType").val().trim();
+        var ciqProductId = $("#txtciqProductId").find("option:selected").val();
+        var ciqSpec = $("#txtciqSpec").val().trim();
+        var ciqHSNo = $("#txtciqHSNo").val().trim();
+        var ciqAssemCountry = $("#txtciqAssemCountry").val();
+        var Def9 = $("#PicChecklist").find("option:selected").val();
+        var Def10 = $("#txtDef10").val().trim();
+        var imagefile = $("#divThumbnail").parent().find("img").attr("src");
+        var QtyUnit = $("#selapiUnit").find("option:selected").val();
+        var Def15 = $("#txtDef15").val().trim();
+        var Def16 = $("#txtDef16").val().trim();
+        var ComAttrvalues = [], AttrId = [], PropertyId = [], ComAttrName = [];
+        $("#TypeAttribute").find("input[type=text]").each(function () {
+            if ($(this).val() == "" || $(this).attr("title") == "") {
+            }
+            else {
+                AttrId.push($(this).attr("title"))
+                ComAttrvalues.push($(this).val());
+                PropertyId.push($(this).attr("name"))
+            }
+        })
+        $.ajax({
+            type: "GET",
+            url: "/CheckProduct/UpdateProduct?Scode=" + Scode + "&Cdescript=" + Cdescript + "&Cat1=" + Cat1+"&Cat2=" + Cat2 + "&Rolevel=" + Rolevel + "&AttrId=" + AttrId
+                + "&ComAttrvalues=" + ComAttrvalues + "&PropertyId=" + PropertyId + "&ciqProductId=" + ciqProductId + "&ciqSpec=" + ciqSpec + "&ciqHSNo=" + ciqHSNo
+                + "&ciqAssemCountry=" + ciqAssemCountry + "&Def9=" + Def9 + "&Def10=" + Def10 + "&imagefile=" + imagefile + "&QtyUnit=" + QtyUnit + "&Def15=" + Def15 + "&Def16=" + Def16,
+            success: function (data) {
+                if (data) {
+                    //GetTable($("#txtTiao").val(), $("#selPages").val())
+                    SearchbyScode();
+                    alert("保存成功！")
+                }
+                else {
+                    alert("保存失败！")
+                }
+            },
+            error: function () {
+                alert("保存失败！")
+            }
+        });
+    }
+
+    /*获取拉列表商品类别显示相应属性*/
+    function ddl(TypeNo) {
+        $("#TypeAttribute").html("")
+        var Scode = $("#txtScodeE").val();
+        $.ajax({
+            type: "GET",
+            url: "/Product/GetTypeNo?TypeNo=" + TypeNo + "&Scode=" + Scode,
+            success: function (data) {
+                $("#TypeAttribute").html(data);
+            },
+            error: function () {
+                alert("error")
+            }
+        });
+    }
+
+    /**/
+    function ddl1(value, id) {
+        $("#txtCat" + id).val(value)
+    }
+
+
+    /*关闭*/
+    function Close() {
+        $(".PopBg").hide();
+        $(".myPopdiv").hide();
+    }
+
+    ///*翻页*/
+    //function TurnPage(obj) {
+    //    if ($("#txtTiao").val() == "") {
+    //        return false;
+    //    }
+    //    var pages = $("#selPages").val();
+    //    switch (obj) {
+    //        case 1: GetTable(0, pages);//----首页
+    //            $("#txtTiao").val(1);
+    //            $("#PageNum").html(1)
+    //            break;
+    //        case 2:;//----上一页
+    //            if ($("#txtTiao").val() == "1") {
+    //                return false;
+    //            }
+    //            else {
+    //                GetTable($("#txtTiao").val() * 1 - 1, pages)
+    //                $("#txtTiao").val($("#txtTiao").val() * 1 - 1);
+    //                $("#PageNum").html($("#txtTiao").val())
+    //            }
+    //            break;
+    //        case 3://----下一页
+    //            if ($("#txtTiao").val() == $("#PageCount").html()) {
+    //                return false;
+    //            }
+    //            else {
+    //                GetTable($("#txtTiao").val() * 1 + 1, pages);
+    //                $("#txtTiao").val($("#txtTiao").val() * 1 + 1);
+    //                $("#PageNum").html($("#txtTiao").val())
+    //            }
+
+    //            break;
+    //        case 4: GetTable($("#PageCount").html(), pages);//----尾页
+    //            $("#txtTiao").val($("#PageCount").html());
+    //            $("#PageNum").html($("#PageCount").html())
+    //            break;
+    //        case 5: GetTable($("#txtTiao").val(), pages);//----跳转
+    //            $("#PageNum").html($("#txtTiao").val());
+
+    //            break;
+
+    //    }
+    //}
+
+    ///*控制显示数目*/
+    //function selPage() {
+    //    if (flag) {
+    //        GetTable(1, $("#selPages").val())
+    //        $("#txtTiao").val(1)
+    //        $("#PageNum").html(1)
+    //    }
+    //}
+
+
+    /*图片放大*/
+    function showPic() {
+        var m = $("#mytable1,#mytable").find("img").length - 1;
+        $("#mytable1,#mytable").find("img").each(function (i, j) {
+            if (i == m && m != 0) {
+                $(this).hover(function () {
+                    var y = $(this).offset().top;
+                    var x = $(this).offset().left;
+                    $("#divShowPic").css("top", y - 140);
+                    $("#divShowPic").css("left", x + 60);
+                    var src = $(this).attr("src");
+                    var Type = src.split(".")[4];
+                    src = src.split("@@")[0];
+                    $("#divShowPic").html("<img src='" + src + "' style='height:200px;width:200px' />")
+                    ScrollPic("divShowPic");
+
+                }, function () {
+                    $("#divShowPic").html("");
+                    CloseScroll();
+                })
+            } else {
+                $(this).hover(function () {
+                    var y = $(this).offset().top;
+                    var x = $(this).offset().left;
+                    $("#divShowPic").css("top", y);
+                    $("#divShowPic").css("left", x + 60);
+                    var src = $(this).attr("src");
+                    var Type = src.split(".")[4];
+                    src = src.split("@@")[0];
+                    $("#divShowPic").html("<img src='" + src + "' style='height:200px;width:200px' />")
+                    ScrollPic("divShowPic");
+
+
+                }, function () {
+                    $("#divShowPic").html("")
+                    CloseScroll();
+                })
+            }
+
+
+        })
+    }
+
+    /*滚动鼠标控制图片变化*/
+    function ScrollPic(obj) {
+        var scrollFunc = function (e) {
+            var direct = 0;
+            ee = e || window.event;
+            if (e.wheelDelta > 0) {
+                var add = $("." + obj).find("img").css("width");
+                add = parseInt(add)
+                if (add < 500) {
+                    $("." + obj).find("img").css("width", add + 25)
+                    $("." + obj).find("img").css("height", add + 25)
+                }
+
+            }
+            else {
+                var add = $("." + obj).find("img").css("width");
+                add = parseInt(add)
+                if (add != 300) {
+                    $("." + obj).find("img").css("width", add - 25)
+                    $("." + obj).find("img").css("height", add - 25)
+                }
+            }
+
+            $("body").css("overflow", "hidden");
+            $("#EditContainer").css("overflow", "hidden");
+            //ScrollText(direct);
+
+        }
+        //if (document.addEventListener) {
+        //    document.addEventListener('DOMMouseScroll', scrollFunc, false);
+        //}//W3C  
+        window.onmousewheel = document.onmousewheel = scrollFunc; //IE/Opera/Chrome/Safari 
+    }
+    function CloseScroll() {
+        $("body").css("overflow", "auto");
+        $("#EditContainer").css("overflow", "auto");
+        window.onmousewheel = document.onmousewheel = 0; //IE/Opera/Chrome/Safari
+    }
+
+    /*显示所有上传图片*/
+    function ShowAllpic(scode) {
+
+        $("#divScodePic").html("");
+        $("#divUploadImg").html("");
+        var scode = $("#txtScodeE").val();
+        var srcs = [];
+        $.ajax({
+            type: "get",
+            url: "/OperaPic/retAllpicByScode?scode=" + scode,
+            success: function (data) {
+                if (data != "") {
+                    $("#divScodePic").html(data);
+                }
+                MaxPic('div_img1');
+            },
+            error: function () {
+            },
+        })
+    }
+
+    /*显示所有上传图片*/
+    function ShowAllpicStyle(Style) {
+        $("#divScodePicStyle").html("");
+        $("#divUploadImgStyle").html("");
+        //var scode = $("#txtScodeE").val();
+        var srcs = [];
+        $.ajax({
+            type: "get",
+            url: "/OperaPic/retAllpicByScodeStyle?Style=" + Style,
+            success: function (data) {
+                if (data != "") {
+                    $("#divScodePicStyle").html(data);
+                }
+                MaxPic('div_imgStyle');
+
+            },
+            error: function () {
+            },
+        })
+    }
+
+    //编辑页面显示主图的大图通用
+    function MaxPic(obj) {
+        $("#" + obj).find("img").each(function () {
+            $(this).hover(function () {
+                var y = $(this).offset().top;
+                var x = $(this).offset().left;
+
+                $(".divShowPic").css("top", y - 230);
+                $(".divShowPic").css("left", x + 80);
+                $(".divShowPic").css("z-index", "9999")
+                var src = $(this).attr("src");
+                var Type = src.split(".")[4];
+                if (src != "") {
+                    src = src.split("@@")[0];
+                    $(".divShowPic").html("<img src='" + src + "' style='height:300px;width:300px' />");
+                }
+                ScrollPic("divShowPic");
+
+
+            }, function () {
+                $(".divShowPic").html("");
+                CloseScroll();
+            })
+        })
+    }
+
+    //--显示HS编码
+    function ShowHSNum() {
+        var win = null;
+        win = window.open("/Product/HSNumberShow", 'win', 'height=700, width=900, top=200,left=600, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no, status=no');
+    }
+    //--全选box
+    function selectbox() {
+        if ($("#selectallbox").attr("checked") == "checked") {
+            $(".box").attr("checked", "checked");
+        }
+        else {
+            $(".box").removeAttr("checked");
+        }
+    }
+
+    /*禁用按钮*/
+    function btndisabled() {
+        //$("#btn2Check").attr("disabled", "disabled");
+        //$("#btn3Check").attr("disabled", "disabled");
+        //$("#btn4Check").attr("disabled", "disabled");
+        //$("#btn5Check").attr("disabled", "disabled");
+        //$("#btn6Check").attr("disabled", "disabled");
+    }
+    btndisabled();
+    /*生成报文*/
+    function CeateSJProductReport() {
+        var scode = [];
+        $(".box").each(function () {
+            if ($(this).attr("checked") == "checked") {
+                scode.push($(this).attr("title"));
+            }
+        })
+        scode = scode + "";
+        if (scode != "") {
+            //btndisabled();
+            //if (data.indexOf("成功") >= 0) { $("#btn2Check").removeAttr("disabled"); } else { $("#btn1Check").removeAttr("disabled"); }
+            //$(".PopBg").height($(document).height());
+            //$(".PopBg").show();
+            $.post("/Customs/createSJProductReport", { scode: scode }, function (data) { alert(data); console.log(data); $(".PopBg").hide();  });
+        }
+        else {
+            $.MsgBox.Alert("提示", "请选择需要生成报文的商品!")
+        }
+
+    }
+
+
+
+    /*上传报文*/
+    function ProductReport(scode) {
+        var scode = [];
+        $(".box").each(function () {
+            if ($(this).attr("checked") == "checked") {
+                scode.push($(this).attr("title"));
+            }
+        })
+        scode = scode + "";
+        if (scode != "") {
+            //btndisabled();
+            //if (data.indexOf("成功") >= 0) { $("#btn3Check").removeAttr("disabled"); } else { $("#btn2Check").removeAttr("disabled"); }
+            //$(".PopBg").height($(document).height());
+            //$(".PopBg").show();
+            $.post("/Customs/upLoadSJProductReport", { scode: scode }, function (data) { alert(data); console.log(data); SearchbyScode(); @*GetTable($("#txtTiao").val().trim(), $("#selPages").val());*@ $(".PopBg").hide();  });
+        }
+        else {
+            $.MsgBox.Alert("提示", "请选择需要上传报文的商品!")
+        }
+
+    }
+
+    /*下载报文回执*/
+    function getSJProductResult() {
+        //btndisabled();
+        //if (data.indexOf("成功") >= 0) { $("#btn4Check").removeAttr("disabled"); } else { $("#btn3Check").removeAttr("disabled"); }
+        //$(".PopBg").height($(document).height());
+        //$(".PopBg").show();
+        $.ajax({
+            type: "POST",
+            url: "/Customs/downLoadSJProductReport",
+            success: function (data) {
+                console.log(data);
+                alert(data);
+                $(".PopBg").hide();
+               
+            },
+            error: function () {
+            },
+
+        })
+    }
+
+    /*读取商品回执*/
+    function ProductReportResult() {
+        //btndisabled(); if (data.indexOf("成功") >= 0) { $("#btn5Check").removeAttr("disabled"); } else { $("#btn4Check").removeAttr("disabled"); }
+        //$(".PopBg").height($(document).height());
+        //$(".PopBg").show();
+        $.post("/Customs/readSJProductReport", {}, function (data) { alert(data); console.log(data); SearchbyScode();@* GetTable($("#txtTiao").val().trim(), $("#selPages").val());*@ $(".PopBg").hide(); });
+
+
+    }
+
+    /*下载审核回执*/
+    function getSJProductResult2() {
+        //btndisabled();
+        //$(".PopBg").height($(document).height());
+        //$(".PopBg").show();
+        $.ajax({
+            type: "POST",
+            url: "/Customs/downLoadSJCheckProductReport",
+            //data: { "Scode": $(this).attr("title") },
+            success: function (data) {
+                console.log(data);
+                alert(data);
+                //if (data.indexOf("成功") >= 0) { $("#btn6Check").removeAttr("disabled"); } else { $("#btn5Check").removeAttr("disabled"); }
+            },
+            error: function () {
+            },
+
+        })
+    }
+
+    /*读取审核回执*/
+    function ProductReportResult2() {
+        //btndisabled(); if (data.indexOf("成功") >= 0) { $("#btn1Check").removeAttr("disabled"); } else { $("#btn6Check").removeAttr("disabled"); }
+        //$(".PopBg").height($(document).height());
+        //$(".PopBg").show();
+        $.post("/Customs/readSJCheckProductReport", {}, function (data) { alert(data); console.log(data); SearchbyScode();@*GetTable($("#txtTiao").val().trim(), $("#selPages").val());*@ $(".PopBg").hide(); });
+    }
+
+
+    /*联邦商品报备*/
+    function BBCProductReport() {
+        var scode = [];
+        $(".box").each(function () {
+            if ($(this).attr("checked") == "checked") {
+                scode.push($(this).attr("title"));
+            }
+        })
+        scode = scode + "";
+        if (scode != "") {
+            //$(".PopBg").height($(document).height());
+            //$(".PopBg").show();
+            $.post("/Customs/BBCProductReport", { scode: scode }, function (data) { alert(data); console.log(data); SearchbyScode();@* GetTable($("#txtTiao").val().trim(), $("#selPages").val());*@ $(".PopBg").hide(); });
+        }
+        else {
+            $.MsgBox.Alert("提示", "请选择需要联邦报备的商品!")
+        }
+    }
+
+
+    /*获得城市下拉列表*/
+    function GetCountry() {
+        $.post("/Product/GetCountrylist", { "countryName": $("#txtciqAssemCountry").val().trim(), "Country": "" }, function (data) { $("#selciqAssemCountry").html(data) })
+    }
+
+    /*城市列表选择赋值*/
+    function GetCountryddl() {
+        $("#txtciqAssemCountry").val($("#selciqAssemCountry").find("option:selected").text())
+    }
+
+</script>

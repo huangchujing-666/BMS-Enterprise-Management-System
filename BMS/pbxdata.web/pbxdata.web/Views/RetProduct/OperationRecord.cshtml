@@ -1,0 +1,259 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<style type="text/css">
+    *
+    {
+        margin: 0px;
+        padding: 0px;
+    }
+
+
+        header input
+        {
+            height: 20px;
+        }
+
+        header li
+        {
+            float: left;
+            margin-left: 5px;
+            margin-top: 7px;
+        }
+
+        header a
+        {
+            display: inline-block;
+            height: 22px;
+            width: 70px;
+            text-align: center;
+            line-height: 20px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+            header a:hover
+            {
+                border: 1px solid lightblue;
+                height: 20px;
+                border-radius: 5px;
+                color: red;
+            }
+
+    .divContainer
+    {
+        border: solid 1px lightblue;
+        overflow: hidden;
+    }
+
+    .divclose
+    {
+        position: absolute;
+        right: 8px;
+        top: 3px;
+        cursor: pointer;
+        font-size: 2em;
+        font-weight: bolder;
+        width: 30px;
+        height: 30px;
+    }
+
+        .divclose:hover
+        {
+            color: red;
+        }
+
+    #PopEditContent, #PopAddContent
+    {
+        left: 30%;
+        top: 25%;
+        min-height: 200px;
+    }
+
+    .PopContent
+    {
+        min-height: 100px;
+        width: 710px;
+    }
+
+    .btnClose
+    {
+        margin-left: 15px;
+    }
+
+    .PopContent li
+    {
+        margin-top: 5px;
+        text-align: right;
+        width: 220px;
+        float: left;
+    }
+
+        .PopContent li input
+        {
+            width: 150px;
+            height: 20px;
+        }
+
+    .PopContent select
+    {
+        width: 150px;
+    }
+     .mytable td:last-child a
+    {
+        margin-left: 10px;
+    }
+        .mytable td:last-child a:last-child
+        {
+            margin-right:10px;
+        }
+    .mytable a
+    {
+        text-decoration: none;
+    }
+
+        .mytable a:hover
+        {
+            color: red;
+        }
+
+</style>
+
+<header id="SearchHeader">
+    订单编号：<input type="text" id="txtSearchOrderId" /> 
+    操作表格：<input type="text" id="txtSearchOperaTable" />
+    操作类型：<select id="txtSearchOperaType">
+        <option value="">请选择</option>
+        <option value="添加">添加</option>
+        <option value="编辑">编辑</option>
+        <option value="删除">删除</option></select> 
+    操作时间：<input type="date" id="txtSearchOperaTime" />-：<input type="date" id="txtSearchOperaTime1" />
+    <input type="button" onclick="OnSearch()" value=" 查  询 " />
+</header>
+<div id="divContainer">
+    <table id="mytable" class="mytable" border="0" cellpadding="0" cellspacing="0">
+    </table>
+    <div class="divJump" style="">
+        <select id="selPages" onchange="selPage()">
+            <option>1</option>
+            <option>5</option>
+            <option selected="selected">10</option>
+            <option>20</option>
+            <option>50</option>
+            <option>100</option>
+        </select>
+        <a href="#" onclick="TurnPage(1)">首页</a>
+        <a href="#" onclick="TurnPage(2)">上一页</a>
+        <input type="text" id="txtTiao" name="txtTiao" value="1" style="width: 35px;" onkeyup="OnTiaoChange();" />
+        <a href="#" onclick="TurnPage(3)">下一页</a>
+        <a href="#" onclick="TurnPage(4)">尾页</a>
+        <a href="#" onclick="TurnPage(5)">跳转</a>
+        共<span id="PageCount" ></span>页&nbsp;&nbsp;当前第<span id="PageNum" ></span>页&nbsp;&nbsp;共<span id="AllCounts" ></span>条数据
+    </div>
+</div>
+<script type="text/javascript">
+    /*获得操作类型列表*/
+    $.post("/RetProduct/GetOperaRecordlist", {}, function (data) { $("#txtSearchOperaType").html(data) })
+
+   
+    /*获得table*/
+    function GetTable(obj, selpages) {
+        var lists = [];
+        lists.push($("#txtSearchOrderId").val() == null ? "" : $("#txtSearchOrderId").val().trim())
+        lists.push($("#txtSearchOperaTable").val() == null ? "" : $("#txtSearchOperaTable").val().trim())
+        lists.push($("#txtSearchOperaType").find("option:selected").val() == null ? "" : $("#txtSearchOperaType").find("option:selected").val())
+        lists.push($("#txtSearchOperaTime").val() == null ? "" : $("#txtSearchOperaTime").val().trim())
+        lists.push($("#txtSearchOperaTime1").val() == null ? "" : $("#txtSearchOperaTime1").val().trim())
+        $.ajax({
+            type: "get",
+            url: "/RetProduct/SearchOperationRecord",
+            data: { "menuId": "@ViewData["myMenuId"]", "lists": lists.join(","), "page": obj, "selpages": selpages },
+            success: function (data) {
+                selpages = selpages * 1;
+                var tabledata = [];
+                var tabledata = data.split("-*-");
+                $("#mytable").html(tabledata[0]);
+                $("#AllCounts").html(tabledata[1])
+                $("#PageCount").html(Math.ceil(tabledata[1] * 1 / selpages))
+
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }
+
+    /*搜索*/
+    function OnSearch() {
+        GetTable(1, $("#selPages").val().trim());
+        $("#txtTiao").val(1);
+        $("#PageNum").html(1);
+    }
+
+    function selPage() {//---------设置显示数目
+        $("#txtTiao").val(1);
+        $("#PageNum").html(1);
+        GetTable(1, $("#selPages").val().trim())
+        
+    }
+
+    /*跳转*/
+    function TurnPage(obj) {//-----翻页---
+        var pages = $("#selPages").val().trim();
+        switch (obj) {
+            case 1: GetTable(1, pages);//----首页
+                $("#txtTiao").val(1);
+                $("#PageNum").html(1)
+                break;
+            case 2:;//----上一页
+                if ($("#txtTiao").val().trim() == "1") {
+                    return false;
+                }
+                else {
+                    GetTable($("#txtTiao").val().trim() * 1 - 1, pages)
+                    $("#txtTiao").val($("#txtTiao").val().trim() * 1 - 1);
+                    $("#PageNum").html($("#txtTiao").val().trim())
+                }
+                break;
+            case 3://----下一页
+                if ($("#txtTiao").val().trim() == $("#PageCount").html()) {
+                    return false;
+                }
+                else {
+                    GetTable($("#txtTiao").val().trim() * 1 + 1, pages);
+                    $("#txtTiao").val($("#txtTiao").val().trim() * 1 + 1);
+                    $("#PageNum").html($("#txtTiao").val().trim())
+                }
+
+                break;
+            case 4: GetTable($("#PageCount").html(), pages);//----尾页
+
+                $("#txtTiao").val($("#PageCount").html());
+                $("#PageNum").html($("#PageCount").html())
+                break;
+            case 5: GetTable($("#txtTiao").val().trim(), pages);//----跳转
+                $("#PageNum").html($("#txtTiao").val().trim());
+
+                break;
+
+        }
+    }
+
+    /*关闭按钮取消修改*/
+    function Close() {
+        $(".PopBg").hide();
+        $(".myPopdiv").hide();
+
+    }
+
+    /*删除按钮*/
+    function DeleteRetBalance(Id) {
+        $.MsgBox.Confirm("提示", "确定要删除吗?", function () {
+            $.post("/RetProduct/DeleteRetBalance", { "Id": Id }, function (data) { if (data != "") { $.MsgBox.Alert("提示", data); } GetTable($("#txtTiao").val().trim(), $("#selPages").val().trim()); })
+        })
+    }
+    //$(function () {
+    //    $.CreatJump.NoBal();
+    //})
+</script>

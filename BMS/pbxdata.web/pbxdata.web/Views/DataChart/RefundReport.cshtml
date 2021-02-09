@@ -1,0 +1,52 @@
+﻿<script src="~/js/jquery-1.8.2.min.js" type="text/javascript"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<style type="text/css">
+    *
+    {
+        padding:0px;
+        margin:0px;
+    }
+     .ReportContainer
+    {
+        margin-top:10px;
+    }
+     .RateContainer
+    {
+        width:400px;
+        float:left;
+        margin-left:20px;
+    }
+    .mytable
+    {
+        min-width:400px;
+    }
+</style>
+<header id="divSearch" style="padding-top:10px; width:100%;">
+    <span class='spanProperty'><span class='spanPropertyName'>时间：</span><input type='date' id='MinTime'  class='spanPropertyValue' style='width:120px; padding:0 0;' />-<input type='date' id='MaxTime'  class='spanPropertyValue' style='width:120px; padding:0 0;'/></span>
+    <input type="button" value="查  询" onclick="OnSearch()" style="width:50px;" class="spanPropertySearch" />
+@*    时间:<input type="date" id="MinTime" />-<input type="date" id="MaxTime" />
+    <input type="button" value="查询" onclick="OnSearch()" />*@
+</header>
+<div class="ReportContainer">
+    <div id="RefundReport" class="RateContainer"><table class="mytable"></table></div>
+    <div id="RetBalanceReport" class="RateContainer"><table class="mytable"></table></div>
+</div>
+
+
+
+
+
+<script type="text/javascript">
+
+
+    function OnSearch() {
+        var MinTime = $("#MinTime").val() == null ? "" : $("#MinTime").val();
+        var MaxTime = $("#MaxTime").val() == null ? "" : $("#MaxTime").val();
+        $.post("/DataChart/GetRefundReport", { MinTime: MinTime, MaxTime: MaxTime }, function (data) { $("#RefundReport").find("table").html(data); })
+        $.post("/DataChart/GetReturnBalanceReport", { MinTime: MinTime, MaxTime: MaxTime }, function (data) { $("#RetBalanceReport").find("table").html(data); })
+        
+    }
+    
+</script>

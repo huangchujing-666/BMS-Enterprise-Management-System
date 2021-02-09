@@ -1,0 +1,28 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<script src="~/js/pageIndex.js"></script>
+<script type="text/javascript">
+    $(function ()
+    {
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/ShopManager/CollaborationShopShow",
+                success: function (data)
+                {
+                    $("#CollaborationTable").html(data);
+                }
+            })
+    })
+    function Instruction(shopid,shopname)
+    {
+        location.href = "/ShopManager/Warehouse?shopname="+shopname+"&shopid="+shopid;
+    }
+</script>
+<div id="CollaborationTable">
+
+</div>

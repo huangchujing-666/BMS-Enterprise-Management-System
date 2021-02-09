@@ -1,0 +1,279 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8;" />
+    <meta name="viewport" content="width=device-width" />
+    <script src="~/js/jquery-1.8.2.min.js"></script>
+    <script>
+        $().ready(function () {
+            var i = 0;
+            $("#divshowhidden").click(function () {/*控制子菜单切换*/
+                i++;
+                var item = $("#divshowhidden")[0].innerText;
+                if (item == "<") {
+                    $("#divshowhidden").html(">");
+                }
+                else {
+                    $("#divshowhidden").html("<");
+                }
+
+                $("#divLeft").toggle(1000, function () {
+
+                    $("#divContent").width("98.8%");
+                });
+                if (i % 2 == 0) {
+
+                    $("#divContent").animate({ width: "84.5%" }, 1000);
+                }
+            })
+            $("#btn").click(function () { alert("11"); })
+
+            /*获取主菜单*/
+            var menucount = 0;
+            $.post("/Layout/getdatamenuF", function (data) {
+                var s1 = eval('(' + data + ')');
+                var s = "";
+                menucount = s1.menu.length + 1;
+                for (var i = 0; i < s1.menu.length; i++) {
+                    if (i == 0) {
+                        s += "<li title=" + s1.menu[i].menuid + " ><a>" + s1.menu[i].menuname + "</a></li>";
+                    }
+                    else {
+                        s += "<li title=" + s1.menu[i].menuid + " ><a>" + s1.menu[i].menuname + "</a></li>";
+                    }
+                }
+
+                $("#ulmenuF").html(s)
+                $("#ulmenuF>li").find("a").each(function () {
+                    $(this).click(function () {
+                        $(this).css("color", "#FF5F3E")
+                        $(this).parent().siblings().find("a").css("color", "")
+                    })
+                })
+
+                /*获取子菜单*/
+                var DivNavigation = $(".nav ul li a");
+
+                for (var i = 0; i < DivNavigation.length; i++) {
+                    DivNavigation[i].onclick = function () {
+                        var menuid = $(this).parent().attr("title");
+                        if ($(this).html() == "首页") {
+                            $("#divContent").html("<iframe name='Content' width='100%' height='100%' src='/Home/Welcome'></iframe>");
+                        }
+                        $.post("/Layout/getdatamenuC", { menuid: menuid }, function (data) {
+                            var sc = "";
+
+                            var sc1 = eval('(' + data + ')');
+
+                            for (var i = 0; i < sc1.menu.length; i++) {
+                                if (sc1.menu[i].menuname == "0") {
+
+                                }
+                                else {
+                                    if (i == 0) {
+                                        sc += "<li title=" + sc1.menu[i].menuid + " onclick='menuC(this)' onmouseover='menuC1(this)'><a class='hover' target='Content' href='" + sc1.menu[i].menusrc + "?menuId=" + sc1.menu[i].menuid + "' >" + sc1.menu[i].menuname + "</a></li>";
+                                    }
+                                    else {
+                                        sc += "<li title=" + sc1.menu[i].menuid + " onclick='menuC(this)' onmouseover='menuC1(this)'><a target='Content' href='" + sc1.menu[i].menusrc + "?menuId=" + sc1.menu[i].menuid + "' >" + sc1.menu[i].menuname + "</a></li>";
+                                    }
+
+                                }
+                            }
+
+                            sc += "<div id='lanPos'></div>";
+                            $("#uimenuC").html(sc);
+
+                        })
+                    }
+                }
+                first();
+                function first() {
+                    $.post("/Layout/getdatamenuC", { menuid: $(".nav ul li a:first-child").parent().attr("title") }, function (data) {
+                        var sc = "";
+
+                        var sc1 = eval('(' + data + ')');
+
+                        for (var i = 0; i < sc1.menu.length; i++) {
+                            if (sc1.menu[i].menuname == "0") {
+
+                            }
+                            else {
+                                if (i == 0) {
+                                    sc += "<li title=" + sc1.menu[i].menuid + " onclick='menuC(this)' onmouseover='menuC1(this)'><a class='hover' target='Content' href='" + sc1.menu[i].menusrc + "?menuId=" + sc1.menu[i].menuid + "' >" + sc1.menu[i].menuname + "</a></li>";
+                                }
+                                else {
+                                    sc += "<li title=" + sc1.menu[i].menuid + " onclick='menuC(this)' onmouseover='menuC1(this)'><a target='Content' href='" + sc1.menu[i].menusrc + "?menuId=" + sc1.menu[i].menuid + "' >" + sc1.menu[i].menuname + "</a></li>";
+                                }
+
+                            }
+                        }
+
+                        sc += "<div id='lanPos'></div>";
+                        $("#uimenuC").html(sc);
+                    })
+                }
+
+
+            })
+
+
+
+
+            setTimeout(pp, 500);
+
+            function pp() {
+
+                var liCur = $(".nav ul li");
+                //$(".curBg").width(1000);
+                var navW = $(".nav ul li").width();
+                var curP = liCur.position().left;
+                var slider = $(".curBg");
+                var navBox = $(".nav");
+                var targetEle = $(".nav ul li a");
+
+                slider.animate({
+                    "left": curP + 20, width: $(".nav ul li").width()
+                });
+                targetEle.mouseenter(function () {
+                    var $_parent = $(this).parent(),
+                      posL = $_parent.position().left
+                    slider.stop(true, true).animate({
+                        "left": posL + 20, "width": $(this).width()
+                    }, "fast");
+                });
+                //navBox.mouseleave(function (cur) {
+                //    cur = curP;
+                //    slider.stop(true, true).animate({
+                //        "left": cur, "width": navW
+                //    }, "fast");
+                //});
+            }
+
+
+
+
+        })
+
+        /*获取子菜单*/
+        function menuC(obj) {
+            $(obj).siblings().children('a').removeClass('hover');
+            $(obj).children('a').addClass('hover');
+
+            $('#lanPos').css('top', $('.hover').offset().top - 83);
+            $('#uimenuC li').hover(function () {
+                $('#lanPos').css('top', $(this).offset().top - 83);
+            }, function () {
+                $('#lanPos').css('top', $('.hover').offset().top - 83);
+            })
+        }
+
+        /*激活id='lanPos'的DIV*/
+        function menuC1(obj) {
+            $('#lanPos').css('top', $('.hover').offset().top - 83);
+            $('#uimenuC li').hover(function () {
+                $('#lanPos').css('top', $(this).offset().top - 83);
+            }, function () {
+                $('#lanPos').css('top', $('.hover').offset().top - 83);
+            })
+        }
+        $(function () {
+            $.ajax(
+                {
+                    type: "POST",
+                    datatype: "text",
+                    url: "/Layout/UserShow",
+                    success: function (data) {
+                        var da = data.split('❤');
+                        $("#Name").html(da[1]);
+                        $("#PersionName").html(da[2]);
+                        $("#UserName").html(da[0]);
+                    }
+                })
+        })
+        ///注销
+        function Logoff() {
+            $.ajax(
+                {
+                    type: "POST",
+                    datatype: "text",
+                    url: "/Layout/Logoff",
+                    success: function (data) {
+                        location.href = data;
+                    }
+                })
+
+        }
+
+        $().ready(function () {
+            var now = new Date();
+            hour = now.getHours();
+            if (hour < 6) { $("#spanRegards").html("凌晨好") }
+            else if (hour < 9) { $("#spanRegards").html("早上好") }
+            else if (hour < 12) { $("#spanRegards").html("上午好") }
+            else if (hour < 14) { $("#spanRegards").html("中午好") }
+            else if (hour < 17) { $("#spanRegards").html("下午好") }
+            else if (hour < 19) { $("#spanRegards").html("傍晚好") }
+            else if (hour < 22) { $("#spanRegards").html("晚上好") }
+            else { $("#spanRegards").html("深夜好！") }
+
+        });
+    </script>
+    <link href="~/Css/layout.css" rel="stylesheet" />
+    <style type="text/css">
+        *
+        {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .divmenuF
+        {
+            background: -webkit-linear-gradient(white, #93e3fe); /* Safari 5.1 - 6.0 */
+            background: -o-linear-gradient(white, #93e3fe); /* Opera 11.1 - 12.0 */
+            background: -moz-linear-gradient(white, #93e3fe); /* Firefox 3.6 - 15 */
+            background: linear-gradient(white, #93e3fe); /* 标准的语法 */
+        }
+
+        #divLeft
+        {
+            background: -webkit-linear-gradient(white, #93e3fe); /* Safari 5.1 - 6.0 */
+            background: -o-linear-gradient(white, #93e3fe); /* Opera 11.1 - 12.0 */
+            background: -moz-linear-gradient(white, #93e3fe); /* Firefox 3.6 - 15 */
+            background: linear-gradient(white, #93e3fe); /* 标准的语法 */
+        }
+    </style>
+</head>
+
+<body>
+    <input type="hidden" value="" id="iptmenuF" />
+    <div style="position: absolute; right: 20px">
+        <span>欢迎您回来！</span><span id="welcome"></span>
+        <span id="Name"></span>(<span id="UserName"></span>)&nbsp;
+        <span id="PersionName"></span>&nbsp;
+        <a style="color: blue;" href="#" onclick="Logoff()">注销</a>
+    </div>
+    <div style="width: 100%; height: 100%;">
+        <div class="divmenuF" style="width: 99.8%; height: 15%; border: solid 1px gray;">
+            @{Html.RenderPartial("menuF");}
+
+        </div>
+        <div style="position: absolute; width: 100%; height: 84.8%">
+            <div id="divLeft" style="width: 14%; height: 100%; border: solid 1px gray; float: left;">
+                @{Html.RenderPartial("menuC");}
+
+            </div>
+            <div id="" style="width: 0.5%; height: 100%; border: solid 1px gray; float: left; box-sizing: content-box; position: relative">
+                <span id="divshowhidden" style="vertical-align: middle; top: 48%; position: absolute; cursor: pointer;"><
+                </span>
+            </div>
+            <div id="divContent" style="border: solid 1px gray; float: left; width: 84.9%; box-sizing: content-box; height: 100%;">
+                @RenderBody()
+
+                <iframe name="Content" width="100%" height="100%" src="~/Home/Welcome"></iframe>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

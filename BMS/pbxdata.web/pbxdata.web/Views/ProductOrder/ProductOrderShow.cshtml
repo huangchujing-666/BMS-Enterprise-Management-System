@@ -1,0 +1,283 @@
+﻿@model System.Data.DataTable
+<script src="~/js/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="~/js/My97DatePicker/WdatePicker.js"></script>
+<script src="~/js/textValidate.js"></script>
+<script type="text/javascript">
+    //var js = { a: "a", b: { c: "v" }, d: [{ e: "e" }, {f:"f"}] };
+    //alert(JSON.stringify(js));
+  // var a = JSON.parse("{\"apiOrderDetails\":[{\"def1\":null,\"def2\":null,\"def3\":null,\"def4\":null,\"def5\":null,\"detailscolor\":\"Red\",\"detailsdeliveryprice\":\"123\",\"detailsedittime\":\"2014-04-23 10:19:00\",\"detailsimg\":\"sdfa\",\"detailsitemprice\":12313,\"detailsorderid\":\"1231233\",\"detailspaytime\":\"2014-04-23 10:19:00\",\"detailssalecount\":1,\"detailsscode\":\"396382741000F\",\"detailssendtime\":\"2014-04-23 10:19:00\",\"detailsstatus\":1,\"detailssucesstime\":\"2014-04-23 10:19:00\",\"detailstaxprice\":123,\"detailstime\":\"2014-04-23 10:19:00\",\"orderid\":\"3215466\"}],\"apiOrderDiscount\":{\"def1\":null,\"def2\":null,\"def3\":null,\"def4\":null,\"def5\":null,\"dicountamount\":0,\"dicounttype\":0,\"orderid\":\"3215466\",\"remark\":null},\"apiOrderPayDetails\":{\"buyeraccount\":null,\"def1\":null,\"def2\":null,\"def3\":null,\"def4\":null,\"def5\":null,\"orderid\":\"3215466\",\"payid\":null,\"paymentname\":null,\"payouterid\":null,\"payplatform\":null,\"payprice\":0,\"paytime\":\"2014-04-23 10:19:00\",\"selleraccount\":null},\"buynameaddress\":\"深圳\",\"cityid\":\"罗湖\",\"createtime\":\"2014-04-23 10:19:00\",\"def1\":null,\"def2\":null,\"def3\":null,\"def4\":null,\"def5\":null,\"deliveryprice\":132,\"district\":\"国贸\",\"favorableprice\":231,\"invoicetitle\":\"dfda\",\"invoicetype\":\"jdfakd\",\"ispay\":0,\"itemprice\":34233,\"orderid\":\"3215466\",\"ordermsg\":\"发的噶\",\"orderprice\":23423,\"orderstatus\":1,\"paidprice\":2342,\"payouterid\":\"11000\",\"paytime\":\"2014-04-23 10:19:00\",\"phone\":\"12345666660\",\"postcode\":\"444444\",\"provinceid\":\"32\",\"realname\":\"张三\",\"taxprice\":2342}");
+  //// var a = { apiOrderId: "3215464", apiOrderDetailsId: [""] };
+  //alert(a.toString());
+    //alert(JSON.stringify(a));
+  //  //http://localhost:10155/Api/CancelApiOrder/AddAllOrder?MDapiorder={%22a%22:%22a%22,%22b%22:%22{%27c%27:%27c%27}%22}
+    //$.ajax(
+    //    {
+    //        type:"Post",
+    //        url: "http://localhost:1808/api/AddApiOrder?userName=sa&userPwd=123",
+    //       // contentType: "application/json",
+    //        data:a,
+    //        datatype: "json",
+    //        success: function (data) {
+    //            alert(data);
+    //        },
+    //        error: function (a, b, c) {
+    //        }
+    //    });
+
+    function PageIndexChange(index, isTiao) {
+        var pageIndex = parseInt($("#pageIndex").html());
+        var pageProCount = parseInt($("#pageCount").html());
+        var pgCount = parseInt($("#pgCount").select().val());
+        var ind = parseInt($("#txtTiao").val());
+        var beginTime = $("#txtBeginTime").val() == "" ? "" : $("#txtBeginTime").val();//开始时间
+        var endTime = $("#txtEndTime").val() == "" ? "" : $("#txtEndTime").val();//结束时间
+        var yhm = $("#txtYhm").val() == "" ? "" : $("#txtYhm").val();//用户名
+        var Scode = $("#txtScode").val() == "" ? "" : $("#txtScode").val();//货号
+        var Brand = $("#DrpBrand").val() == "" ? "" : $("#DrpBrand").val();//品牌
+        var Type = $("#DrpType").val() == "" ? "" : $("#DrpType").val();//类别
+        var state = $("#State").val()==""?"":$("#State").val();//订单状态
+        var pricemin = $("#priceMin").val()==""?"":$("#priceMin").val();//最小价格
+        var pricemax = $("#priceMax").val() == "" ? "" : $("#priceMax").val();//最大价格
+        var OrderId = $("#OrderId").val() == "" ? "" : $("#OrderId").val();//单号
+        if (Boolean(isTiao)) {
+            if (ind >= pageProCount) {
+                $("#txtTiao").val(pageIndex);
+                return;
+            }
+            else {
+                //alert("b");
+                //var menuId = '@ViewData["menuId"]';
+                //var sourceCode = '@ViewData["sourceCode"]';
+                $.ajax(
+                    {
+                        type: "POST",
+                        url: "/ProductOrder/PageIndexChange",
+                        data: {
+                            pageIndex: ind,
+                            pgCount: pgCount,
+                            beginTime: beginTime,
+                            endTime: endTime,
+                            yhm: yhm,
+                            Scode: Scode,
+                            Brand: Brand,
+                            Type: Type,
+                            state: state,
+                            pricemin: pricemin,
+                            pricemax: pricemax,
+                            OrderId:OrderId
+                        },
+                        success: function (data) {
+                            if (data != "") {
+                                var str = data.split("╋");
+                                $("#tableBody").html(str[0]);
+                                $('#pageCount').html(str[1]);
+                                $('#pageRowsCount').html(str[2]);
+                                $("#txtTiao").val(ind);
+                                $("#pageIndex").html(ind);
+                                
+                            }
+                            else {
+
+                            }
+                            return;
+                        },
+                        error: function (a, b, c) {
+                            alert(b);
+                        }
+                    });
+            }
+            return;
+        }
+        switch (index) {
+            case 0://首页
+                pageIndex = 1;
+                break;
+            case 1://上一页
+                pageIndex = pageIndex - 1;
+                break;
+            case 2://下一页
+                pageIndex = pageIndex + 1;
+                break;
+            case 3://尾页
+                pageIndex = pageProCount;
+                break;
+        }
+        if (index != 0 && (pageIndex <= 0 || pageIndex > pageProCount)) {
+            return;
+        }
+        else {
+           @* var menuId = '@ViewData["menuId"]';
+            var sourceCode = '@ViewData["sourceCode"]';*@
+            $.ajax({
+                type: "POST",
+                url: "/ProductOrder/PageIndexChange",
+                dataType: "text",
+                data: {
+                    pageIndex: pageIndex,
+                    pgCount: pgCount,
+                    beginTime: beginTime,
+                    endTime: endTime,
+                    yhm: yhm,
+                    Scode: Scode,
+                    Brand: Brand,
+                    Type: Type,
+                    state: state,
+                    pricemin: pricemin,
+                    pricemax: pricemax,
+                    OrderId: OrderId
+                },
+                success: function (data) {
+                    if (data != "") {
+                        if (data != "") {
+                            var str = data.split("╋");
+                            $("#tableBody").html(str[0]);
+                            $('#pageCount').html(str[1]);
+                            $('#pageRowsCount').html(str[2]);
+                            $("#txtTiao").val(pageIndex);
+                            $("#pageIndex").html(pageIndex);
+                            return;
+                        }
+                    }
+                    else {
+                        $("#txtTiao").val(pgIndex);
+                    }
+                }
+            });
+        }
+    }
+</script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<style type="text/css">
+    #mytable {
+        border: solid #999; /* 设置边框属性；样式(solid=实线)、颜色(#999=灰) */
+        border-width: 1px 0 0 1px; /* 设置边框状粗细：上 右 下 左 = 对应：1px 0 0 1px */
+        font-size: 12px;
+        border: solid 1px #808080;
+        width: 98%;
+        border-collapse: collapse;
+    }
+
+        #mytable caption {
+            font-size: 12px;
+            font-weight: bolder;
+        }
+
+        #mytable th, table td {
+            border: solid #999;
+            height: 25px;
+            border-width: 0 1px 1px 0;
+            padding: 2px;
+        }
+
+        #mytable td {
+            height: 25px;
+            width: auto;
+            text-align: center;
+            position: relative;
+        }
+
+    #Div {
+        margin-top: 10px;
+        width: 100%;
+        height: 90%;
+        font-size: 12px;
+        overflow-x: scroll;
+    }
+
+    td div {
+        border: 1px solid #808080;
+        width: 300px;
+        height: auto;
+        font: bold 11px #fff;
+        top: -10px;
+        background-color: #999;
+        position: absolute;
+        opacity: 1;
+        display: none;
+        z-index: 999;
+    }
+
+    .divShow {
+        display: block;
+    }
+
+    .divHide {
+        display: none;
+    }
+
+    .curren {
+        cursor: pointer;
+    }
+
+    .TimeCss {
+        width: 100px;
+    }
+</style>
+<div id="Div">
+    <table id="mytable" class="mytable">
+        <thead>
+            <tr> 
+                <td colspan="100"><span>货号：</span><input type="text" id="txtScode" name="txtScode" />
+                    单号:<input type="text" id="OrderId" />
+                    品牌：@Html.DropDownList("DrpBrand",ViewData["DrpBrand"] as List<SelectListItem>)
+                    类别：@Html.DropDownList("DrpType",ViewData["DropType"] as List<SelectListItem>)
+                    价格：<input  type="text" id="priceMin" style="width:50px;"/>--<input type="text" id="priceMax"style="width:50px;" />
+                    时间：<input type="text" id="txtBeginTime" name="txtBeginTime" style="width:100px;" onclick="WdatePicker()" class="TimeCss" />--<input class="TimeCss" type="text" id="txtEndTime" style="width:100px;" name="txtEndTime" onclick="    WdatePicker()" />
+                    <span>客户名称：</span><input type="text" id="txtYhm" style="width:45px;" name="txtYhm" />
+                                        状态:<select id="State">
+                        <option value="">请选择</option>
+                        <option value="1">取消</option>
+                        <option value="0">入单</option>
+                       </select>
+                    <input type="button" onclick="PageIndexChange(0, false)" value="查询" />
+@*                    <a href="#" onclick="PageIndexChange(0,false)">查询</a></td>*@
+            </tr>
+            <tr>
+                @{ List<string> list = new List<string>();}
+                @foreach (System.Data.DataColumn c in Model.Columns)
+                {
+                    list.Add(c.ColumnName);
+                    <td>@c.ColumnName</td>
+                }
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            @foreach (System.Data.DataRow r in Model.Rows)
+            {
+                <tr>
+                    @foreach (string s in list)
+                    {
+                        if (s == "订单状态")
+                        {
+                            if (r[s] == null || r[s].ToString() == "" || r[s].ToString() != "1")
+                            {
+                        <td>入单</td>
+                            }
+                            else
+                            {
+                        <td>取消</td>
+                            }
+                            continue;
+                        }
+                        else
+                        {
+                        <td>@r[s] </td>
+                        }
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div style="width: 100%;">
+    <span><a href="#" onclick="PageIndexChange(0,false)">首页</a>  <a href="#" onclick="PageIndexChange(1,false)">上一页</a>
+        <input type="text" id="txtTiao" name="txtTiao" value="1" style="width: 50px;" onkeyup="IsNumber(this);" />
+        <a href="#" onclick="PageIndexChange(4,true)">跳转</a>  <a href="#" onclick="PageIndexChange(2,false)">下一页</a>  <a href="#" onclick="PageIndexChange(3,false)">尾页</a>
+        <select id="pgCount" onchange="PageIndexChange(0,false)">
+            <option value="10">10</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+        </select>
+        共 <span id="pageCount">@ViewData["pageRowsCount"]</span> 页 当前第 <span id="pageIndex">1</span> 页 共 <span id="pageRowsCount">@ViewData["pageCount"]</span>条数据
+    </span>
+</div>

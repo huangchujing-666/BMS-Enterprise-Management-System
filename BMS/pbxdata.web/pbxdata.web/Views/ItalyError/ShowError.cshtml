@@ -1,0 +1,204 @@
+﻿@model System.Data.DataTable
+<link href="~/Css/All.css" rel="stylesheet" />
+<style type="text/css">
+    #mytable {
+        border: solid #999; /* 设置边框属性；样式(solid=实线)、颜色(#999=灰) */
+        border-width: 1px 0 0 1px; /* 设置边框状粗细：上 右 下 左 = 对应：1px 0 0 1px */
+        font-size: 12px;
+        border: solid 1px #808080;
+        width: 98%;
+        border-collapse: collapse;
+    }
+
+        #mytable caption {
+            font-size: 12px;
+            font-weight: bolder;
+        }
+
+        #mytable th, table td {
+            border: solid #999;
+            height: 25px;
+            border-width: 0 1px 1px 0;
+            padding: 2px;
+        }
+
+        #mytable td {
+            height: 25px;
+            width: auto;
+            text-align: center;
+            position: relative;
+        }
+
+    #Div {
+        margin-top: 10px;
+        width: 100%;
+        height: 90%;
+        font-size: 12px;
+        overflow-x: scroll;
+    }
+
+    td div {
+        border: 1px solid #808080;
+        width: 300px;
+        height: auto;
+        font: bold 11px #fff;
+        top: -10px;
+        background-color: #999;
+        position: absolute;
+        opacity: 1;
+        display: none;
+        z-index: 999;
+    }
+</style>
+<script src="~/js/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="~/js/My97DatePicker/WdatePicker.js"></script>
+<script src="~/js/textValidate.js"></script>
+<script type="text/javascript">
+    function PageIndexChange(index, isTiao) {
+        var menuId = '@ViewData["menuId"]';
+        var pageIndex = parseInt($("#pageIndex").html());
+        var pageProCount = parseInt($("#pageCount").html());
+        var pgCount = parseInt($("#pgCount").select().val());
+        var ind = parseInt($("#txtTiao").val());
+        var beginTime = $("#txtBeginTime").val() == "" ? "" : $("#txtBeginTime").val();//开始时间
+        var endTime = $("#txtEndTime").val() == "" ? "" : $("#txtEndTime").val();//结束时间
+        var txtItaly = $("#txtItaly").val().trim() == "" ? "" : $("#txtItaly").val();//供应商编号
+        if (Boolean(isTiao)) {
+            if (ind >= pageProCount) {
+                $("#txtTiao").val(pageIndex);
+                return;
+            }
+            else {
+                //alert("b");
+                //var menuId = '@ViewData["menuId"]';
+                $.ajax(
+                    {
+                        type: "POST",
+                        url: "/ItalyError/PageIndexChange",
+                        data: {
+                            pageIndex: ind,
+                            pgCount: pgCount,
+                            beginTime: beginTime,
+                            endTime: endTime,
+                            Italy: txtItaly,
+                            menuId: menuId
+                        },
+                        success: function (data) {
+                            if (data != "") {
+                                var str = data.split("╋");
+                                $("#t_body").html(str[0]);
+                                $('#pageCount').html(str[1]);
+                                $('#pageRowsCount').html(str[2]);
+                                $("#txtTiao").val(ind);
+                                $("#pageIndex").html(ind);
+                            }
+                            else {
+                            }
+                            return;
+                        },
+                        error: function (a, b, c) {
+                            alert(b);
+                        }
+                    });
+            }
+            return;
+        }
+        switch (index) {
+            case 0://首页
+                pageIndex = 1;
+                break;
+            case 1://上一页
+                pageIndex = pageIndex - 1;
+                break;
+            case 2://下一页
+                pageIndex = pageIndex + 1;
+                break;
+            case 3://尾页
+                pageIndex = pageProCount;
+                break;
+        }
+        if (index != 0 && (pageIndex <= 0 || pageIndex > pageProCount)) {
+            return;
+        }
+        else {
+           @* var menuId = '@ViewData["menuId"]';
+            var sourceCode = '@ViewData["sourceCode"]';*@
+            $.ajax({
+                type: "POST",
+                url: "/ItalyError/PageIndexChange",
+                dataType: "text",
+                data: {
+                    pageIndex: pageIndex,
+                    pgCount: pgCount,
+                    beginTime: beginTime,
+                    endTime: endTime,
+                    Italy: txtItaly,
+                    menuId: menuId
+                },
+                success: function (data) {
+                    if (data != "") {
+                        var str = data.split("╋");
+                        $("#t_body").html(str[0]);
+                        $('#pageCount').html(str[1]);
+                        $('#pageRowsCount').html(str[2]);
+                        $("#txtTiao").val(pageIndex);
+                        $("#pageIndex").html(pageIndex);
+                        return;
+                    }
+                    else {
+                        $("#txtTiao").val(pgIndex);
+                    }
+                },
+                error: function (a, b, c) {
+                    alert(b + c);
+                }
+            });
+        }
+    }
+</script>
+<div>
+    <div id="Div">
+        <table id="mytable" class="mytable">
+            <tr>
+                <td colspan="10">数据源:<input type="text" id="txtItaly" name="txtItaly" style="width: 100px;" />
+                    时间：<input type="text" id="txtBeginTime" name="txtBeginTime" style="width: 100px;" onclick="WdatePicker()" class="TimeCss" />--<input class="TimeCss" type="text" id="txtEndTime" style="width: 100px;" name="txtEndTime" onclick="    WdatePicker()" />
+                    <input type="button" onclick="PageIndexChange(0, false)" value="查询" />
+                </td>
+            </tr>
+            <tr>
+                @{
+                    List<string> str = new List<string>();
+                    foreach (System.Data.DataColumn c in Model.Columns)
+                    {
+                        str.Add(c.ColumnName);
+                    <td>@c.ColumnName</td>
+                    }
+                }
+            </tr>
+            <tbody id="t_body">
+                @foreach (System.Data.DataRow r in Model.Rows)
+                {
+                    <tr>
+                        @foreach (string s in str)
+                        {
+                            <td>@r[s]</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div style="width: 100%; text-align: center;">
+        每页显示条数：<select id="pgCount" onchange="PageIndexChange(0,false)" style="width: 45px;">
+            <option value="10">10</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+        </select>
+        <span><a href="#" onclick="PageIndexChange(0,false)">首页</a>  <a href="#" onclick="PageIndexChange(1,false)">上一页</a>
+            <input type="text" id="txtTiao" name="txtTiao" value="1" style="width: 50px;" onkeyup="IsNumber(this);" />
+            <a href="#" onclick="PageIndexChange(4,true)">跳转</a>  <a href="#" onclick="PageIndexChange(2,false)">下一页</a>  <a href="#" onclick="PageIndexChange(3,false)">尾页</a>
+
+            共 <span id="pageCount">@ViewData["pageCount"]</span> 页 当前第 <span id="pageIndex">1</span> 页 共 <span id="pageRowsCount">@ViewData["pageRowsCount"]</span>条数据
+        </span>
+    </div>
+</div>

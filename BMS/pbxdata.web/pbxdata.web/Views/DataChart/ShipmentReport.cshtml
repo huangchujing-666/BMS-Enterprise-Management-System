@@ -1,0 +1,168 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<script src="~/js/divShow.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/Search.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<header>
+    <span class="spanProperty"><span class="spanPropertyName">供应商：</span><select  class="spanPropertyValue" id="selVencode"></select></span>
+     <span class="spanProperty"><span class="spanPropertyName">来货日期：</span><input type="date" id="Mindate"  class="spanPropertyValue" style="width:110px; padding:0 0;" />-<input type="date" id="Maxdate"  class="spanPropertyValue" 
+style="width:110px; padding:0 0;" /></span>
+    <input type="button" value="查  询" style="width:50px;" class="spanPropertySearch" onclick="OnSearch()" />
+    @*供应商:<select id="selVencode"></select>
+    来货日期:<input type="date" id="Mindate" />-<input type="date" id="Maxdate" />
+    <input type="button" onclick="OnSearch()" value="查询" />*@
+</header>
+
+
+<div id="divContainer" style="width:100%;">
+    <table id="mytable" class="mytable" border="0" cellpadding="0" cellspacing="0">
+    </table>
+    <div class="divJump" style="">
+        <span id="spanPage" style="font-weight: 400;"></span>
+        共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span>条数据
+       @* <select id="selPages" onchange="selPage()">
+            <option>1</option>
+            <option>5</option>
+            <option selected="selected">10</option>
+            <option>20</option>
+            <option>50</option>
+            <option>100</option>
+        </select>
+        <a href="#" onclick="TurnPage(1)">首页</a>
+        <a href="#" onclick="TurnPage(2)">上一页</a>
+        <input type="text" id="txtTiao" name="txtTiao" value="1" />
+        <a href="#" onclick="TurnPage(3)">下一页</a>
+        <a href="#" onclick="TurnPage(4)">尾页</a>
+        <a href="#" onclick="TurnPage(5)">跳转</a>
+        共<span id="PageCount"></span>页&nbsp;&nbsp;当前第<span id="PageNum"></span>页&nbsp;&nbsp;共<span id="AllCounts"></span>条数据&nbsp;&nbsp;*@
+    </div>
+</div>
+
+<script type="text/javascript">
+    /*搜索*/
+    function OnSearch() {
+        var Mindate = $("#Mindate").val().trim();
+        var Maxdate = $("#Maxdate").val().trim();
+        var Vencode = $("#selVencode").find("option:selected").val() == null ? "" : $("#selVencode").find("option:selected").val();
+        var params = "{Mindate:'" + Mindate + "',Maxdate:'" + Maxdate + "',Vencode:'" + Vencode + "'}";
+
+        $.post("/DataChart/GetShipmentReport", {
+            menuId: "0",
+            pageIndex: 1,
+            pageSize: 10,
+            params: params
+        }, function (data) {
+            var ss = data.split("-----");
+            $("#mytable").html("");
+            $("#mytable").append(ss[0]);
+            $("#PageCount").html(ss[1]);
+            $("#AllCounts").html(ss[2]);
+        });
+
+        var b = $.PageFunc("/DataChart/GetShipmentReport", "0", params);
+        $("#spanPage").html(b);
+        $("#txtTiao").val(1);
+        $("#PageNum").html(1);
+        //GetTable(1, $("#selPages").val().trim());
+        //$("#txtTiao").val(1);
+        //$("#PageNum").html(1);
+    }
+
+    function selPage(url, menuId, obj) {
+        var params = JSON.stringify(obj).replace(/\"/g, "'");
+        $.post(url, {
+            menuId: menuId,
+            pageIndex: 1,
+            pageSize: $("#selPages").val(),
+            params: params
+        }, function (data) {
+            $("#mytable").html("");
+            var ss = data.split("-----");
+            $("#mytable").append(ss[0]);
+            $("#PageCount").html(ss[1]);
+            $("#AllCounts").html(ss[2]);
+        });
+    };
+
+    //function VecondeChange() {
+    //    OnSearch();
+    //}
+
+    /*获得table*/
+    //function GetTable(obj, selpages) {
+    //    var lists = [];
+
+    //    lists.push($("#Mindate").val().trim() == null ? "" : $("#Mindate").val().trim());
+    //    lists.push($("#Maxdate").val().trim() == null ? "" : $("#Maxdate").val().trim());
+    //    lists.push($("#selVencode").find("option:selected").val() == null ? "" : $("#selVencode").find("option:selected").val())
+    //    $.ajax({
+    //        type: "get",
+    //        url: "/DataChart/GetShipmentReport",
+    //        data: { "lists": lists.join(","), "page": obj, "selpages": selpages },
+    //        success: function (data) {
+    //            selpages = selpages * 1;
+    //            var tabledata = [];
+    //            var tabledata = data.split("-*-");
+    //            $("#mytable").html(tabledata[0]);
+    //            $("#AllCounts").html(tabledata[1]);
+    //            $("#PageCount").html(Math.ceil(tabledata[1] * 1 / selpages));
+    //            $("#BalanceCounts").html(tabledata[2]);
+    //        },
+    //        error: function () {
+    //            alert("error")
+    //        },
+    //    })
+
+    //}
+    //function selPage() {//---------设置显示数目
+    //    $("#txtTiao").val(1);
+    //    $("#PageNum").html(1);
+    //    GetTable(1, $("#selPages").val().trim())
+    //}
+    ///*跳转*/
+    //function TurnPage(obj) {//-----翻页---
+    //    var pages = $("#selPages").val().trim();
+    //    switch (obj) {
+    //        case 1: GetTable(1, pages);//----首页
+    //            $("#txtTiao").val(1);
+    //            $("#PageNum").html(1)
+    //            break;
+    //        case 2:;//----上一页
+    //            if ($("#txtTiao").val().trim() == "1") {
+    //                return false;
+    //            }
+    //            else {
+    //                GetTable($("#txtTiao").val().trim() * 1 - 1, pages)
+    //                $("#txtTiao").val($("#txtTiao").val().trim() * 1 - 1);
+    //                $("#PageNum").html($("#txtTiao").val().trim())
+    //            }
+    //            break;
+    //        case 3://----下一页
+    //            if ($("#txtTiao").val().trim() == $("#PageCount").html()) {
+    //                return false;
+    //            }
+    //            else {
+    //                GetTable($("#txtTiao").val().trim() * 1 + 1, pages);
+    //                $("#txtTiao").val($("#txtTiao").val().trim() * 1 + 1);
+    //                $("#PageNum").html($("#txtTiao").val().trim())
+    //            }
+
+    //            break;
+    //        case 4: GetTable($("#PageCount").html(), pages);//----尾页
+
+    //            $("#txtTiao").val($("#PageCount").html());
+    //            $("#PageNum").html($("#PageCount").html())
+    //            break;
+    //        case 5: GetTable($("#txtTiao").val().trim(), pages);//----跳转
+    //            $("#PageNum").html($("#txtTiao").val().trim());
+
+    //            break;
+
+    //    }
+    //}
+
+    $.post("/Category/VencodeList", {}, function (data) { $("#selVencode").html(data) })
+</script>

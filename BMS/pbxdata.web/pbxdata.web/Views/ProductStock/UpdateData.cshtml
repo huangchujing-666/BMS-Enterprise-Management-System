@@ -1,0 +1,160 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<script type="text/javascript">
+
+    var Url = "http://112.74.75.82:8081/Update/";
+    $(function () {
+        $.ajax(
+            {
+                type: "POST",
+                url: "/ProductStock/PageFristShow",
+                datatype: "text",
+                data:{"menuid":"@ViewData["myMenuId"]"},
+                success: function (data) {
+                    $("#Updata").html(data);
+                }
+            })
+
+    })
+    function Load() {
+        $.ajax(
+            {
+                type: "POST",
+                url: "/ProductStock/PageFristShow",
+                datatype: "text",
+                data: { "menuid": "@ViewData["myMenuId"]" },
+                success: function (data) {
+                    $("#Updata").html(data);
+                }
+            })
+    }
+    function Refresh() {
+        $.ajax(
+            {
+                type: "POST",
+                url: "/ProductStock/PageFristShow",
+                datatype: "text",
+                data: { "menuid": "@ViewData["myMenuId"]" },
+                success: function (data) {
+                    $("#Updata").html(data);
+                }
+            })
+    }
+    ///数据更新 
+    function StartUpdate(tablename, settime, sourcescode, Thread) {
+        var table = tablename;
+        var time = settime;
+        var thread = Thread;
+        var code = sourcescode;
+        var all = time + "❤" + thread + "❤" + sourcescode;
+        window.location.href = Url + "StartUpdate/" + table + "/" + all;
+    }
+    //停止数据更新
+    function StopUpdate(tablename) {
+        var table = tablename;
+        window.location.href = Url + "StopUpdate/" + table + "/" + "true";
+    }
+    //设置时间
+    var SourceCode = "";
+    function SetTimeOut(sourceCode) {
+        SourceCode = sourceCode;
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#Insert").show();
+
+    }
+    //确认设置
+    function SetTime() {
+        var time = $("#Time").val();
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/ProductStock/SetTimeOut",
+                data: {
+                    "sourceCode": SourceCode,
+                    "SetTime": time,
+                    "menuid": "@ViewData["myMenuId"]",
+                },
+                success: function (data) {
+                    $(".PopBg").hide();
+                    $("#Insert").hide();
+                    alert(data)
+                    Refresh();
+                }
+            })
+    }
+    ///打开设置线程面板
+
+    var Source = "";
+    function SetThread(source) {
+        Source = source;
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#Thread").show();
+    }
+    ///确认设置
+    function UpdateThread() {
+        var Thread = $("#ThreadCount").val();
+        $.ajax({
+            type: "POST",
+            url: "/ProductStock/UpdateThread",
+            datatype: "text",
+            data: {
+                "ThreadCount": Thread,
+                "SourceCode": Source,
+                "menuid": "@ViewData["myMenuId"]",
+            },
+            success: function (data) {
+                $(".PopBg").hide();
+                $("#Thread").hide();
+                alert(data)
+                Refresh();
+
+            }
+        })
+    }
+
+    //关闭弹窗
+    function Close() {
+        $(".PopBg").hide();
+        $(".myPopdiv").hide();
+    }
+</script>
+<style type="text/css">
+    .PopContent
+    {
+        min-height:50px;
+        min-width:200px;
+    }
+</style>
+<div id="FunctionUpdate">
+    <table id="Updata" rules="all" class="mytable">
+    </table>
+</div>
+<br />
+<br />
+
+<div></div>
+
+<div class="PopBg"></div>
+<div class="myPopdiv" style="left: 30%;" id="Insert">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">设置更新时间间隔：</div>
+    <div class="PopContent">
+        <input type="text" id="Time" style="width: 50px;" /><input type="button" value="确认" onclick="SetTime()" />
+    </div>
+</div>
+
+
+<div class="PopBg"></div>
+<div class="myPopdiv" style="left: 30%;" id="Thread">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">设置更新线程：</div>
+    <div class="PopContent">
+        <input type="text" id="ThreadCount" style="width: 50px;" /><input type="button" value="确认" onclick="UpdateThread()" />
+    </div>
+</div>

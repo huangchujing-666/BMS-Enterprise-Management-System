@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8;" />
+    <script src="js/jquery-1.8.2.min.js"></script>
+    <script src="js/jquery.form.js"></script>
+    <title></title>
+
+    <style type="text/css">
+        *
+        {
+            padding: 0px;
+            margin: 0px;
+        }
+
+        html
+        {
+            height: 100%;
+        }
+
+        body
+        {
+            position: relative;
+            width: 100%;
+            min-height: 100%;
+        }
+
+        footer
+        {
+            position: absolute;
+            bottom: 0px;
+            height: 10px;
+            width: 100%;
+            background-color: gray;
+        }
+
+        #mytest
+        {
+            list-style-type: none;
+        }
+
+            #mytest li
+            {
+                height: 50px;
+                width: 50px;
+                border: 1px solid gray;
+                float: left;
+                margin-left: 10px;
+            }
+    </style>
+    <script type="text/javascript">
+        
+    </script>
+</head>
+<body>
+    <form id="form1" method="post" enctype="multipart/form-data">
+        <input type="file" id="fileName" name="fileName" accept=".xls" />
+        <input type="button" value="Click" onclick="Upload()" />
+    </form>
+    <div id="show">123</div>
+    <button onclick="mytest()">下载</button>
+    <input type="text" class="aa onlyNum" id="txt" size="5" />
+    <input type="text" class="onlyNum" id="Text1" size="5" />
+    <input type="text" class="onlyNum" id="Text2" size="5" />
+    <input type="text" class="onlyNum" id="Text3" size="5" />
+    <!--<ul id="mytest"><li></li><li></li><li></li><li></li></ul>-->
+
+   
+</body>
+
+</html>
+
+<script type="text/javascript">
+    
+ 
+
+    $(".onlyNum").each(function () {
+        $(this).bind("input propertychange", function () { $(this).val($(this).val().match(/\d+/g)) })
+    })
+
+
+    function start() {
+
+        var len = $("#mytest").find("li").length;
+        //setTimeout("exchange(0)", 0 * 100);
+        //setTimeout("exchange(1)", 1 * 100);
+        //setTimeout("exchange(2)", 2 * 100);
+        //setTimeout("exchange(3)", 3 * 100);
+        for (var i = 1; i <= 1000; i++) {
+            setTimeout("exchange(" + i + ")", i * 10);
+
+        }
+    }
+    function exchange(i) {
+        $("#show").append("<div>" + i + "</div>");
+        //$("#mytest").find("li").eq(i).css("background-color", "green");
+        //$("#mytest").find("li").eq(i).siblings().css("background-color", "white");
+    }
+    //var ss = setInterval("start()",400)
+
+    var option_ajax = {
+        type: "post",
+        url: "/Upload/UploadExcel",
+        beforeSubmit: function () {
+            if ($("#fileName").val() == "") {
+                console.log($("#fileName").val());
+                alert("请选择文件");
+                return false;
+            }
+            else if ($("#fileName").val().split(".")[$("#fileName").val().split(".").length] != "xls") {
+                alert("请选择xls文件");
+                return false;
+            }
+
+        },
+        success: function (data) {
+            $("#show").html(data)
+        },
+        error: function () {
+            alert("error!");
+        }
+
+    }
+    function Upload() {
+
+        $("#form1").ajaxSubmit(option_ajax);
+
+    }
+
+    function mytest() {
+        $.post("/Upload/mytest", {}, function (data) {
+            //window.open(data, "_target", "")
+            console.log(data);
+            location.href = data;
+        })
+    }
+
+    //var conn = new ActiveXObject("ADODB.Connection");
+
+    //conn.Open("Provider=SQLOLEDB.1; Data Source=localhost; User ID=sa; "
+    //  + "Password=bms123456; Initial Catalog=pubs");
+    //var rs = new ActiveXObject("ADODB.Recordset");
+    //var sql = "select * from mytest";
+
+    //console.log(rs.open(sql, conn));
+    //rs.close();
+    //rs = null;
+    //conn.close();
+    //conn = null;
+</script>

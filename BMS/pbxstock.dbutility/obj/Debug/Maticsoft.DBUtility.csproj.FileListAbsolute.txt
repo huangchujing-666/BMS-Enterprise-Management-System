@@ -1,0 +1,5 @@
+F:\project\BMS1\BMS\pbxstock.dbutility\bin\Debug\pbxstock.dbutility.dll
+F:\project\BMS1\BMS\pbxstock.dbutility\bin\Debug\pbxstock.dbutility.pdb
+F:\project\BMS1\BMS\pbxstock.dbutility\obj\Debug\pbxstock.dbutility.dll
+F:\project\BMS1\BMS\pbxstock.dbutility\obj\Debug\pbxstock.dbutility.pdb
+F:\project\BMS1\BMS\pbxstock.dbutility\obj\Debug\Maticsoft.DBUtility.csprojResolveAssemblyReference.cache

@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{263BA49F-6044-4094-8F18-92AB9F1DF613}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>pbxdata.bll</RootNamespace>
+    <AssemblyName>pbxdata.bll</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ActivityBLL.cs" />
+    <Compile Include="apiorderbll.cs" />
+    <Compile Include="apiorderexpressbll.cs" />
+    <Compile Include="apiorderpaydetailsbll.cs" />
+    <Compile Include="Attributebll.cs" />
+    <Compile Include="BrandBLL.cs" />
+    <Compile Include="CheckProductbll.cs" />
+    <Compile Include="ciqproductmsgbll.cs" />
+    <Compile Include="Custombll.cs" />
+    <Compile Include="CustomPropertybll.cs" />
+    <Compile Include="DataChartbll.cs" />
+    <Compile Include="dataoperatingbll.cs" />
+    <Compile Include="Errorlogbll.cs" />
+    <Compile Include="ExcelOperationbll.cs" />
+    <Compile Include="funPermissonbll.cs" />
+    <Compile Include="hscodebll.cs" />
+    <Compile Include="ItalyErrorbll.cs" />
+    <Compile Include="menubll.cs" />
+    <Compile Include="mytest_Lbll.cs" />
+    <Compile Include="ordercustomsresultbll.cs" />
+    <Compile Include="paycustomsresultbll.cs" />
+    <Compile Include="personapermissonbll.cs" />
+    <Compile Include="ProductBll.cs" />
+    <Compile Include="productcustomresultbll.cs" />
+    <Compile Include="ProductOrderbll.cs" />
+    <Compile Include="productPorpertybll.cs" />
+    <Compile Include="ProductStockBLL.cs" />
+    <Compile Include="ProductStockConfigBll.cs" />
+    <Compile Include="ProductTypeBLL.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RetProductbll.cs" />
+    <Compile Include="rolebll.cs" />
+    <Compile Include="Seasonbll.cs" />
+    <Compile Include="shopbll.cs" />
+    <Compile Include="ShopProductBll.cs" />
+    <Compile Include="ShopTypeBLL.cs" />
+    <Compile Include="shoporderbll.cs" />
+    <Compile Include="SoCalProductBll.cs" />
+    <Compile Include="sourceorderbll.cs" />
+    <Compile Include="SystemConfigManagerbll.cs" />
+    <Compile Include="tableFiledPerssionbll.cs" />
+    <Compile Include="taoAppUserbll.cs" />
+    <Compile Include="tbProductReMarkBll.cs" />
+    <Compile Include="usersbll.cs" />
+    <Compile Include="SystemConfigManagerbll_L.cs" />
+    <Compile Include="ProductStockBLL_L.cs" />
+    <Compile Include="ProductBll_L.cs" />
+    <Compile Include="BrandBLL_L.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\pbxdata.dalfactory\pbxdata.dalfactory.csproj">
+      <Project>{4479bd08-ccd8-416c-a65a-7f293162a3f1}</Project>
+      <Name>pbxdata.dalfactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\pbxdata.dal\pbxdata.dal.csproj">
+      <Project>{00228381-30bf-4d6c-bbff-7fdaf0a5add2}</Project>
+      <Name>pbxdata.dal</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\pbxdata.idal\pbxdata.idal.csproj">
+      <Project>{e7b74671-993f-4dd8-8d89-9b579dd26568}</Project>
+      <Name>pbxdata.idal</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\pbxdata.model\pbxdata.model.csproj">
+      <Project>{6672ddad-a0f6-4098-955e-13194b0d5a84}</Project>
+      <Name>pbxdata.model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\pbxstock.dbutility\Maticsoft.DBUtility.csproj">
+      <Project>{7d9cae0e-fa82-4464-91cf-3a324029149b}</Project>
+      <Name>Maticsoft.DBUtility</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

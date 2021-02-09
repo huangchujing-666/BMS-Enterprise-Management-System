@@ -1,0 +1,341 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="~/js/textValidate.js"></script>
+<script type="text/javascript" src="~/js/My97DatePicker/WdatePicker.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<script type="text/javascript" src="~/js/pageIndex.js"></script>
+<script type="text/ecmascript">
+    //分页事件   已完成  待优化
+    function PageIndexChange(Index) {
+        var scode = "";  //货号
+        var style = "";  //款号
+        var price = "";  //价格1
+        var price1 = "";  //价格2
+        var cat = "";     //季节  
+        var brand = "";   //品牌
+        var CatLB = "";
+        var stcok = "";   //库存1
+        var stcok1 = "";   //库存2
+        var time = "";    //时间1
+        var time1 = "";   //时间2
+        var vencode = "";//供应商
+        var page = $("#PageByScode").val()==""?10:$("#PageByScode").val();//每页个数:
+        var returnPage = $("#PageSum").val() == "" ? 1 : $("#PageSum").val();
+        var vencode = "";
+        vencode = $("#VendCodeByScode").val();
+        if ($("#Scode").val() != "") {
+            scode = $("#Scode").val();
+        }
+        if ($("#Style").val() != "") {
+            style = $("#Style").val();
+        }
+        if ($("#PriceMin").val() != "") {
+            price = $("#PriceMin").val();
+        }
+        if (isNaN(price) == true) {
+            alert("价格请输入数字类型");
+            return false;
+        }
+        if ($("#PriceMax").val() != "") {
+            price1 = $("#PriceMax").val();
+        }
+        if (isNaN(price1) == true) {
+            alert("价格请输入数字类型");
+            return false;
+        }
+        if ($("#Season").val() != "") {
+            cat = $("#Season").val();
+        }
+        if ($("#DrpBrand").val() != "") {
+            brand = $("#DrpBrand").val();
+        }
+        if ($("#Brand").val() != "")//手动输入  品牌
+        {
+            brand = $("#Brand").val();
+        }
+        if ($("#StcokMin").val() != "") {
+            stcok = $("#StcokMin").val();
+        }
+        if (isNaN(stcok) == true) {
+            alert("库存应为整数类型");
+            return false;
+        }
+        if ($("#StcokMax").val() != "") {
+            stcok1 = $("#StcokMax").val();
+        }
+        if (isNaN(stcok1) == true) {
+            alert("库存应为整数类型");
+            return false;
+        }
+        if ($("#MinTime").val() != "") {
+            time = $("#MinTime").val();
+        }
+        if ($("#MaxTime").val() != "") {
+            time1 = $("#MaxTime").val();
+        }
+        if ($("#CatPP").val() != "") {
+            CatLB = $("#CatPP").val();
+        }
+        $.ajax(
+        {
+            type: "POST",
+            url: "/OpenProduct/GetAllProduct",
+            datatype: "text",
+            data: {
+                "returnPage": returnPage,//跳页
+                "Index": Index,//分页类型
+                "scode": scode,
+                "style": style,
+                "price": price,
+                "price1": price1,
+                "cat": cat,
+                "brand": brand,
+                "stcok": stcok,
+                "stcok1": stcok1,
+                "time": time,
+                "time1": time1,
+                "CatLB": CatLB,
+                "Vencode": vencode,
+                "Page": page,//每页个数
+                "ispage": true,//是否为分页
+                "Imagefile": $("#Imagefile").val(),
+                "Descript": $("#Descript").val()
+            },
+            success: function (data) {
+                if (data != null) {
+                    if (data != null) {
+                        var da = data.split("❤");
+                        $("#tableStcok").html(da[0]);
+                        $("#PageCount").html(da[1]);
+                        $("#Record").html(da[2]);
+                        $("#thisPge").html(da[3]);
+                        $("#PageSum").val(da[3])
+                    }
+                    else {
+                        $('#customList').html(data);
+                    }
+                }
+            }
+        })
+    }
+    //多条件查询事件  已完成 待优化
+    function Search() {
+        PageIndexChange(2);
+    }
+    ///页码改变
+    function ChangeByScode()
+    {
+        PageIndexChange(2);
+    }
+
+
+    $(function ()
+    {
+        $("#Search").click(function ()
+        {
+            var Style = $("#Style").val() == null ? "" : $("#Style").val();
+            var Scode = $("#Scode").val() == null ? "" : $("#Scode").val();
+            var PriceMin = $("#PriceMin").val() == null ? "" : $("#PriceMin").val();
+            var PriceMax = $("#PriceMax").val() == null ? "" : $("#PriceMax").val();
+            var Season = $("#Season").val() == null ? "" : $("#Season").val();
+            var Type = $("#Type").val() == null ? "" : $("#Type").val();
+            var Brand = $("#Brand").val() == null ? "" : $("#Brand").val();
+            var StockMin = $("#StcokMin").val() == null ? "" : $("#StcokMin").val();
+            var StockMax = $("#StcokMax").val() == null ? "" : $("#StcokMax").val();
+            var Descript = $("#Descript").val() == null ? "" : $("#Descript").val();
+            var MinTime = $("#MinTime").val() == null ? "" : $("#MinTime").val();
+            var MaxTime = $("#MaxTime").val() == null ? "" : $("#MaxTime").val();
+            var Vencode = $("#Vencode").val() == null ? "" : $("#Vencode").val();
+            var ImageFile = $("#Imagefile").val() == null ? "" : $("#Imagefile").val();
+
+            var Params = "{"+
+                "Style:'"+ Style+"', Scode:'"+ Scode+"', PriceMin:'"+ PriceMin+"', PriceMax:'"+ PriceMax+"', Season:'"+ Season+"', Type:'"+ Type+"', Brand:'"+ Brand+"',"+
+                "StockMin:'"+ StockMin+"', StockMax:'"+ StockMax+"', Descript:'"+ Descript+"', MinTime:'"+ MinTime+"', MaxTime:'"+ MaxTime+"', Vencode:'"+ Vencode+"', ImageFile:'"+ ImageFile+"'"
+            +"}";
+            $.post("/OpenProduct/GetAllProduct", {
+                menuId: "@ViewData["myMenuId"]",
+                pageIndex: 1,
+                pageSize: 10,
+                params: Params,
+                }, function (data) { $("#tableStcok").html(""); var ss = data.split("-----"); $("#tableStcok").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+            var b = $.PageFunc("/OpenProduct/GetAllProduct", "@ViewData["myMenuId"]", Params);
+            $("#spanPage").html(b);
+            $("#txtTiao").val(1);
+            $("#PageNum").html(1);
+        })
+    })
+
+</script>
+
+<div style="border: 1px solid gray;">
+    <div>
+        <div style="height: auto;">
+            <span style="font-size: 12px; color: #808080;">款号：<input type="text" id="Style" style="width: 70px;">
+                货号：<input type="text" id="Scode" style="width: 120px;" />
+                价格：<input type="text" id="PriceMin" style="width: 50px;">-<input type="text" id="PriceMax" style="width: 50px;" />
+                季节：<input type="text" id="Season" style="width: 40px;" />
+                类别：<select id="Type">@Html.Raw(ViewData["DropType"])</select> 
+                品牌:<input type="text" id="Brand" style="width: 50px;" /><select id="DrpBrand">@Html.Raw(ViewData["DrpBrand"])</select>
+                库存：<input type="text" style="width: 50px;" id="StcokMin">-<input type="text" id="StcokMax" style="width: 50px;" />
+                描述：<input  type="text" style="width: 50px;" id="Descript"/>
+                时间：<input type="text" class="Wdate" id="MinTime" style="width: 86px;" onfocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" />-<input type="text" class="Wdate" id="MaxTime" style="width: 86px;" onfocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" />
+                供应商：<select id="Vencode">@Html.Raw(ViewData["Vencode"])</select>
+                图片:<select id="Imagefile"><option value="">请选择</option><option value="1">有图</option><option value="2">无图</option></select>
+                <input type="button" id="Search" value="查询" /><span style="margin-left: 22px;"></span>
+                <input type="button" value="批量开放" onclick="OpenOperationAll()"/>
+                <input type="button" value="批量关闭" onclick="CloseOperationAll()"/>
+                <input type="button" value="确认开放" onclick="OpenOperation()"/>
+                <input type="button" value="确认关闭" onclick="CloseOperation()"/>
+            </span>
+        </div>
+
+    </div>
+    <div id="tableStcok" style="width: 100%; height: auto; font-size: 12px; color: #808080; overflow-x: scroll; border: solid 1px lightblue">
+    </div>
+    <div class="divJump">
+    <span id="spanPage" style="font-weight:400;"></span>
+    共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span>条数据
+    </div>
+    <div id="divShowPic" style="position: absolute"></div>
+</div>
+
+
+<script type="text/javascript">
+    ///开放
+    function OpenOperation()
+    {
+        var list = [];
+        $("input[class=check]").each(function () {
+            if ($(this).attr("checked") == "checked") {
+                list.push($(this).attr("title") + "❤" + $(this).attr("vencode"));
+            }
+        });
+        $.post("/OpenProduct/OpenOperation", { list: list + "" }, function (data) { alert(data); PageIndexChange(2) })
+    }
+    ///关闭
+    function CloseOperation()
+    {
+        var list = [];
+        $("input[class=check]").each(function () {
+            if ($(this).attr("checked") == "checked") {
+                list.push($(this).attr("title") + "❤" + $(this).attr("vencode"));
+            }
+        });
+        $.post("/OpenProduct/CloseOperation", { list: list + "" }, function (data) { alert(data); PageIndexChange(2) })
+    }
+    ///批量开放
+    function OpenOperationAll()
+    {
+        var scode = $("#Scode").val() == null ? "" : $("#Scode").val();  //货号
+        var style = $("#Style").val() == null ? "" : $("#Style").val();  //款号
+        var price = $("#PriceMin").val() == null ? "" : $("#PriceMin").val();  //价格1
+        var price1 = $("#PriceMax").val() == null ? "" : $("#PriceMax").val();  //价格2
+        var cat = $("#Season").val() == null ? "" : $("#Season").val();     //季节  
+        var brand = $("#Brand").val() == null ? "" : $("#Brand").val();//品牌  手动输入
+        var CatLB = $("#CatPP").val() == null ? "" : $("#CatPP").val();
+        var stcok = $("#StcokMin").val() == null ? "" : $("#StcokMin").val();   //库存1
+        var stcok1 = $("#StcokMax").val() == null ? "" : $("#StcokMax").val();   //库存2
+        var time = $("#MinTime").val() == null ? "" : $("#MinTime").val();    //时间1
+        var time1 = $("#MaxTime").val() == null ? "" : $("#MaxTime").val();   //时间2
+        var vencode = $("#VendCodeByScode").val();
+        //判断开始时间不能大于结束时间
+        if (time != "" && time1 != "") {
+            if ((time.replace(/-/g, "/")) > (time1.replace(/-/g, "/"))) {
+                alert('结束时间不能小于开始时间！');
+                return false;
+            }
+        }
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/OpenProduct/OpenOperationAll",
+                data:
+                    {
+                        "scode": scode,
+                        "style": style,
+                        "price": price,
+                        "price1": price1,
+                        "Cat1": cat,
+                        "brand": brand,
+                        "stcok": stcok,
+                        "stcok1": stcok1,
+                        "time": time,
+                        "time1": time1,
+                        "Cat2": CatLB,
+                        "Vencode": vencode,
+                        "Imagefile": $("#Imagefile").val(),
+                        "Descript": $("#Descript").val()
+                    },
+                success: function (data)
+                {
+                    alert(data);
+                    PageIndexChange(2)
+                }
+            })
+    }
+    ///批量关闭
+    function CloseOperationAll()
+    {
+        var scode = $("#Scode").val() == null ? "" : $("#Scode").val();  //货号
+        var style = $("#Style").val() == null ? "" : $("#Style").val();  //款号
+        var price = $("#PriceMin").val() == null ? "" : $("#PriceMin").val();  //价格1
+        var price1 = $("#PriceMax").val() == null ? "" : $("#PriceMax").val();  //价格2
+        var cat = $("#Season").val() == null ? "" : $("#Season").val();     //季节  
+        var brand = $("#Brand").val() == null ? "" : $("#Brand").val();//品牌  手动输入
+        var CatLB = $("#CatPP").val() == null ? "" : $("#CatPP").val();
+        var stcok = $("#StcokMin").val() == null ? "" : $("#StcokMin").val();   //库存1
+        var stcok1 = $("#StcokMax").val() == null ? "" : $("#StcokMax").val();   //库存2
+        var time = $("#MinTime").val() == null ? "" : $("#MinTime").val();    //时间1
+        var time1 = $("#MaxTime").val() == null ? "" : $("#MaxTime").val();   //时间2
+        var vencode = $("#VendCodeByScode").val();
+        //判断开始时间不能大于结束时间
+        if (time != "" && time1 != "") {
+            if ((time.replace(/-/g, "/")) > (time1.replace(/-/g, "/"))) {
+                alert('结束时间不能小于开始时间！');
+                return false;
+            }
+        }
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/OpenProduct/CloseOperationAll",
+                data:
+                    {
+                        "scode": scode,
+                        "style": style,
+                        "price": price,
+                        "price1": price1,
+                        "Cat1": cat,
+                        "brand": brand,
+                        "stcok": stcok,
+                        "stcok1": stcok1,
+                        "time": time,
+                        "time1": time1,
+                        "Cat2": CatLB,
+                        "Vencode": vencode,
+                        "Imagefile": $("#Imagefile").val(),
+                        "Descript": $("#Descript").val()
+                    },
+                success: function (data) {
+                    alert(data);
+                    PageIndexChange(2)
+                }
+            })
+    }
+    function checkall()
+    {
+        if ($("#CheckAll").attr("checked") == "checked") { // 全选 
+            $("input[class=check]").each(function () {
+                $(this).attr("checked", true);
+            });
+        }
+        else { // 取消全选 
+            $("input[class=check]").each(function () {
+                $(this).attr("checked", false);
+            });
+        }
+    }
+</script>

@@ -1,0 +1,949 @@
+﻿
+<script type="text/javascript" src="~/js/textValidate.js"></script>
+<link href="~/js/kindeditor-4.1.7/themes/default/default.css" rel="stylesheet" />
+<link href="~/js/kindeditor-4.1.7/plugins/code/prettify.css" rel="stylesheet" />
+<link href="~/js/Content/uploadify.css" rel="stylesheet" />
+<script charset="utf-8" src="~/js/kindeditor-4.1.7/kindeditor.js"></script>
+<script charset="utf-8" src="~/js/kindeditor-4.1.7/lang/zh_CN.js"></script>
+<script charset="utf-8" src="~/js/kindeditor-4.1.7/plugins/code/prettify.js"></script>
+<script src="~/js/swfobject.js" type="text/javascript"></script>
+<script src="~/js/jquery.uploadify.v2.1.4.js" type="text/javascript"></script>
+
+
+
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<script type="text/javascript" src="~/js/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript">
+    //页面加载时加载根据权限 加载查询条件
+    $(function () {
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/SoCalProduct/SoCalWareHouseShow",
+                data:{"MenuId":"@ViewData["MenuId"]"},
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#Condition").html(da[0]);
+                    $("#ConditionDown").html(da[1]);
+                }
+            })
+    })
+    //查询-款号
+    function SoCalSearchStyle() {
+        SoCalSearchPage(0);
+    }
+    //分页-款号
+    function SoCalSearchPage(Index) {
+        var style = $("#StyleTop").val() == null ? "" : $("#StyleTop").val();
+        var priceMin = $("#priceMin").val() == null ? "" : $("#priceMin").val();
+        var priceMax = $("#priceMax").val() == null ? "" : $("#priceMax").val();
+        var Cat = $("#Cat").val() == null ? "" : $("#Cat").val();
+        var BalanceMin = $("#BalanceMin").val() == null ? "" : $("#BalanceMin").val();
+        var BalanceMax = $("#BalanceMax").val() == null ? "" : $("#BalanceMax").val();
+        var Cat2 = $("#Cat2").val() == null ? "" : $("#Cat2").val();
+        var Imagefile = $("#Imagefile").val() == null ? "" : $("#Imagefile").val();
+        var salesState = $("#salesState").val() == null ? "" : $("#salesState").val();
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/SoCalProduct/SoCalSearch",
+                data: {
+                    "style": style,
+                    "priceMin": priceMin,
+                    "priceMax": priceMax,
+                    "Cat": Cat,
+                    "BalanceMin": BalanceMin,
+                    "BalanceMax": BalanceMax,
+                    "Cat2": Cat2,
+                    "Imagefile": Imagefile,
+                    "salesState": salesState,
+                    "IsPage": true,
+                    "Index": Index,
+                    "ThisPage": $("#Pagetop").val() == "" ? 1 : $("#Pagetop").val(),
+                    "Page": $("#Page").val() == "" ? 10 : $("#Page").val(),
+                    "ShopId": $("#title").attr("title"),
+                },
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#TableTop").empty;
+                    $("#AllCountstop").empty;
+                    $("#PageCounttop").empty;
+                    $("#PageNumtop").empty;
+                    $("#TableTop").html(da[0]);
+                    $("#AllCountstop").html(da[1]);
+                    $("#PageCounttop").html(da[2]);
+                    $("#PageNumtop").html(da[3]);
+                    $("#Pagetop").val(da[3])
+                }
+            })
+    }
+    //页码改变
+    function ChangePageCount() {
+        SoCalSearchPage(2);
+    }
+    //查询-货号
+    function ScCalSearchScode() {
+        ScCalSearchScodePage(2)
+    }
+    //分页-货号
+    function ScCalSearchScodePage(Index) {
+        var style = $("#Style").val() == null ? "" : $("#Style").val();
+        var scode = $("#ScodeDown").val() == null ? "" : $("#ScodeDown").val();
+        var priceMin = $("#PriceMinDown").val() == null ? "" : $("#PriceMinDown").val();
+        var priceMax = $("#PriceMaxDown").val() == null ? "" : $("#PriceMaxDown").val();
+        var Cat = $("#CatDown").val() == null ? "" : $("#CatDown").val();
+        var BalanceMin = $("#StcokMinDown").val() == null ? "" : $("#StcokMinDown").val();
+        var BalanceMax = $("#StcokMaxDown").val() == null ? "" : $("#StcokMaxDown").val();
+        var Cat2 = $("#Cat2Down").val() == null ? "" : $("#Cat2Down").val();
+        var minTime = $("#MinTimeDown").val() == null ? "" : $("#MinTimeDown").val();
+        var maxTime = $("#MaxTimeDown").val() == null ? "" : $("#MaxTimeDown").val();
+        var salesState = $("#salesStatedown").val() == null ? "" : $("#salesStatedown").val();
+        var Imagefiledown = $("#Imagefiledown").val() == null ? "" : $("#Imagefiledown").val();
+        $.ajax(
+            {
+                type: "POST",
+                url: "/SoCalProduct/ScCalSearchScode",
+                datatype: "text",
+                data:
+                    {
+                        "style": style,
+                        "scode": scode,
+                        "priceMin": priceMin,
+                        "priceMax": priceMax,
+                        "Cat": Cat,
+                        "BalanceMin": BalanceMin,
+                        "BalanceMax": BalanceMax,
+                        "Cat2": Cat2,
+                        "minTime": minTime,
+                        "maxTime": maxTime,
+                        "salesState": salesState,
+                        "Imagefiledown": Imagefiledown,
+                        "IsPage": true,
+                        "Index": Index,
+                        "ThisPage": $("#PageD").val() == "" ? 1 : $("#PageD").val(),
+                        "Page": $("#PageDown").val() == "" ? 10 : $("#PageDown").val(),
+                        "ShopId": $("#title").attr("title"),
+                    },
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#TableDown").empty;
+                    $("#PageCountD").empty;
+                    $("#AllCountsD").empty;
+                    $("#PageNumD").empty;
+                    $("#TableDown").html(da[0]);
+                    $("#PageCountD").html(da[2]);
+                    $("#AllCountsD").html(da[1]);
+                    $("#PageNumD").html(da[3]);
+                    $("#PageD").val(da[3])
+                }
+
+            })
+    }
+    //页码改变
+    function ChangePageCountDown()
+    {
+        ScCalSearchScodePage(2)
+    }
+    //查看商品
+    function LookShop(style) {
+        $("#Style").val(style);
+        ScCalSearchScode();
+
+    }
+</script>
+<style type="text/css">
+    #PopStyledescript
+    {
+        left: 20%;
+        top: 0%;
+        width: 1000px;
+        min-height: 500px;
+    }
+
+    #divMainPicContent, #divMainPicContentStyle, .divStyleContainer
+    {
+        margin: auto;
+        width: 90%;
+        min-height: 100px;
+        border: 1px solid gray;
+        padding: 10px;
+        margin-top: 10px;
+        text-align: center;
+    }
+
+        #divMainPicContent img, #divMainPicContentStyle img, .divStyleContainer img
+        {
+            width: 75px;
+            height: 75px;
+        }
+
+    #PopContent #tabProperty
+    {
+        width: 720px;
+    }
+
+        #PopContent #tabProperty td
+        {
+            border: none;
+            width: 33%;
+            text-align: right;
+        }
+
+    #PopContent
+    {
+        left: 0%;
+        top: 0%;
+        width: 1250px;
+        height: 805px;
+    }
+
+    #divUploadMainPicStyle img, #divShowMianPic img
+    {
+        margin-left: 10px;
+    }
+
+    #divUploadMainPic, #divShowMianPic, #divUploadMainPicStyle, #divShowMianPicStyle
+    {
+        float: left;
+    }
+
+    #EditContainer
+    {
+        margin-top: 5px;
+        border: 1px solid lightblue;
+        height: 765px;
+        width: 61%;
+        background-color: white;
+        padding-top: 15px;
+        overflow: auto;
+        float: left;
+    }
+
+    #divProductInfo
+    {
+        float: right;
+        margin-top: 5px;
+        margin-right: 5px;
+        border: 1px solid lightblue;
+        height: 765px;
+        width: 38%;
+        background-color: white;
+        padding-top: 15px;
+        overflow: auto;
+    }
+
+    .Loading
+    {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 105%;
+        line-height: 500px;
+        background-color: white;
+        text-align: center;
+        font-size: 50px;
+        display: none;
+        z-index: 999;
+    }
+
+    #divImageFile, #divImageFileStyle
+    {
+        margin: auto;
+        width: 90%;
+        min-height: 200px;
+        border: 1px solid gray;
+        padding: 10px;
+        text-align: center;
+        overflow: auto;
+    }
+
+    .divclose
+    {
+        position: absolute;
+        right: 8px;
+        top: 3px;
+        cursor: pointer;
+        font-size: 2em;
+        font-weight: bolder;
+        width: 30px;
+        height: 30px;
+    }
+
+        .divclose:hover
+        {
+            color: red;
+        }
+
+    #div_img1, #div_imgStyle
+    {
+        float: left;
+        padding-bottom: 10px;
+        min-width: 100%;
+    }
+
+        #div_img1 img, #div_imgStyle img
+        {
+            margin-left: 10px;
+            margin-top: 10px;
+            float: left;
+            box-sizing: border-box;
+            width: 75px;
+            height: 75px;
+        }
+
+    #divMainPicContent, #divMainPicContentStyle, .divStyleContainer
+    {
+        margin: auto;
+        width: 90%;
+        min-height: 100px;
+        border: 1px solid gray;
+        padding: 10px;
+        margin-top: 10px;
+        text-align: center;
+        overflow: auto;
+    }
+
+        #divMainPicContent img, #divShowMianPicStyle img
+        {
+            width: 75px;
+            height: 75px;
+        }
+
+        #divUploadMainPicStyle img, .divStyleContainer img
+        {
+            width: 75px;
+            height: 75px;
+            margin-left: 10px;
+        }
+
+    #divUploadMainPic, #divShowMianPic, #divUploadMainPicStyle, #divShowMianPicStyle
+    {
+        float: left;
+    }
+
+    .divMainMaxPic
+    {
+        position: absolute;
+    }
+</style>
+
+
+
+
+<div >
+    <span class="spanProperty" id="title" title="@ViewData["ShopId"]">
+        <span class="spanPropertyName">当前店铺：</span>
+        <span class="spanPropertyName">@ViewData["shopname"]</span>
+    </span>
+</div>
+<div id="Condition">
+
+
+</div>
+<div id="TableTop"></div>
+<div class="divJump">
+    <select id="Page" onchange = "return ChangePageCount()">@Html.Raw(ViewData["PageSum"])</select>
+    <a href="#" onclick="SoCalSearchPage(0)">首页</a>
+    <a href="#" onclick="SoCalSearchPage(1)">上一页</a>
+    <input type="text" id="Pagetop" />
+    <a href="#" onclick="SoCalSearchPage(2)">跳页</a>
+    共<span id='PageCounttop'></span>页&nbsp;&nbsp;
+    当前第<span id='PageNumtop'>1</span>页&nbsp;&nbsp;
+    共<span id='AllCountstop'></span>条数据
+    <a href="#" onclick="SoCalSearchPage(3)">下一页</a>
+    <a href="#" onclick="SoCalSearchPage(4)">末页</a>
+</div>
+<div id="ConditionDown"></div>
+<div id="TableDown"></div>
+<div class="divJump">
+    <select id="PageDown" onchange = "return ChangePageCountDown()">@Html.Raw(ViewData["PageSum"]) </select>
+    <a href="#" onclick="ScCalSearchScodePage(0)">首页</a>
+    <a href="#" onclick="ScCalSearchScodePage(1)">上一页</a>
+    <input type="text" id="PageD" />
+    <a href="#" onclick="ScCalSearchScodePage(2)">跳页</a>
+    共<span id='PageCountD'></span>页&nbsp;&nbsp;
+    当前第<span id='PageNumD'>1</span>页&nbsp;&nbsp;
+    共<span id='AllCountsD'></span>条数据
+    <a href="#" onclick="ScCalSearchScodePage(3)">下一页</a>
+    <a href="#" onclick="ScCalSearchScodePage(4)">末页</a>
+</div>
+<script type="text/ecmascript">
+    //查看属性
+    function LookAtrrbutt(scode, vencode) {
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/SoCalProduct/GetShopProductByScodeAndShopIdVencode",
+                data: {
+                    "scode": scode,
+                    "vencode": vencode,
+                    "ShopId": $("#title").attr("title"),
+                },
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#EditContent").empty;
+                    $("#divProductInfo").empty;
+                    $("#CaoZuo").empty;
+                    $.get("/ShopManager/ShowMainPic", { scode: scode }, function (data) {
+                        var da = data.split('-*-');
+                        $("#divShowMianPic").html("");
+                        for (var i = 0; i < da.length - 1; i++) {
+                            $("#divShowMianPic").append("<img style='width:75px;height:75px;' src='" + da[i] + "'/>")
+                        }
+                        MaxPic();
+                        ShowMainPic(scode);
+
+                    })//主图
+                    $("#EditContent").html(da[0]);
+                    $("#divProductInfo").html(da[1]);
+                    $("#CaoZuo").html(da[3]);
+                    $("#PopContent").show();
+
+                }
+            })
+    }
+    //关闭查看属性
+    function Close() {
+        $(".myPopdiv").hide();
+        $(".PopBg").hide();
+    }
+
+</script>
+<div class="PopBg"></div>
+<div id="PopContent" class="myPopdiv">
+    <div class="Loading">图片上传中<span style="color: red; font-size: 50px;">(请勿关闭窗口!)</span>......</div>
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">编辑商品属性</div>
+    <div id="EditContainer">
+        <div id="EditContent" style="width: 760px">
+        </div>
+        <div id="TypeAttribute">
+        </div>
+        <div>
+
+            <div id="divMainPicContent">
+                <div>主图</div>
+                <div id="divUploadMainPic"></div>
+                <div id="divShowMianPic"></div>
+            </div>
+            <div id="divImageFile">
+                <div id="div_img1">
+                    <div id="divScodePic"></div>
+                    <div id="divUploadImg"></div>
+                </div>
+                <div>
+                    <div id="fileQueue1" style="text-align: center">
+                    </div>
+                </div>
+            </div>
+            <div style="width: 100%; text-align: center; margin-top: 20px;" id="CaoZuo">
+                <input type="button" value=" 关 闭 " onclick="Close()" style="margin-left: 20px;" />
+            </div>
+        </div>
+    </div>
+    <div id="divProductInfo"></div>
+    <div class="divMainMaxPic"></div>
+</div>
+
+<script type="text/ecmascript">
+    //查看图片
+    function LookAttr(style) {
+        $.get("/SoCalProduct/ShowMainPicStyle", { style: style }, function (data) {
+            var da = data.split('-*-');
+            $("#divMainPic").html("");
+            if (da.length > 0) {
+                for (var i = 0; i < da.length - 1; i++) {
+                    $("#divMainPic").append("<img style='width:75px;height:75px;' src='" + da[i] + "'/>")
+                }
+            }
+        })//主图
+        $.get("/SoCalProduct/ShowPeiPic", { style: style }, function (data) {
+            var da = data.split('-*-');
+            $("#divBrandPeiPic").html("");
+            if (da.length > 0) {
+                for (var i = 0; i < da.length - 1; i++) {
+                    $("#divBrandPeiPic").append("<img style='width:75px;height:75px;' src='" + da[i] + "'/>")
+                }
+            }
+            //$("#divBrandPeiPic").empty; $("#divBrandPeiPic").append(data)
+        })//配图
+        $.get("/SoCalProduct/ShowDetailPic", { style: style }, function (data) {
+            var da = data.split('-*-');
+            $("#divProductDetail").html("");
+            if (da.length > 0) {
+                for (var i = 0; i < da.length - 1; i++) {
+                    $("#divProductDetail").append("<img style='width:75px;height:75px;' src='" + da[i] + "'/>")
+                }
+            }
+            //$("#divProductDetail").empty; $("#divProductDetail").append(data)
+        })//细节图
+        $("#PopStyledescript").show();
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+    }
+    //--上传图片-货号表
+    $(document).ready(function () {
+        $("#uploadify1").uploadify({
+            'uploader': '/js/content/uploadify.swf',
+            'script': '/Product/UploadminImg',
+            'cancelImg': '/js/content/cancel.png',
+            'folder': 'UploadFile',
+            'fileExt': '*.jpg;*.gif;*.png;*.bmp;',
+            'fileDesc': '请选择jpg,jpeg,gif,png,bmp格式',
+            'queueID': 'fileQueue1',
+            'auto': false,
+            'multi': true,
+            'onComplete': function (event, ID, fileObj, response, data) {
+                $('#divUploadImg').append("<img src=\"" + response + "\" alt='' height='100' width='100' />")
+                select();
+                SavePic();
+
+            }
+        });
+    });
+</script>
+<div id="PopStyledescript" class="myPopdiv">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">商品图片</div>
+    <div class="PopContent">
+        <div id="info">
+            <table style="width: 95%">
+                <tr>
+                    <td><span style="width: 20px; display: block;">商品描述</span></td>
+                    <td style="text-align: center;">
+                        <textarea id="txtproductDescript" style="width: 92%; height: 100px; margin: auto"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span style="width: 20px; display: block">商品缩略图</span></td>
+                    <td>
+                        <div>
+                            <div class="divStyleContainer">
+                                <div>品牌配图</div>
+                                <div id="divBrandPeiPic" style="margin-left: 0%;"></div>
+                            </div>
+
+                            <div id="divMainPicContentStyle">
+                                <div>主图</div>
+                                <div id="divMainPic"></div>
+                            </div>
+                            <div class="divStyleContainer">
+                                <div>商品细节</div>
+                                <div id="divProductDetail" style="margin-left: 0%;"></div>
+                            </div>
+                            <div id="divImageFileStyle">
+                                <div id="div_imgStyle">
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div style="text-align: center" id="Operation">
+            </div>
+        </div>
+        <div class="divMainMaxPic">
+        </div>
+    </div>
+</div>
+<div class="PopBg"></div>
+<script type="text/javascript">
+    //关闭入库界面
+    function ColseInsert() {
+        $(".PopBg").hide();
+        $("#UpdateBalance").hide();
+        ScCalSearchScode();
+    }
+    var updateScode;
+    var updatevencode;
+    function Subtract(scode, vencode) {
+        updateScode = scode;
+        updatevencode = vencode;
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/SoCalProduct/PageShowRk",
+                data: {
+                    "Scode": scode,
+                    "Vencode": vencode,
+                    "ShopId": $("#title").attr("title"),
+                },
+                success: function (data) {
+                    var da = data.split('❤')
+                    $("#tdScode").html(da[0]);//货号
+                    $("#tdVenName").html(da[1]);//数据源名称
+                    $("#lbCountBalance").html(da[2]);//总库存
+                    $("#TableShopBalance").html(da[3]);//写入表
+                    $("#AllCounts").html(da[4]);//总记录数
+                    $("#Count").html(da[5]);//总页数
+                    $("#SurplusBalance").html(da[6]);//剩余库存
+                    $(".PopBg").height($(document).height());
+                    $(".PopBg").show();
+                    $("#UpdateBalance").show();
+
+                }
+            })
+
+    }
+    ///确认修改库存
+    function SaveUpdateBalance() {
+        var balance = $("#BalanceSum").val();
+        if (balance < 0) {
+            alert("库存不允许为负数");
+            return false;
+        }
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/SoCalProduct/UpdateBalanceByAndShopIdVencode",
+                data: {
+                    "Scode": updateScode,
+                    "Vencod": updatevencode,
+                    "Balance": balance,
+                    "ShopId": $("#title").attr("title"),
+                },
+                success: function (data) {
+                    alert(data);
+                    Subtract(updateScode, updatevencode);
+                    ColseInsert();
+
+                }
+            })
+    }
+</script>
+<div class="myPopdiv" style="left: 10%; top: 20%; width: auto; height: 500px" id="UpdateBalance">
+
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">库存修改</div>
+    <div class="PopContent">
+        <table style="width: auto;">
+            <tr style="height: 30px;">
+                <td style="font-weight: bold;">货号</td>
+                <td id="tdScode" style="color: red;"></td>
+                <td id="tdVenName" style="color: red; font-weight: bold;"></td>
+                <td>
+                    <label style="font-weight: bold;">共有</label>
+                    <label id="lbCountBalance" style="color: red;"></label>
+                    <label style="font-weight: bold;">件</label>
+                    &nbsp;&nbsp;
+                    <label style="font-weight: bold;">剩余库存</label>
+                    <label style="font-weight: bold; color: red;" id="SurplusBalance"></label>
+                </td>
+            </tr>
+            <tr style="height: 30px;">
+                <td style="font-weight: bold;">修改库存</td>
+                <td style="width: auto;">
+
+                    <input type="text" id="BalanceSum" />&nbsp;&nbsp;<input type="button" value="确认修改" onclick="SaveUpdateBalance()" /></td>
+            </tr>
+        </table>
+        <div id="TableShopBalance"></div>
+    </div>
+</div>
+
+<div class="PopBg"></div>
+<script type="text/ecmascript">
+    ///打开修改价格的页面
+    var Pricestyle;
+    var PriceScode;
+    var priceVencode
+    function UpdatePricea(style, scode, vencode) {
+        Pricestyle = style;
+        PriceScode = scode;
+        priceVencode = vencode;
+        $.ajax(
+            {
+                type: "POST",
+                datatype: "text",
+                url: "/SoCalProduct/GetPriceByScodeAndShopId",
+                data:
+                    {
+                        "Scode": scode,
+                        "Vencode": priceVencode,
+                        "ShopId": $("#title").attr("title"),
+                    },
+                success: function (data) {
+                    var da = data.split('❤');
+                    $("#PirceScode").html(scode);
+                    $("#Pricea").html(da[0]);
+                    $("#Priceb").html(da[1]);
+                    $("#Pricec").html(da[2]);
+                    $("#Priced").html(da[3]);
+                    $("#Pricee").html(da[4]);
+
+                }
+            })
+        $("#UpdatePrice").show();
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+    }
+    ///关闭修改界面
+    function ColseUpdateBalance() {
+        $("#UpdatePrice").hide();
+    }
+    ///确认修改价格
+    function SaveUpdatePrice() {
+        if (confirm("确认是否修改款号 " + Pricestyle + " 售货价")) {
+            var pricec = $("#Pricee").html();
+            var UpatePricec = $("#UpatePricec").val();
+            if (UpatePricec < 0) {
+                alert("价格不允许为负数！");
+                return false;
+            }
+            $.ajax(
+                {
+                    type: "POST",
+                    datatype: "text",
+                    url: "/SoCalProduct/UpdateSoCalPriceByStyleAll",
+                    data: {
+                        "style": Pricestyle,
+                        "pricec": pricec,
+                        "UpatePricec": UpatePricec,
+                        "scode": PriceScode,
+                        "Vencode": priceVencode,
+                        "ShopId": $("#title").attr("title"),
+                    },
+                    success: function (data) {
+                        alert(data);
+                        $("#UpdatePrice").hide();
+                        $(".PopBg").hide();
+                        ScCalSearchScode();
+
+                    }
+                })
+        }
+
+    }
+</script>
+<div class="PopBg"></div>
+<div class="myPopdiv" style="left: 35%; top: 30%; width: 200px; height: 200px" id="UpdatePrice">
+    <div class="divclose" onclick="Close()">×</div>
+    <div class="Poptitle">价格修改</div>
+    <div class="PopContent">
+        <br />
+        <div style="text-align: left; margin-top: 10px; margin-left: 30px;">
+            当前货号：<label id="PirceScode" style="color: red;"></label><br />
+            吊牌价：<label id="Pricea" style="height: 20px;"></label><br style="height: 20px;" />
+            零售价：<label id="Priceb" style="height: 20px;"></label><br />
+            供货价：<label id="Pricec"></label><input id="UpatePricec" style="width: 50px;" />
+            <br />
+            批发价：<label id="Priced"></label><br />
+            成本价：<label id="Pricee"></label><br />
+            <input type="button" value="确认" onclick="SaveUpdatePrice()" />
+            <br />
+            <br />
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    ///全选
+    function CheckAll() {
+        if ($("#Checkall").attr("checked") == "checked") {
+            $("input[id=Choose]").each(function () {
+                $(this).attr("checked", true);
+            })
+        }
+        else {
+            $("input[id=Choose]").each(function () {
+                $(this).attr("checked", false);
+            })
+        }
+    }
+    //开放销售
+    function OpenSale() {
+        var styles = "";
+        $("input[id=Choose]").each(function () {
+            if ($(this).attr("checked") == "checked") {
+                styles += $(this).attr("styleName") + "❤";
+            }
+        })
+        var count = styles.split('❤').length;
+        if (count > 1) {
+            if (confirm("是否确认开放销售？")) {
+                $.ajax(
+                    {
+                        type: "POST",
+                        datatype: "text",
+                        url: "/SoCalProduct/OpenSale",
+                        data: {
+                            "styles": styles,
+                            "ShopId": $("#title").attr("title"),
+                        },
+                        success: function (data) {
+                            alert(data);
+                            SoCalSearchStyle();
+                        }
+                    })
+            }
+        }
+        else {
+            alert("请选择需要开放销售的款号！");
+        }
+    }
+    //取消销售
+    function CancelSale() {
+        var styles = "";
+        $("input[id=Choose]").each(function () {
+            if ($(this).attr("checked") == "checked") {
+                styles += $(this).attr("styleName") + "❤";
+            }
+        })
+        var count = styles.split('❤').length;
+        if (count > 1) {
+            if (confirm("是否确认取消销售？")) {
+                $.ajax(
+                    {
+                        type: "POST",
+                        datatype: "text",
+                        url: "/SoCalProduct/CancelSale",
+                        data: {
+                            "styles": styles,
+                            "ShopId": $("#title").attr("title"),
+                        },
+                        success: function (data) {
+                            alert(data);
+                            SoCalSearchStyle();
+                        }
+                    })
+            }
+        }
+        else {
+            alert("请选择需要取消销售的款号！");
+        }
+    }
+</script>
+<script type="text/ecmascript">
+    ///货号下单
+    var PlaceAnOrderVencode;
+    function PlaceAnOrderScode(Style, Scode, Vencode) {
+        PlaceAnOrderVencode = Vencode;
+        $.ajax(
+            {
+                tyep: "POST",
+                datatype: "text",
+                url: "/SoCalProduct/PlaceAnOrderScode",
+                data:
+                    {
+                        "style": Style,
+                        "scode": Scode,
+                        "vencode": Vencode,
+                        "ShopId": $("#title").attr("title"),
+                    },
+                success: function (data) {
+                    alert(data);
+                }
+            })
+    }
+    ///款号下单
+    function PlaceAnOrder(Style) {
+        $.ajax(
+            {
+                tyep: "POST",
+                datatype: "text",
+                url: "/SoCalProduct/PlaceAnOrder",
+                data:
+                    {
+                        "style": Style,
+                        "vencode": PlaceAnOrderVencode,
+                        "ShopId": $("#title").attr("title"),
+                    },
+                success: function (data) {
+                    alert(data);
+                }
+            })
+    }
+    function DeleteScode(Scode)
+    {
+        $.ajax(
+            {
+                type: "",
+                datatype: "text",
+                url: "",
+                data: {},
+                success: function (data)
+                {
+
+                }
+            })
+    }
+</script>
+
+
+
+<script type="text/javascript">
+
+
+    $.getDropDownList("#Cat");
+    $.getDropDownList("#CatDown");
+    function GetDropToBrand(e) {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Productstock/Brand",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+                var d1 = eval(data);
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].BrandAbridge + "'>" + d1[i].BrandName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+
+    }
+
+
+    $.getDropDownList("#Cat2");
+    $.getDropDownList("#Cat2Down");
+    function GetDropToType(e) {
+        if ($("#" + e).val() == "") {
+            sql = 1; //"";
+        } else {
+            sql = 2;// "select TOP 10 TypeName,Id from Brand where TypeName like " + "'%" + $("#" + e).val() + "%'";
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Productstock/Type",
+            data: {
+                sql: sql,
+                value: $("#" + e).val()
+            },
+            success: function (data) {
+
+                var d1 = eval(data);
+
+
+                for (i in d1) {
+                    $("#dd ul").append("<li title='" + d1[i].TypeNo + "'>" + d1[i].TypeName + "")
+                }
+                getCss(e);
+            },
+            error: function () {
+                alert("error")
+            },
+        })
+    }
+
+</script>

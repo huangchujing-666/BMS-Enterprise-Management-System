@@ -1,0 +1,95 @@
+﻿<script src="~/js/jquery-1.8.2.min.js" type="text/javascript"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<style type="text/css">
+    .Container
+    {
+    }
+
+        .Container ul
+        {
+        }
+
+        .Container span
+        {
+            font-weight: bolder;
+            color: blue;
+        }
+
+    .ulCount
+    {
+        list-style-type: none;
+        margin-top: 10px;
+    }
+
+        .ulCount li
+        {
+            float: left;
+            width: 200px;
+        }
+
+    #divRank
+    {
+        margin-left: 200px;
+        margin-top: 10px;
+    }
+
+        #divRank .Content
+        {
+            float: left;
+            width: 200px;
+        }
+
+            #divRank .Content:last-child
+            {
+                margin-left: 200px;
+            }
+
+    #BrandContainer, #TypeContainer
+    {
+    }
+</style>
+<div class="Container">
+    <div>销售统计</div>
+    <div id="SalesCount"></div>
+    <div class="clearfix"></div>
+    <div style="margin-top: 10px;">商品统计</div>
+    <div id="ProductCount"></div>
+    <div class="clearfix"></div>
+    <div id="divRank">
+        <div class="Content">
+            <h2>库存前20品牌名称:</h2>
+            <div id="BrandContainer"></div>
+        </div>
+        <div class="Content">
+            <h2>库存前20类别名称:</h2>
+            <div id="TypeContainer"></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+
+    $.ajax({
+        type: "POST",
+        url: "/DataChart/ReturnInfo",
+        data: { "test": $("#tex").val() },
+        success: function (data) {
+            $("#SalesCount").html(data);
+        }
+    })
+    $.ajax({
+        type: "POST",
+        url: "/DataChart/ReturnProduct",
+        data: { "test": $("#tex").val() },
+        success: function (data) {
+            var s = data.split("-*-");
+
+            $("#ProductCount").html(s[0]);
+            $("#BrandContainer").html(s[1]);
+            $("#TypeContainer").html(s[2]);
+
+        }
+    })
+
+</script>

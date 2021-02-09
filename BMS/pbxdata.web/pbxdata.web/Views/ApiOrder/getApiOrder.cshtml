@@ -1,0 +1,464 @@
+﻿@{
+    ViewBag.Title = "获取订单列表";
+}
+
+<div style="color: #FF5F3E; font-weight: bolder; line-height: 20px;">获取订单列表</div>
+
+
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script src="~/js/divShow.js"></script>
+<script src="~/js/pageIndex.js"></script>
+<script src="~/js/pagecommon.js"></script>
+<style>
+    .details
+    {
+        border-collapse: collapse;
+        border: solid 1px green;
+        /*background-color:#e1f1d2;*/
+        background-color:#d0eff5;
+        text-align: center;
+        width: 100%;
+    }
+
+    .details tr:hover
+    {
+        /*background-color: #EAF2FF;*/
+        background-color: #e1f1d2;
+    }
+
+    .mytable td:first-child
+    {
+        cursor: pointer;
+    }
+
+    .mytable
+    {
+        width: 100%;
+    }
+
+    .orderSplit
+    {
+        /*background-color:#b6ff00;*/
+        background-color: red;
+    }
+
+    .myPopdiv
+    {
+        left: 0%;
+        top: 0%;
+        min-height: 200px;
+        width: 980px;
+    }
+
+    .divclose
+    {
+        position: absolute;
+        right: 8px;
+        top: 3px;
+        cursor: pointer;
+        font-size: 2em;
+        font-weight: bolder;
+        width: 30px;
+        height: 30px;
+    }
+
+        .divclose:hover
+        {
+            color: red;
+        }
+
+    #texRemark
+    {
+        width: 90%;
+        height: 50px;
+    }
+
+    .tdRemark
+    {
+        text-align: left;
+    }
+
+    #divShowPic
+    {
+        position: absolute;
+    }
+
+    #mytable {
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+</style>
+
+
+<script type="text/javascript">
+    $().ready(function () {
+        
+
+        ///查询
+        $("#btnSearch").click(function () {
+            var orderId = $("#txtorderId").val();
+            var orderScode = $("#txtdetailsScode").val();
+            var orderColor = $("#txtdetailsColor").val();
+            var orderBuyName = $("#txtrealName").val();
+            var orderAddress = $("#txtbuyNameAddress").val();
+            var orderMobile = $("#txtphone").val();
+            var orderStatus = $("#selorderStatus").val();
+            var orderPayStatus = $("#selisPay").val();
+
+            var params = "{orderId:'" + orderId + "',orderScode:'" + orderScode
+                + "',orderColor:'" + orderColor + "',orderBuyName:'" + orderBuyName + "',orderAddress:'" + orderAddress
+                + "',orderMobile:'" + orderMobile + "',orderStatus:'" + orderStatus + "',orderPayStatus:'" + orderPayStatus + "'}";
+            $.post("/ApiOrder/getData", {
+                menuId: "@ViewData["myMenuId"]",
+                pageIndex: 1,
+                pageSize: 10,
+                params: params,  //搜索条件（参数）
+            }, function (data) { $(".mytable").html(""); var ss = data.split("-----"); $(".mytable").append(ss[0]); $("#PageCount").html(ss[1]); $("#AllCounts").html(ss[2]); })
+
+
+            //分页部分
+            var b = $.PageFunc("/ApiOrder/getData", "@ViewData["myMenuId"]", params);
+            $("#spanPage").html(b);
+            $("#txtTiao").val(1);
+            $("#PageNum").html(1);
+
+        })
+
+
+
+        ///批量分配
+        $("#btnAssign").click(function () {
+            var orderIdo = "";
+
+            var statu = confirm("确定要批量分配供应商吗?");
+            if (!statu) {
+                return false;
+            }
+            $("#mytable input[name=ckbTable]").each(function () {
+                if ($(this).attr("checked") == "checked") {
+                    orderIdo += $(this).parent().parent().children().eq(2).html() + ",";
+                }
+            })
+
+            if (orderIdo.length == "") {
+                alert("请选择需要分配供应商的订单");
+                return false;
+            }
+            $.post("/ApiOrder/getSplitSingle", { orderId: orderIdo }, function (data) {
+                alert(data);
+            });
+
+        })
+
+    })
+
+
+    //点击行展开订单详情
+    function detailstable(obj) {
+        var details = $(obj).children().eq(1).html();
+        var orderId = $(obj).children().eq(1).next().html();
+        if (details == "+") {
+            $(obj).children().eq(1).html("-");
+            $(obj).nextUntil("tr.trSourceOrder").remove();
+            $.post("/ApiOrder/getOrderDetails", { orderId: orderId, menuId: "@ViewData["myMenuId"]" }, function (data) {
+                $(obj).after(data);
+            });
+        } else {
+            $(obj).children().eq(1).html("+");
+            $(obj).nextUntil("tr.trSourceOrder").remove();
+        }
+    }
+
+
+    ///分配供应商
+    function splitSingle(obj) {
+        var statu = confirm("确定要分配供应商吗?");
+        if (!statu) {
+            return false;
+        }
+
+        $.post("/ApiOrder/getSplitSingle", { orderId: obj }, function (data) {
+            alert(data);
+        });
+    }
+
+    ///查询订单详情
+    function showTable(obj) {
+        var details = $(obj).html();
+        var orderId = $(obj).next().html();
+        if (details == "+") {
+            $(obj).html("-");
+            $(obj).parent().nextUntil("tr.trSourceOrder").remove();
+            $.post("/ApiOrder/getOrderDetails", { orderId: orderId, menuId: "@ViewData["myMenuId"]" }, function (data) {
+                $(obj).parent().after(data);
+            });
+
+        } else {
+            $(obj).html("+");
+            $(obj).parent().nextUntil("tr.trSourceOrder").remove();
+        }
+    }
+
+
+    ///全选
+    var count = 0;
+    function selectAll() {
+        $.selectAllFunc("#mytable input[name=ckbTable]");
+    }
+
+</script>
+
+@*搜索*@
+<div style="width: 100%; min-height: 50px; border-color: red;">
+    <div id="divSearchlist">
+        <span class ="spanProperty"><span class="spanPropertyName">订单ID:</span><input class="spanPropertyValue" type="text" id="txtorderId"></span>
+        <span class ="spanProperty"><span class="spanPropertyName">货号:</span><input class="spanPropertyValue" type="text" id="txtdetailsScode"></span>
+        <span class ="spanProperty"><span class="spanPropertyName">颜色:</span><input class="spanPropertyValue" type="text" id="txtdetailsColor"></span>
+        <span class ="spanProperty"><span class="spanPropertyName">姓名:</span><input class="spanPropertyValue" type="text" id="txtrealName"></span>
+        <span class ="spanProperty"><span class="spanPropertyName">详细地址:</span><input type="text" class="spanPropertyValue" id="txtbuyNameAddress"></span>
+        <span class ="spanProperty"><span class="spanPropertyName">手机:</span><input type="text" class="spanPropertyValue" id="txtphone"></span>
+        <span class ="spanProperty">
+            <span class="spanPropertyName">订单状态:</span>
+            <select id="selorderStatus" class="spanPropertyValue"><option value="">请选择</option>
+                <option value="1">待确认</option>
+                <option value="2">确认</option>
+                <option value="3">失败</option>
+                <option value="4">发货</option>
+                <option value="5">收货</option>
+                <option value="11">退单</option>
+            </select>
+        </span>
+        <span class ="spanProperty">
+            <span class="spanPropertyName">支付状态:</span>
+            <select id="selisPay" class="spanPropertyValue"><option value="">请选择</option>
+                <option value="0">未支付</option>
+                <option value="1">已支付</option>
+            </select>
+        </span>
+    </div>
+    <input class="spanPropertySearch" value=" 查   询 " type="button" id="btnSearch" >
+    <input class="spanPropertySearch" value=" 分   配 " type="button" id="btnAssign" >
+</div>
+
+<table id="mytable" class="mytable" rules="all">
+</table>
+
+@*分页*@
+<div class="divJump">
+    <span id="spanPage" style="font-weight:400;"></span>
+    共 <span id='PageCount' style='color: blue'></span>页&nbsp;&nbsp;
+    当前第 <span id='PageNum' style='color: blue'>1</span> 页&nbsp;&nbsp;
+    共 <span id='AllCounts' style='color: blue'></span>条数据
+</div>
+
+
+@*编辑备注*@
+<div class="myPopdiv" id="EditContainer">
+    <div class="divclose" onclick="Close()">×</div>
+    <div style="text-indent: 10px; text-align: left;">修改订单</div>
+    <div id="PopContent" style="background-color: white; padding: 10px; margin-top: 10px; border-radius: 5px;">
+        <input type="hidden" value="" id="hidOrderId" />
+        <table id="tabEditOrder" class="mytable"></table>
+        <div id="divRemarks"></div>
+        <div style="margin-top: 10px;">
+            <div style="font-size: 2em; float: left">备注：</div>
+            <textarea id="texRemark"></textarea>
+        </div>
+        <div style="width: 100%; text-align: center; margin-top: 10px;">
+            <input type="button" value=" 保  存 " onclick="UpdateApiOrder()" />
+        </div>
+    </div>
+</div>
+<div class="PopBg"></div>
+<div id="divShowPic" class="divShowPic"></div>@*--鼠标移上去缩略图放大--*@
+<script>
+
+    //编辑按钮
+    function userEdit(OrderId) {
+        $("#EditContainer").show();
+        $("#hidOrderId").val(OrderId);
+        $(".PopBg").height($(document).height());
+        $(".PopBg").show();
+        $("#texRemark").val("");
+        $.ajax({
+            type: "POST",
+            url: "/ApiOrder/EditApiOrder",
+            data: { "menuId": "@ViewData["myMenuId"]", "OrderId": OrderId },
+            success: function (data) {
+                $("#tabEditOrder").html(data.split("-*-")[0]);
+                $("#divRemarks").html(data.split("-*-")[1]);
+                EditRemark();
+            },
+            error: function () {
+                alert("error!");
+            }
+        })
+
+    }
+    /*取消修改或者添加*/
+    function Close() {
+        $(".PopBg").hide();
+        $("#EditContainer").hide();
+    }
+
+    //确定修改
+    function UpdateApiOrder() {
+        var OrderId = $("#hidOrderId").val();
+        var Remark = $("#texRemark").val().trim();
+        if (Remark != "") {
+            $.ajax({
+                type: "POST",
+                url: "/ApiOrder/UpdateApiOrder",
+                data: { "OrderId": OrderId, "Remark": Remark },
+                success: function (data) {
+                    $.MsgBox.Alert("提示", data);
+                    userEdit(OrderId);
+                },
+                error: function () {
+                },
+            })
+        }
+    }
+
+    //删除备注
+    function DeleteRemark(Id) {
+        var OrderId = $("#hidOrderId").val();
+        $.MsgBox.Confirm("提示", "确定要删除吗？", function () {
+            $.ajax({
+                type: "GET",
+                url: "/ApiOrder/DeleteRemark?Id=" + Id,
+                success: function (data) {
+                    $.MsgBox.Alert("提示", data);
+                    userEdit(OrderId);
+                },
+                error: function () {
+                },
+            })
+        });
+    }
+
+    //编辑备注
+    function EditRemark() {
+        $(".EditRemark").each(function () {
+            $(this).find("a").click(function () {
+                var OrderId = $("#hidOrderId").val();
+                if ($(this).html() == "编辑") {
+                    $(this).html("确定");
+                    var Remark = $(this).parent().parent().find(".tdRemark").html();
+                    $(this).parent().parent().find(".tdRemark").html("<textarea style='min-height:35px;width:100%'>" + Remark + "</textarea>")
+                }
+                else {
+                    $(this).html("编辑");
+                    var Id = $(this).attr("title");
+                    var UpdateRemark = $(this).parent().parent().find(".tdRemark").find("textarea").val().trim();
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/ApiOrder/EditRemark",
+                        data: { "Id": Id, "Remark": UpdateRemark },
+                        success: function (data) {
+                            $.MsgBox.Alert("提示", data);
+                        },
+                        error: function () {
+                        },
+                    })
+                    userEdit(OrderId);
+
+                }
+            })
+        })
+    }
+
+    /*图片错误处理*/
+    function errorImg(obj) {
+        var src = $(obj).attr("src");
+        $(obj).parent().attr("title", src);
+        $(obj).parent().html("Img error");
+    }
+
+    /*缩略图放大*/
+    function showPic() {
+        var m = $("#mytable").find("img").length - 1;
+        $("#mytable").find("img").each(function (i, j) {
+            if (i == m && m != 0) {
+                $(this).hover(function () {
+                    var y = $(this).offset().top;
+                    var x = $(this).offset().left;
+                    $("#divShowPic").css("top", y - 140);
+                    $("#divShowPic").css("left", x + 60);
+                    var src = $(this).attr("src");
+                    var Type = src.split(".")[4];
+                    src = src.split("@@")[0];
+                    $("#divShowPic").html("<img src='" + src + "' style='height:200px;width:200px' />")
+                    ScrollPic("divShowPic");
+
+                }, function () {
+                    $("#divShowPic").html("");
+                    CloseScroll();
+                })
+            } else {
+                $(this).hover(function () {
+                    var y = $(this).offset().top;
+                    var x = $(this).offset().left;
+                    $("#divShowPic").css("top", y);
+                    $("#divShowPic").css("left", x + 60);
+                    var src = $(this).attr("src");
+                    var Type = src.split(".")[4];
+                    src = src.split("@@")[0];
+                    $("#divShowPic").html("<img src='" + src + "' style='height:200px;width:200px' />")
+                    ScrollPic("divShowPic");
+
+
+                }, function () {
+                    $("#divShowPic").html("")
+                    CloseScroll();
+                })
+            }
+
+
+        })
+    }
+
+    function ScrollPic(obj) {
+        var scrollFunc = function (e) {
+            var direct = 0;
+            ee = e || window.event;
+            if (e.wheelDelta > 0) {
+                var add = $("." + obj).find("img").css("width");
+                add = parseInt(add)
+                if (add < 500) {
+                    $("." + obj).find("img").css("width", add + 25)
+                    $("." + obj).find("img").css("height", add + 25)
+                }
+
+            }
+            else {
+                var add = $("." + obj).find("img").css("width");
+                add = parseInt(add)
+                if (add != 300) {
+                    $("." + obj).find("img").css("width", add - 25)
+                    $("." + obj).find("img").css("height", add - 25)
+                }
+            }
+
+            $("body").css("overflow", "hidden");
+            $("#EditContainer").css("overflow", "hidden");
+        }
+
+        window.onmousewheel = document.onmousewheel = scrollFunc; //IE/Opera/Chrome/Safari 
+    }
+
+    function CloseScroll() {
+        $("body").css("overflow", "auto");
+        $("#EditContainer").css("overflow", "auto");
+        window.onmousewheel = document.onmousewheel = 0; //IE/Opera/Chrome/Safari
+    }
+
+</script>
+
+
+

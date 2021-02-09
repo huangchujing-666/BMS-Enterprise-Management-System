@@ -1,0 +1,178 @@
+﻿@model List<pbxdata.model.productsource>
+
+<script src="~/js/jquery-1.8.2.min.js"></script>
+<script type="text/javascript">
+   // var h = "http://192.168.0.124:8111/Home/";
+   var h = "http://112.74.75.82:8081/Home/";
+    function OnDelete(Code) {
+        if (window.confirm("确定删除？")) {
+            //window.location.href = "http://192.168.0.124:8111/Home/DeleteProductsources/" + Code;
+            //window.location.href = "http://112.74.74.98:8081/Home/DeleteProductsources/" + Code;
+            $.ajax({
+                type: "GET",
+                url: "/SystemManager/DeleteProductsources/" + Code,
+                dataType: "text",
+                success: function (data) {
+                    if (data == "True") {
+                        alert("删除成功！");
+                        $("#" + Code).remove();
+                    }
+                    else {
+                        alert(data);
+                    }
+                }
+            });
+        }
+    }
+    //启动更新
+    function OnStart(Code) {
+        if (window.confirm("确定启动？")) {
+            window.location.href = h + "StartUpdate/" + Code + "/false";
+            update();
+        }
+    }
+    //启动单次更新
+    function OnOnceStart(Code) {
+        if (window.confirm("确定启动？")) {
+            window.location.href = h + "StartUpdate/" + Code + "/" + "true";
+        }
+    }
+    //关闭更新
+    function OnStop(Code) {
+        if (window.confirm("确定关闭？")) {
+            //  alert(Code);
+            window.location.href = h + "StopUpdate/" + Code;
+            update();
+        }
+    }
+    function update() {
+        $.ajax(
+             {
+                 type: "GET",
+                 url: h + "selectProcessState"
+             }
+             );
+    }
+    $(
+        function () {
+            update();
+            //window.location.href = h+"selectProcessState";
+            //history.go(-1);
+        }
+        );
+</script>
+<style type="text/css">
+    #mytable {
+        border: solid #999; /* 设置边框属性；样式(solid=实线)、颜色(#999=灰) */
+        border-width: 1px 0 0 1px; /* 设置边框状粗细：上 右 下 左 = 对应：1px 0 0 1px */
+        font-size: 12px;
+        border: solid 1px #808080;
+        width: auto;
+        border-collapse: collapse;
+    }
+
+        #mytable caption {
+            font-size: 12px;
+            font-weight: bolder;
+        }
+
+        #mytable th, table td {
+            border: solid #999;
+            height: 25px;
+            border-width: 0 1px 1px 0;
+            padding: 2px;
+        }
+
+        #mytable td {
+            height: 25px;
+            text-align: center;
+        }
+
+    #proDIV {
+        margin-top: 10px;
+        width: 100%;
+        height: 98%;
+        font-size: 12px;
+        color: #808080;
+        overflow-x: scroll;
+        overflow-y: scroll;
+    }
+</style>
+<div id="proDIV">
+    @if (ViewData["Insert"].ToString() == "true")
+    {
+        <a id="Add" href="/SystemManager/InsertProductsoures">添加供应商</a>
+    }
+    @if (Model.Count > 0)
+    {
+        <table id="mytable" class="mytable">
+            <thead>
+                <tr>
+                    @foreach (string s in (ViewData["Head"] as Dictionary<string, string>).Values)
+                    {
+                        <th>@s</th>
+                    }
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    string[] rote = (ViewData["Head"] as Dictionary<string, string>).Keys.ToArray();
+                }
+                @foreach (pbxdata.model.productsource p in Model)
+                {
+                    <tr id="@p.SourceCode">
+                        @if (rote.Contains("SourceCode"))
+                        {
+                            <td>@p.SourceCode</td>
+                        }
+                        @if (rote.Contains("sourceName"))
+                        {
+                            <td>@p.sourceName</td>
+                        }
+                        @if (rote.Contains("sourcePhone"))
+                        {
+                            <td>@p.sourcePhone</td>
+                        }
+                        @if (rote.Contains("SourceManage"))
+                        {
+                            <td>@p.SourceManage</td>
+                        }
+                        @if (rote.Contains("SourceLevel"))
+                        {
+                            <td>@p.SourceLevel</td>
+                        }
+                         @if (rote.Contains("Def2"))
+                        {
+                            <td>@p.Def2</td>
+                        }
+                         @if (rote.Contains("Def3"))
+                        {
+                            <td>@p.Def3</td>
+                        }
+                        @if (rote.Contains("UserId"))
+                        {
+                        <td>@p.UserName1</td>
+                        }
+                        <td>
+                            @if (ViewData["Update"].ToString() == "true")
+                            {
+                                <a href="/SystemManager/UpdateProductsoures?Id=@p.SourceCode&menuId=@ViewData["menuId"]" >修改</a>
+                            }
+                            @if (ViewData["Delete"].ToString() == "true")
+                            {
+                                <a href="#" onclick="OnDelete('@p.SourceCode')">删除</a>
+                            }
+                            @if (ViewData["Start"].ToString() == "true")
+                            {
+                                <a href="#" onclick="OnStart('@p.SourceCode')">启动</a>
+                                <a href="#" onclick="OnOnceStart('@p.SourceCode')">单次启动</a>
+                                <a href="#" onclick="OnStop('@p.SourceCode')">结束</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

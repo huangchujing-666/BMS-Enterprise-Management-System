@@ -1,0 +1,205 @@
+﻿<script src="~/js/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="~/js/textValidate.js"></script>
+<script type="text/javascript" src="~/js/My97DatePicker/WdatePicker.js"></script>
+<link href="~/Css/divShow.css" rel="stylesheet" />
+<link href="~/Css/All.css" rel="stylesheet" />
+<link href="~/Css/Search.css" rel="stylesheet" />
+<script type="text/ecmascript">
+    ///全选所有
+    $(function () {
+        $("#all").change(function () {
+            if ($(this).attr("checked") == "checked") {
+                $("#show").find("input[type=checkbox]").attr("checked", true)
+            }
+            else {
+                $("#show").find("input[type=checkbox]").attr("checked", false)
+            }
+        })
+    })
+    ///页面第一次加载
+    $(function () {
+        $("#show").attr("title",@ViewData["RoleId"].ToString()+"");
+        if ($("#show").attr("title") != 1)//如果不是管理员 则是个人配置
+        {
+            $("#Customer").hide();//隐藏角色选择项
+            $("#OkPerssoin").hide();//隐藏分配项
+        }
+        //加载供应商下拉列表
+        $.ajax(
+            {
+                type: "POST",
+                url: "/BrandType/ShowVencode",
+                datatype: "text",
+                success: function (data) {
+                    $("#Vencode").html(data);
+                }
+            })
+        //加载角色下拉列表
+        $.ajax(
+            {
+                type: "POST",
+                url: "/BrandType/ShowCustomer",
+                datatype: "text",
+                success: function (data) {
+                    $("#Customer").html(data);
+                }
+            })
+    })
+    ///全选某一项
+    function CheckAll(Id) {
+        if ($("#" + Id).attr("checked") == "checked") { // 全选 
+            $("input[name=" + Id + "]").each(function () {
+                $(this).attr("checked", true);
+            });
+        }
+        else { // 取消全选 
+            $("input[name=" + Id + "]").each(function () {
+                $(this).attr("checked", false);
+            });
+        }
+    }
+    ///确认配置  角色分配
+    function OkBrandConfig()
+    {
+        var BrandId = "";
+        var PersonalId = "";//保存选择的Id
+        if ($("#show").attr("title") == 1) {   //如果是管理源  则可以选择个用户
+            PersonalId = $("#Customer").val()
+        }
+        else {  //如果不是管理员  则只能看到自己当前角色
+            PersonalId = $("#show").attr("title")
+        }
+        if (PersonalId == 0)
+        {
+            alert("请选择需要分配的角色");
+            return false;
+        }
+        $("input[Genre=Brand]").each(function ()
+        {
+            if ($(this).attr("checked") == "checked")
+            {
+                BrandId += ","+$(this).attr("id");
+            }
+        })
+        $.ajax({
+            type: "POST",
+            datatype: "text",
+            url: "/BrandType/OkBrandPerssion",
+            data: {
+                "BrandId": BrandId,
+                "Personal": PersonalId,
+                "Vencode":$("#Vencode").val()
+            },
+            success: function (data) {
+                alert(data)
+            },
+            error: function () {
+                alert("权限分配错误");
+            },
+
+        })
+    }
+    ///确认配置  个人配置
+    function OkUserPersion()
+    {
+        var PersonalId = "";//保存选择的Id
+        if ($("#show").attr("title") == 1) {   //如果是管理源  则可以选择个用户
+            PersonalId = $("#Customer").val()
+        }
+        else {  //如果不是管理员  则只能看到自己当前角色
+            PersonalId = $("#show").attr("title")
+        }
+        var BrandId = "";
+        $("input[Genre=Brand]").each(function () {
+            if ($(this).attr("checked") == "checked") {
+                BrandId += "," + $(this).attr("id");
+            }
+        })
+        $.ajax({
+            type: "POST",
+            datatype: "text",
+            url: "/BrandType/UserBrandPression",
+            data: {
+                "BrandId": BrandId,
+                "Personal": PersonalId,
+                "Vencode": $("#Vencode").val()
+
+            },
+            success: function (data) {
+                alert(data)
+            },
+            error: function () {
+                alert("权限分配错误");
+            },
+
+        })
+    }
+    //数据源下拉改变事件
+    function VencodeChage()
+    {
+        var RoleId;
+        if ($("#show").attr("title") == 1) {   //如果是管理源  则可以选择个用户
+            RoleId = $("#Customer").val()
+        }
+        else {  //如果不是管理员  则只能看到自己当前角色
+            RoleId = $("#show").attr("title")
+        }
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/BrandType/BrandShowPage",
+                data: {
+                    "Vencode": $("#Vencode").val(),
+                    "roleId": RoleId
+                },
+                success: function (data)
+                {
+                    $("#show").html(data);
+                }
+            })
+    }
+    //角色列表下拉改变事件
+    function PersonalChange()
+    {
+        var RoleId;
+        if ($("#show").attr("title") == 1) {   //如果是管理源  则可以选择个用户
+            RoleId = $("#Customer").val()
+        }
+        else {  //如果不是管理员  则只能看到自己当前角色
+            RoleId = $("#show").attr("title")
+        }
+        $.ajax(
+            {
+                type: "post",
+                datatype: "text",
+                url: "/BrandType/BrandShowPage",
+                data: {
+                    "Vencode": $("#Vencode").val(),
+                    "roleId": RoleId
+                },
+                success: function (data) {
+                    $("#show").html(data);
+                }
+            })
+    }
+</script>
+<div>
+@*    <span class="spanProperty">
+        <span class="spanPropertyName">款号：</span>
+        <input type='text' id='StyleBig' class="spanPropertyValue">
+    </span>*@
+
+
+
+    <select id="Vencode" onchange="VencodeChage()" class="spanPropertyValue"></select>
+    <select id="Customer" onchange="PersonalChange()" class="spanPropertyValue"></select>
+    <input id="OkPerssoin"  type="button" value="分配权限" class="spanPropertyValue" onclick="OkBrandConfig()"/>
+    <input id="Save" type="button" value="保存" class="spanPropertyValue"  onclick="OkUserPersion()" />
+    <span id="DrpBrand"></span>
+</div>
+<div style="height:auto">
+<div><label><input type="checkbox" id="all" >全选</label></div>
+<div id="show" title="" ></div>
+</div>
+
